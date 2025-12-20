@@ -6,17 +6,17 @@ const Comments = ({ productId }) => {
   const [comment, setComment] = useState({ comments: "" });
   const [comm, getComments] = useState([]);
 
-  /* FETCH COMMENTS */
-  useEffect(() => {
-    if (!productId) return;
+   
+   useEffect(() => {
+     if (!productId) return;
 
     axios
       .get(`http://localhost:5000/api/comment/${productId}`)
       .then((res) => {
-        console.log(res.data.data)
+        
        
-        getComments(res.data.data); // expecting array
-      })
+      getComments(res.data.data); // expecting array
+     })
       .catch((err) => console.log(err));
   }, [productId]);
 
@@ -35,7 +35,15 @@ const Comments = ({ productId }) => {
         `http://localhost:5000/api/comment/${productId}`,
       {comments: [comment.comments] }
       );
-        console.log(res)
+
+
+      setComment({ comments: "" });
+       const resu = await axios.get(
+      `http://localhost:5000/api/comment/${productId}`
+    );
+
+    getComments(resu.data.data);
+       
     } catch (err) {
       console.log(err);
     }

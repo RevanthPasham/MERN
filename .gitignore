@@ -1,107 +1,70 @@
-# Dependencies
+# ========================
+# Node / MERN common
+# ========================
 node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
 
-# Production builds
-dist/
-build/
-
-# Environment variables
+# ========================
+# Environment files
+# ========================
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
 
-# Logs
-logs
+# ========================
+# Build outputs
+# ========================
+dist/
+build/
+.out/
+.next/
+
+# ========================
+# Vite / React
+# ========================
+.vite/
+.eslintcache
+
+# ========================
+# Backend logs
+# ========================
+logs/
 *.log
 
-# Runtime data
-pids
-*.pid
-*.seed
-*.pid.lock
+# ========================
+# Database
+# ========================
+data/
+*.sqlite
+*.db
 
-# Coverage directory used by tools like istanbul
+# ========================
+# OS / Editor
+# ========================
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+
+# ========================
+# Coverage / Testing
+# ========================
 coverage/
 
-# nyc test coverage
-.nyc_output
-
-# Dependency directories
-jspm_packages/
-
-# Optional npm cache directory
-.npm
-
-# Optional REPL history
-.node_repl_history
-
-# Output of 'npm pack'
-*.tgz
-
-# Yarn Integrity file
-.yarn-integrity
-
-# dotenv environment variables file
-.env
-
-# parcel-bundler cache (https://parceljs.org/)
-.cache
-.parcel-cache
-
-# next.js build output
-.next
-
-# nuxt.js build output
-.nuxt
-
-# vuepress build output
-.vuepress/dist
-
-# Serverless directories
-.serverless
-
-# FuseBox cache
-.fusebox/
-
-# DynamoDB Local files
-.dynamodb/
-
-# TernJS port file
-.tern-port
-
-# Stores VSCode versions used for testing VSCode extensions
-.vscode-test
-
-# OS generated files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-
-# IDE files
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-
+# ========================
 # Temporary files
-tmp/
+# ========================
 temp/
+tmp/
+.cache/
 
-# Data files and databases
-*.db
-*.sqlite
-*.sqlite3
-data/
-*.json
-!package.json
-!tsconfig.json
+# ========================
+# Misc
+# ========================
+*.pem
+*.key

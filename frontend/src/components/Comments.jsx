@@ -60,6 +60,7 @@ const Comments = ({ productId }) => {
           value={comment.comments}
           placeholder="Write a comment"
           onChange={handleChange}
+          required="true"
         />
         <button type="submit">Submit</button>
       </form>

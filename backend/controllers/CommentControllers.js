@@ -1,4 +1,5 @@
 const Comment= require("../models/CommentModel")
+const {User} = require("../models/User")
 
 exports.addComment= async(req,res)=>
 {
@@ -7,12 +8,14 @@ exports.addComment= async(req,res)=>
         
 
       const { productId } = req.params;
-    const { comments } = req.body; // ["nice"]
+      const userId = req.user.userId; // f
+    const { comment } = req.body; // ["nice"]
 
-    const updated = await Comment.findOneAndUpdate(
-      { productId },
-      { $push: { comments: { $each: comments } } }, // 🔥 APPEND
-      { new: true, upsert: true } // 🔥 create if not exists
+    const updated = await Comment.create({
+      productId,
+      userId,
+      comment
+    }
     );
 
     res.status(200).json({
@@ -34,7 +37,8 @@ exports.getComments= async(req,res)=>
     try
     {
         const {productId} = req.params;
-        const comment=await Comment.find({productId})
+        const comment=await Comment.find({productId}).populate("userId", "name picture");
+
         res.status(200).json({success:true,message:"comments fetched",data:comment})
     }
     catch(err)

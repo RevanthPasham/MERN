@@ -1,6 +1,8 @@
 const { User, catago, Collectionmodel } = require("../models/User");
 const bcrypt = require("bcrypt");
 const { OAuth2Client } = require("google-auth-library");
+const jwt = require("jsonwebtoken");
+
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -51,11 +53,19 @@ exports.login = async (req, res) => {
       return res.status(400).json({ error: "Wrong password" });
     }
 
+         const token = jwt.sign(
+       { userId: user._id },
+       process.env.JWT_SECRET,
+       { expiresIn: "7d" }
+       );
+
     res.status(200).json({
-      success: true,
-      message: "Login successful",
-      user
-    });
+    success: true,
+     message: "Login successful",
+    token,
+     user
+});
+
 
   } catch (err) {
     res.status(500).json({ error: "Login failed" });
@@ -65,10 +75,10 @@ exports.login = async (req, res) => {
 /* ================= GOOGLE LOGIN (NO JWT) ================= */
 exports.googleLogin = async (req, res) => {
   try {
-    const { token } = req.body;
+    const { token: googleToken } = req.body; // ✅ rename
 
     const ticket = await client.verifyIdToken({
-      idToken: token,
+      idToken: googleToken,
       audience: process.env.GOOGLE_CLIENT_ID
     });
 
@@ -86,13 +96,22 @@ exports.googleLogin = async (req, res) => {
       await user.save();
     }
 
+    // ✅ create JWT
+    const jwtToken = jwt.sign(
+      { userId: user._id },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
     res.status(200).json({
       success: true,
       message: "Google login successful",
+      token: jwtToken, // ✅ send JWT
       user
     });
 
   } catch (err) {
+    console.error(err);
     res.status(401).json({ error: "Google authentication failed" });
   }
 };

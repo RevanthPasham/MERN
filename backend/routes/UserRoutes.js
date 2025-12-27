@@ -15,7 +15,7 @@ router.get("/collections",getCollections)
 router.get("/collections/:id", getSingleCollection);
 router.get("/collections/:id/related",getRelatedCollections)
 router.get("/search",SearchProduct)
-router.post("/auth/google", googleLogin);
+router.post("/auth/google-login", googleLogin);
 
 
 

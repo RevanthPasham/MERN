@@ -13,12 +13,10 @@ const LoginRegister = () => {
     password: ""
   });
 
-  
-
   const updateForm = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
-  // 🔹 Email / Password
+  // 🔹 Email / Password Login/Register
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -33,7 +31,11 @@ const LoginRegister = () => {
     try {
       const res = await axios.post(url, payload);
 
-      // ✅ SAVE USER
+      // ✅ SAVE USER + JWT
+      if (res.data.token) {
+        localStorage.setItem("token", res.data.token);
+      }
+
       localStorage.setItem("user", JSON.stringify(res.data.user));
 
       alert(isRegister ? "Registered!" : "Login Successful!");
@@ -48,22 +50,28 @@ const LoginRegister = () => {
   const handleGoogleLogin = async (response) => {
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/auth/google",
+        "http://localhost:5000/api/auth/google-login", // ✅ correct URL
         { token: response.credential }
       );
 
-      // ✅ SAVE USER
+
+     
+
+      // ✅ SAVE USER + JWT
+      localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
+      console.log("JWT TOKEN:", res.data.token);
+       console.log("USER:", res.data.user);
 
       navigate("/Home");
-    } catch {
+    } catch (err) {
+      console.log(err);
       alert("Google login failed");
     }
   };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
-
       <form onSubmit={handleSubmit} className="p-6 border rounded-md w-80">
 
         {isRegister && (
@@ -121,7 +129,6 @@ const LoginRegister = () => {
           ? "Already have an account? Login"
           : "Don't have an account? Register"}
       </button>
-
     </div>
   );
 };

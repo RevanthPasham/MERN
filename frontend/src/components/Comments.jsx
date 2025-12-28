@@ -6,6 +6,8 @@ const Comments = ({ productId }) => {
   const [commen, setComment] = useState({ comment: "" });
   const [comm, getComments] = useState([]);
   const [star,setStar]= useState(0);
+  const [rating,setRating]= useState(0);
+  const [totalRating,settotalRating]= useState(0);
 
   // ❌ REMOVED invalid token set line
 
@@ -20,6 +22,24 @@ const Comments = ({ productId }) => {
       })
       .catch((err) => console.log(err));
   }, [productId]);
+
+
+
+
+  useEffect(()=>
+  {
+    if(!productId) return;
+    axios.get(`http://localhost:5000/api/comment/summary/${productId}`)
+    .then((res)=>
+    {
+      setRating(res.data)
+      console.log(res.data)
+    })
+    .catch((err)=>console.log(err))
+   
+  },[productId]);
+
+  
 
   const handleChange = (e) => {
     setComment({
@@ -75,6 +95,8 @@ const Comments = ({ productId }) => {
       );
       getComments(resu.data.data);
 
+
+      
     } catch (err) {
       console.log(err);
     }
@@ -82,6 +104,13 @@ const Comments = ({ productId }) => {
 
   return (
     <div>
+
+       <div>
+        <p>overal rating </p>
+        <StarRating rating={rating.avgRating} />
+        <p>{rating.avgRating} out of 5</p>
+        <p>{rating.totalRating} global ratings</p>
+       </div>
       <p>write a review</p>
       <div>
         {[1,2,3,4,5].map((num)=>
@@ -124,6 +153,15 @@ const Comments = ({ productId }) => {
            <div className="h-[50px]  ">
              
              <p>{item.comment}</p>
+
+             <p className="text-xs text-gray-400">
+  {new Date(item.createdAt).toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  })}
+</p>
+
             </div>
            
          

@@ -14,8 +14,12 @@ const CommentSchema= new mongoose.Schema(
             required:true
         },
         comment:{type:String ,required:true},
-        star:{type:Number}
-    }
+        star:{type:Number},
+          
+    },
+    {timestamps:true}
+    
+   
 )
 
 module.exports= mongoose.model("Comment", CommentSchema)

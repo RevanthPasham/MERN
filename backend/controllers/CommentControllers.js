@@ -9,12 +9,13 @@ exports.addComment= async(req,res)=>
 
       const { productId } = req.params;
       const userId = req.user.userId; // f
-    const { comment } = req.body; // ["nice"]
+    const { comment ,star} = req.body; // ["nice"]
 
     const updated = await Comment.create({
       productId,
       userId,
-      comment
+      comment,
+      star
     }
     );
 

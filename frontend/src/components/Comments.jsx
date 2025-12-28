@@ -5,6 +5,7 @@ const Comments = ({ productId }) => {
 
   const [commen, setComment] = useState({ comment: "" });
   const [comm, getComments] = useState([]);
+  const [star,setStar]= useState(0);
 
   // ❌ REMOVED invalid token set line
 
@@ -27,6 +28,25 @@ const Comments = ({ productId }) => {
     });
   };
 
+  const StarRating = ({ rating }) => {
+  return (
+    <div className="flex gap-1">
+      {[1, 2, 3, 4, 5].map((num) => (
+        <span
+          key={num}
+          style={{
+            color: num <= rating ? "gold" : "#ccc",
+            fontSize: "18px",
+          }}
+        >
+          ★
+        </span>
+      ))}
+    </div>
+  );
+};
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -36,7 +56,11 @@ const Comments = ({ productId }) => {
 
       const res = await axios.post(
         `http://localhost:5000/api/comment/${productId}`,
-        { comment: commen.comment },
+        { comment: commen.comment,
+          star:star
+
+         },
+       
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -58,8 +82,18 @@ const Comments = ({ productId }) => {
 
   return (
     <div>
-      <form onSubmit={handleSubmit}>
-        <input
+      <p>write a review</p>
+      <div>
+        {[1,2,3,4,5].map((num)=>
+        (
+          <span key={num} onClick={()=>setStar(num)}>   ★ </span>
+        ))}
+      </div>
+      
+
+      <div className="h-[80px] flex flex-col" >
+        <form onSubmit={handleSubmit} >
+        <input className="h-[75px]"
           type="text"
           name="comment"
           value={commen.comment}
@@ -67,19 +101,28 @@ const Comments = ({ productId }) => {
           onChange={handleChange}
           required
         />
-        <button type="submit">Submit</button>
+       <div>
+         <button type="submit">Submit</button>
+       </div>
       </form>
 
-      <div>
+      </div>
+  
+
+      <div className="pt-[55px]">
         {comm.map((item) => (
           <div key={item._id} className="border-2">
               <div className=" flex h-[40px] gap-5  ">
-
+               
                  <img src={item.userId?.picture || "/default-user.png"} className="rounded-full"/>
-                <p className="items-center">{item.userId?.name} </p>
+                 <div>
+                   <p className="items-center">{item.userId?.name} </p>
+                 <StarRating rating={item.star} />
 
+                  </div>
               </div>
-           <div className="h-[50px] ">
+           <div className="h-[50px]  ">
+             
              <p>{item.comment}</p>
             </div>
            

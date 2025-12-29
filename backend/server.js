@@ -16,7 +16,7 @@ app.use("/api",      require("./routes/userRoutes"));
 app.use("/api/cart", require("./routes/cartRoutes"));
 app.use("/api",     require("./routes/addressRoutes"));
 app.use("/api",      require("./routes/CommentRoutes"))
-
+app.use("/api/payment", require("./routes/paymentRoutes"));
 
 
 

@@ -69,7 +69,7 @@ exports.getSummary= async(req,res)=>
 
         if(comment.length===0)
         {
-          res.status(200).json({
+           return res.status(200).json({
              avgRating: 0,
              totalRating: 0,
           })

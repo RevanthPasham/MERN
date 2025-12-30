@@ -156,7 +156,7 @@ const Profile = () => {
           {/* PAYMENT SECTION */}
           <div className="mt-6 border-t pt-4">
             <p className="text-lg font-bold">Total: ₹ {totalAmount}</p>
-
+      
             <button
               onClick={handlePayment}
               disabled={payLoading}

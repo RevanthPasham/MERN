@@ -4,7 +4,7 @@ import { Routes, Route } from "react-router-dom";   // ✅ THIS WAS MISSING
 import Userlogin from './components/Userlogin.jsx';
 import Practice from './components/Practice.jsx';
 import Home from './components/Home.jsx';
-import Navbar from './components/Navbar.jsx';
+import Navbar from './components/layout/Navbar.jsx';
 import Slider from './components/Slider.jsx';
 import Singledata from './components/Singledata.jsx';
 import Profile from './components/Profile.jsx'

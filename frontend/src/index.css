@@ -1,2 +1,16 @@
 @import "tailwindcss";
 
+@keyframes slideInFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(500px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in {
+  animation: slideInFromRight 1s ease-out forwards;
+}

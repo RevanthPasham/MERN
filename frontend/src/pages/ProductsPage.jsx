@@ -19,7 +19,8 @@ const ProductsPage = () => {
   return (
     <ProductList
       products={products}
-      onSelect={(id) => navigate(`/product/${id}`)}
+      onClick={(id) => navigate(`/product/${id}`)}
+      
     />
   );
 };

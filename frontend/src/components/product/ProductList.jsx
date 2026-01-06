@@ -5,6 +5,7 @@ const ProductList = ({ products = [], onSelect }) => {
     <div className="grid grid-cols-2 gap-5 mx-2 md:grid-cols-4">
       {products.map((item) => (
         <ProductCard
+        
           key={item._id}
           product={item}
           onClick={() => onSelect?.(item._id)}

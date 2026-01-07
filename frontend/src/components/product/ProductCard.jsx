@@ -6,6 +6,8 @@ const ProductCard = ({ product, onClick }) => {
         className="w-full h-[200px] rounded-xl"
         alt={product.name}
       />
+
+      
       <p>{product.name}</p>
       <p>{product.price?.[0]}</p>
     </div>

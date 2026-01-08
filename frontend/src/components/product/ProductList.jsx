@@ -2,7 +2,7 @@ import ProductCard from "./ProductCard";
 
 const ProductList = ({ products = [], onSelect }) => {
   return (
-    <div className="grid grid-cols-2 gap-5 mx-2 md:grid-cols-4">
+    <div className="grid grid-cols-2    gap-5 mx-2 md:grid-cols-4">
       {products.map((item) => (
         <ProductCard
         
@@ -15,4 +15,4 @@ const ProductList = ({ products = [], onSelect }) => {
   );
 };
 
-export default ProductList;
+export default   ProductList;

@@ -1,6 +1,6 @@
 const ProductCard = ({ product, onClick }) => {
   return (
-    <div onClick={onClick} className="cursor-pointer">
+    <div onClick={onClick}   className="cursor-pointer">
       <img
         src={product.url}
         className="w-full h-[200px] rounded-xl"

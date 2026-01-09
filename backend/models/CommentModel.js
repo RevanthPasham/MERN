@@ -4,6 +4,7 @@ const CommentSchema= new mongoose.Schema(
     {
         productId:{
             type:mongoose.Schema.Types.ObjectId,
+            
             ref:"Collection",
             required:true,
            
@@ -11,6 +12,7 @@ const CommentSchema= new mongoose.Schema(
         userId:{
             type:mongoose.Schema.Types.ObjectId,
             ref:"User",
+
             required:true
         },
         comment:{type:String ,required:true},

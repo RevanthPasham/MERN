@@ -11,10 +11,13 @@ const userSchema = new mongoose.Schema({
   // password is OPTIONAL (for Google users)
   password: { type: String },
 
+
   // identify login method
   provider: {
     type: String,
+
     enum: ["local", "google"],
+
     default: "local"
   },
 
@@ -29,6 +32,7 @@ const userSchema = new mongoose.Schema({
 const catagory = new mongoose.Schema(
   {
     name:{type:String,required:true},
+    
     imgurl:{type:String,required:true},
     catogory:{type:[String],required:true}
   }

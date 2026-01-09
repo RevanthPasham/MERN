@@ -4,37 +4,47 @@ const addressSchema = new mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",          // 👈 model name as STRING
+
+      ref: "User",   
+             // 👈 model name as STRING
       required: true
+
     },
 
     name: {
       type: String,
+
       required: true
+
     },
 
     email: {
       type: String,
+
       required: true
     },
 
     phone: {
       type: Number,
+
       required: true
     },
 
     city: {
       type: String,
+
       required: true
     },
 
     pincode: {
       type: Number,
+
       required: true
     },
 
     address: {
       type: String,
+      
       required: true
     },
 

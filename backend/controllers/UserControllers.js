@@ -196,7 +196,7 @@ exports.getCollections = async (req, res) => {
 };
 
 exports.getSingleCollection = async (req, res) => {
-  const item = await Collectionmodel.findById(req.params.id);
+  const item = await  Collectionmodel.findById(req.params.id);
   res.json(item);
 };
 

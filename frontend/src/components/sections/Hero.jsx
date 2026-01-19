@@ -3,7 +3,7 @@ import Images from "../../assets/images";
 const Hero = () => {
   return (
     <section
-      className="relative md:h-[700px]  h-[800px] bg-cover bg-center"
+      className=" relative md:h-[700px] h-[800px] bg-cover bg-center"
       style={{ backgroundImage: `url(${Images.desktopHero})` }}
     >
       {/* Overlay */}

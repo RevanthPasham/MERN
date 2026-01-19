@@ -3,7 +3,7 @@ import { IoSearchOutline, IoPersonOutline, IoBagOutline } from "react-icons/io5"
 
 const Navbar = () => {
   return (
-    <header className="fixed top-0 left-0 w-full z-50 bg-black/80">
+    <header className="sticky top-0 left-0 w-full z-50 bg-black/80">
       <div className="h-[60px] flex justify-between items-center md:mx-[50px] mx-[10px] text-white">
         
         <div className="flex items-center gap-3">

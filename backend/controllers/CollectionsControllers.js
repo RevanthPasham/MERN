@@ -1,15 +1,15 @@
-const {collectionsmodel} = require("../models/CollectionsModel")
+const {Collectionsmodel} = require("../models/CollectionsModel")
 
 
 
 exports.getCollections= async(req,res)=>
 {
-    const collectionsData= await collectionsmodel.find()
-    res.json(collectionsData)
+    const CollectionsData= await Collectionsmodel.find()
+    res.json(CollectionsData)
 }
 
 exports.getCollectionsById= async(req,res)=>
 {
-    const getCollectionId= await collectionsmodel.findById(req.params.id)
+    const getCollectionId= await Collectionsmodel.findById(req.params.id)
     res.json(getCollectionId)
 }

@@ -190,15 +190,7 @@ exports.createCollection = async (req, res) => {
   }
 };
 
-exports.getCollections = async (req, res) => {
-  const data = await Collectionmodel.find();
-  res.json(data);
-};
 
-exports.getSingleCollection = async (req, res) => {
-  const item = await  Collectionmodel.findById(req.params.id);
-  res.json(item);
-};
 
 exports.getRelatedCollections = async (req, res) => {
   const item = await Collectionmodel.findById(req.params.id);

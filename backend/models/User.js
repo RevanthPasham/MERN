@@ -41,20 +41,9 @@ const catagory = new mongoose.Schema(
 
 
 
-const Collection = new mongoose.Schema(
-  {
-     name:{type:String,required:true},
-     url:{type:String,required:true},
-     price:{type:[Number],required:true},
-     weight:{type:String,required:true},
-     discount:{type:[String],required:true},
-     catagory:{type:[String],required:true}
 
-  }
-)
 
 const User = mongoose.model("User", userSchema);
 const catago= mongoose.model("catago",catagory);
-const Collectionmodel=mongoose.model("Collection",Collection)
 
-module.exports = {User,catago,Collectionmodel};
+module.exports = {User,catago};

@@ -1,7 +1,7 @@
 const mongoose = require("mongoose")
 
 
-const Collection = new mongoose.Schema(
+const Products = new mongoose.Schema(
     {
         name:{type:String,required:true},
         price:{type:[Number],required:true},
@@ -12,6 +12,6 @@ const Collection = new mongoose.Schema(
     }
 )
 
-const Collectionsmodel=mongoose.model("Collection",Collection)
+const ProductsModel=mongoose.model("Products",Products)
 
-module.exports={Collectionsmodel};
+module.exports={ProductsModel};

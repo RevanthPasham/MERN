@@ -5,7 +5,7 @@ exports.getCollections= async(req,res)=>
     try
     {
         const CollectionsData= await CollectionsModel.find()
-        res.Json(CollectionsData)
+        res.json(CollectionsData)
     }
     catch(err)
     {

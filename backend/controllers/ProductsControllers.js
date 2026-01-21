@@ -15,25 +15,30 @@ exports.getProductsById= async(req,res)=>
 }
 
 
-exports.getCollectionProducts= async(req,res)=>
-{
-   try
-   {
-     const {name}= req.params
 
-     
-    const collections= await CollectionsModel.find({name})
-    if(!collections)
-    {
-        return res.status(404).json({message:"Collction not found"})
+exports.getCollectionProducts = async (req, res) => {
+  try {
+    const { name } = req.params;
+
+    // Projection used correctly
+    const collection = await CollectionsModel.findOne(
+      { name },
+      { category: 1 }
+    );
+
+    if (!collection) {
+      return res.status(404).json({ message: "Collection not found" });
     }
 
-    const categories= collections.category
-    const produxts= await ProductsModel.find({category:{$in:categories}})
-   }
-   catch(error)
-   {
-    res.status(500).json({eroor:error.message})
-   }
+    // Extract array from projected doc
+    const categories = collection.category;
 
-}   
+    const products = await ProductsModel.find({
+      category: { $in: categories }
+    });
+
+    res.json(products);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};

@@ -14,7 +14,7 @@ const Home = () => {
       <Hero />
        <Collections />
       
-     
+      <Productspage />
      
     </div>
   );

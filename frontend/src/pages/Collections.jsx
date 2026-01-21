@@ -27,7 +27,7 @@ const Collections = () => {
           <CollectionsCard
             key={item._id}
             imageUrl={item.imageUrl}
-            name={item.name}
+            name={item.name}  
           />
         ))}
       </div>

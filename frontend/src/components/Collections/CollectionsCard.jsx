@@ -1,6 +1,17 @@
+import { useNavigate } from "react-router-dom";
+
 const CollectionsCard = ({ name, imageUrl }) => {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate(`/collections/${encodeURIComponent(name)}`);
+  };
+
   return (
-    <div className="min-w-[120px] sm:min-w-[160px] cursor-pointer text-center">
+    <div
+      onClick={handleClick}
+      className="min-w-[120px] sm:min-w-[160px] cursor-pointer text-center"
+    >
       <div className="w-full h-[120px] sm:h-[180px] rounded-xl overflow-hidden">
         <img
           src={imageUrl}

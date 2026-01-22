@@ -6,16 +6,13 @@ const addressSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
 
       ref: "User",   
-             // 👈 model name as STRING
       required: true
 
     },
 
     name: {
       type: String,
-
       required: true
-
     },
 
     email: {

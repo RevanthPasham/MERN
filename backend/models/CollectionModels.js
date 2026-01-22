@@ -6,6 +6,7 @@ const Collections= new mongoose.Schema(
         category:{type:[String],required:true},
         discription:{type:String,required:true},
         name:{type:String,required:true}
+        
     }
 )
 

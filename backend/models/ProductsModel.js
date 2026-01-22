@@ -9,6 +9,7 @@ const Products = new mongoose.Schema(
         weight:{type:[String],required:true},
         discount:{type:[String],required:true},
         category:{type:[String],required:true}
+        
     }
 )
 

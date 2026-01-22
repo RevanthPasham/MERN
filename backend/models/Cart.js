@@ -4,9 +4,10 @@ const cartItemSchema = new mongoose.Schema(
   {
     productId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Collection",   // your product model
+      ref: "Collection",  
       required: true
     },
+    
     quantity: {
       type: Number,
       default: 1,

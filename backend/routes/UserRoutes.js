@@ -6,14 +6,14 @@ const {login,register ,createcatogory,googleLogin,getcattogory,createCollection,
 
 
 
-router.post("/register", register);
-router.post("/category",createcatogory)
-router.get("/category",getcattogory)
-router.post("/login", login);
-router.post("/collections",createCollection)
+router.post("/register",              register);
+router.post("/category",              createcatogory)
+router.get("/category",               getcattogory)
+router.post("/login",                 login);
+router.post("/collections",           createCollection)
 router.get("/collections/:id/related",getRelatedCollections)
-router.get("/search",SearchProduct)
-router.post("/auth/google-login", googleLogin);
+router.get("/search",                 SearchProduct)
+router.post("/auth/google-login",     googleLogin);
 
 
 

@@ -16,9 +16,11 @@ const Navbar = () => {
         </div>
 
         <div className="flex items-center gap-4">
+
           <IoSearchOutline size={22} />
           <IoPersonOutline size={22} />
           <IoBagOutline size={22} />
+          
         </div>
 
       </div>

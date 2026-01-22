@@ -17,6 +17,7 @@ const CollectionsCard = ({ name, imageUrl }) => {
           src={imageUrl}
           alt={name}
           className="w-full h-full object-cover"
+          
         />
       </div>
       <p className="mt-2 text-sm sm:text-base font-medium">

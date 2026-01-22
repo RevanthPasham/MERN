@@ -1,10 +1,7 @@
 const Cart = require("../models/Cart");
 const Collectionmodel = require("../models/User").Collectionmodel;
 
-/**
- * ✅ ADD TO CART
- * userId + productId
- */
+
 exports.addToCart = async (req, res) => {
   try {
     const { userId, productId } = req.body;
@@ -47,10 +44,7 @@ exports.addToCart = async (req, res) => {
   }
 };
 
-/**
- * ✅ GET CART BY USER
- * userId
- */
+
 exports.getCartByUser = async (req, res) => {
   try {
     const { userId } = req.params;

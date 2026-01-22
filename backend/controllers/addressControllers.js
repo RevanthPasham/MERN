@@ -31,8 +31,6 @@ exports.addAddress = async (req, res) => {
 };
 
 
-
-
 exports.getAdddress = async (req, res) => {
   try {
     const { userId } = req.params;

@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import {getproductById} from '../../services/product.service'
 
 const ProductDetails = () => {
-  const { id } = useParams(); // 👈 THIS is the clicked product ID
+  const { id } = useParams(); 
   const [product, setProduct] = useState(null);
 
   useEffect(() => {

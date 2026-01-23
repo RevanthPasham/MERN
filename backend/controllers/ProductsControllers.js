@@ -36,7 +36,6 @@ exports.getCollectionProducts = async (req, res) => {
     const products = await ProductsModel.find({
       category: { $in: categories }
     });
-
     res.json(products);
   } catch (error) {
     res.status(500).json({ error: error.message });

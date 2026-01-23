@@ -1,5 +1,6 @@
 const {CollectionsModel}= require("../models/CollectionModels")
 
+
 exports.getCollections= async(req,res)=>
 {
     try

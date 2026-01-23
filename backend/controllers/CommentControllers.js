@@ -7,8 +7,6 @@ exports.addComment= async(req,res)=>
 {
     try
     {
-        
-
       const { productId } = req.params;
       const userId = req.user.userId; // f
     const { comment ,star} = req.body; // ["nice"]

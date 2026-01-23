@@ -70,20 +70,14 @@ exports.getCartByUser = async (req, res) => {
 exports.removeFromCart = async (req, res) => {
   try {
     const { userId, productId } = req.params;
-
     const cart = await Cart.findOne({ userId });
-
     if (!cart) {
       return res.status(404).json({ items: [] });
     }
-
-    // 🔑 remove ONLY the selected product
     cart.items = cart.items.filter(
       item => item.productId.toString() !== productId
     );
-
     await cart.save();
-
     res.status(200).json({ items: cart.items });
   } catch (err) {
     console.log(err);

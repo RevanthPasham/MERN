@@ -20,8 +20,11 @@ const ProductDetails = () => {
   return (
   <div >
     <h1>TEST TEXT</h1>
+
     <h1>{product.name}</h1>
+
     <img src={product.url[0]} className="h-100px " />
+    
   </div>
 );
 

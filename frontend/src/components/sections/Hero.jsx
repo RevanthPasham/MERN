@@ -13,6 +13,7 @@ const Hero = () => {
       <div className="relative z-10  h-full flex   items-center md:px-[50px] px-[10px] text-white">
 
         <div>
+
           <h1 className="md:text-5xl animate-slide-in  text-[20px]">House of Turtles</h1>
           <h1 className="md:text-5xl text-[20px]"> where Fashon meets </h1>
          <button  className=" border animate-slide-in  border-white mt-3">see all Products</button>
@@ -20,7 +21,6 @@ const Hero = () => {
         </div>
         
       </div>
-     
     </section>
   );
 };

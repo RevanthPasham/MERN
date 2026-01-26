@@ -44,29 +44,22 @@ exports.addToCart = async (req, res) => {
   }
 };
 
-
 exports.getCartByUser = async (req, res) => {
   try {
     const { userId } = req.params;
-
     const cart = await Cart.findOne({ userId }).populate({
       path: "items.productId",
       model: "Collection"
     });
-
     if (!cart) {
       return res.status(200).json({ items: [] });
     }
-
     res.status(200).json(cart);
-
   } catch (err) {
     console.log(err);
     res.status(500).json({ error: "Failed to fetch cart" });
   }
 };
-
-
 exports.removeFromCart = async (req, res) => {
   try {
     const { userId, productId } = req.params;

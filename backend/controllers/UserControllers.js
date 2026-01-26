@@ -6,9 +6,6 @@ const transporter = require("../config/email");
 const fs = require("fs");
 const path = require("path");
 
-
-
-
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 /* ================= REGISTER ================= */

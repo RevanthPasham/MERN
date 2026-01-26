@@ -15,21 +15,17 @@ exports.getProductsById= async(req,res)=>
 }
 
 
-
 exports.getCollectionProducts = async (req, res) => {
   try {
     const { name } = req.params;
-
     // Projection used correctly
     const collection = await CollectionsModel.findOne(
       { name },
       { category: 1 }
     );
-
     if (!collection) {
       return res.status(404).json({ message: "Collection not found" });
     }
-
     // Extract array from projected doc
     const categories = collection.category;
 

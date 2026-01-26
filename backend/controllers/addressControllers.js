@@ -1,15 +1,11 @@
 const Address= require("../models/UserAddress")
-
 exports.addAddress = async (req, res) => {
   try {
     const { userId, name, email, phone, city, pincode, address, reference } = req.body;
-
     let existing = await Address.findOne({ userId });
-
     if (existing) {
       return res.status(200).json(existing); // 👈 return address directly
     }
-
     const add = new Address({
       userId,
       name,
@@ -20,17 +16,13 @@ exports.addAddress = async (req, res) => {
       address,
       reference
     });
-
     await add.save();
     return res.status(201).json(add); // 👈 return address directly
-
   } catch (err) {
     console.log(err);
     res.status(500).json({ error: "Request failed" });
   }
 };
-
-
 exports.getAdddress = async (req, res) => {
   try {
     const { userId } = req.params;

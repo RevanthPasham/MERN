@@ -17,13 +17,11 @@ const addressSchema = new mongoose.Schema(
 
       required: true
     },
-
     phone: {
       type: Number,
 
       required: true
     },
-
     city: {
       type: String,
 

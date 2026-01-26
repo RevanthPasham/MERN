@@ -9,7 +9,6 @@ const userSchema = new mongoose.Schema({
     enum: ["local", "google"],
     default: "local"
   },
-
   picture: { type: String },
    isFirstLogin: {
     type: Boolean,
@@ -18,12 +17,12 @@ const userSchema = new mongoose.Schema({
 const catagory = new mongoose.Schema(
   {
     name:{type:String,required:true},
-    
     imgurl:{type:String,required:true},
     catogory:{type:[String],required:true}
   }
 )
 const User = mongoose.model("User", userSchema);
 const catago= mongoose.model("catago",catagory);
+
 
 module.exports = {User,catago};

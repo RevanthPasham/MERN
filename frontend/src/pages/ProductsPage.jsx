@@ -7,6 +7,8 @@ const ProductsPage = () => {
   const [products, setProducts] = useState([]);
   const navigate = useNavigate();
 
+
+
   useEffect(() => {
   getProducts()
     .then((data) => {
@@ -16,10 +18,13 @@ const ProductsPage = () => {
     .catch(err => console.log("API ERROR 👉", err));
 }, []);
 
+
+
   return (
     <ProductList
       products={products}
       onClick={(id) => navigate(`/product/${id}`)}
+      
       
     />
   );

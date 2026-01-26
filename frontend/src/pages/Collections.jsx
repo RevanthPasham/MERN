@@ -5,11 +5,15 @@ import CollectionsCard from "../components/collections/CollectionsCard";
 const Collections = () => {
   const [collectionsData, setCollectionsData] = useState([]);
 
+
+  
   useEffect(() => {
     getCollections()
       .then(setCollectionsData)
       .catch(console.error);
   }, []);
+
+
 
   return (
     <section className="px-4 py-4">

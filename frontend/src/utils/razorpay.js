@@ -9,6 +9,7 @@ export const openRazorpay = ({ order, user }) => {
     prefill: {
       name: user?.name,
       email: user?.email,
+      
     },
     theme: { color: "#f97316" },
 

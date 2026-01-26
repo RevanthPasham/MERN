@@ -9,6 +9,7 @@
 //   const navigate = useNavigate();
 //   const [Data, SetData] = useState(null);
 
+
 //   useEffect(() => {
 //     axios
 //       .get(`http://localhost:5000/api/collections/${id}`)

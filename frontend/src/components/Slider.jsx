@@ -5,7 +5,6 @@
 
 // const Slider = () => {
 //     const [items,setitems]= useState([]);
-
 //     useEffect(()=>
 //     {
 //         axios.get("http://localhost:5000/api/category")
@@ -19,7 +18,6 @@
 //         {
 //             console.log("error fetchig data")
 //         });
-        
 //     },[])
 //   return (
 //    <div className=" flex w-full] overflow-x-auto">

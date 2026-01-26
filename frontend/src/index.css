@@ -10,7 +10,6 @@
     transform: translateX(0);
   }
 }
-
 .animate-slide-in {
   animation: slideInFromRight 1s ease-out forwards;
 }

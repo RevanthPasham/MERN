@@ -2,12 +2,9 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getProducts } from "../services/product.service";
 import ProductList from "../components/product/ProductList";
-
 const ProductsPage = () => {
   const [products, setProducts] = useState([]);
   const navigate = useNavigate();
-
-
 
   useEffect(() => {
   getProducts()
@@ -18,14 +15,10 @@ const ProductsPage = () => {
     .catch(err => console.log("API ERROR 👉", err));
 }, []);
 
-
-
-  return (
+return (
     <ProductList
       products={products}
-      onClick={(id) => navigate(`/product/${id}`)}
-      
-      
+      onClick={(id) => navigate(`/product/${id}`)} 
     />
   );
 };

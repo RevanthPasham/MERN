@@ -9,16 +9,13 @@ export const openRazorpay = ({ order, user }) => {
     prefill: {
       name: user?.name,
       email: user?.email,
-      
     },
     theme: { color: "#f97316" },
-
     handler: function (response) {
       console.log("Payment Success:", response);
       alert("Payment Successful 🎉");
     },
   };
-
   const rzp = new window.Razorpay(options);
   rzp.open();
 };

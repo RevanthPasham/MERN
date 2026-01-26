@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-
 const cartItemSchema = new mongoose.Schema(
   {
     productId: {
@@ -7,7 +6,6 @@ const cartItemSchema = new mongoose.Schema(
       ref: "Collection",  
       required: true
     },
-    
     quantity: {
       type: Number,
       default: 1,

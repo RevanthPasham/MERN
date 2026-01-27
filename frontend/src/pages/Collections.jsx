@@ -4,17 +4,11 @@ import CollectionsCard from "../components/collections/CollectionsCard";
 
 const Collections = () => {
   const [collectionsData, setCollectionsData] = useState([]);
-
-
-  
   useEffect(() => {
     getCollections()
       .then(setCollectionsData)
       .catch(console.error);
   }, []);
-
-
-
   return (
     <section className="px-4 py-4">
       <h2 className="text-lg sm:text-xl font-semibold mb-4">

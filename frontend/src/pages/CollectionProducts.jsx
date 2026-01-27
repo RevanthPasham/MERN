@@ -2,14 +2,10 @@ import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-
 const CollectionProducts = () => {
   const { name } = useParams();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-
-
-
   useEffect(() => {
     axios
       .get(`http://localhost:5000/api/products/collections/${name}`)
@@ -24,7 +20,6 @@ const CollectionProducts = () => {
   }, [name]);
 
   if (loading) return <p>Loading...</p>;
-
   if (products.length === 0) {
     return <p>No products found</p>;
   }

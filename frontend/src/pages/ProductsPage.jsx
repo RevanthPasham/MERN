@@ -5,7 +5,6 @@ import ProductList from "../components/product/ProductList";
 const ProductsPage = () => {
   const [products, setProducts] = useState([]);
   const navigate = useNavigate();
-
   useEffect(() => {
   getProducts()
     .then((data) => {

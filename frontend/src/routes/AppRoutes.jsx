@@ -6,7 +6,7 @@ import CollectionProducts from "../pages/CollectionProducts"
 
 const AppRoutes =() =>
 {
-     
+   
     return (
    <div>
      <Routes>

@@ -5,7 +5,6 @@ import {getproductById} from '../../services/product.service'
 const ProductDetails = () => {
   const { id } = useParams(); 
   const [product, setProduct] = useState(null);
-
   useEffect(() => {
        getproductById(id)
       .then(data => {
@@ -14,17 +13,13 @@ const ProductDetails = () => {
       })
       .catch(err => console.error(err));
   }, [id]);
-
   if (!product) return <p>Loading...</p>;
 
   return (
   <div >
     <h1>TEST TEXT</h1>
-
     <h1>{product.name}</h1>
-
     <img src={product.url[0]} className="h-100px " />
-    
   </div>
 );
 

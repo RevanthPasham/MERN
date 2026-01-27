@@ -2,11 +2,9 @@ import { useNavigate } from "react-router-dom";
 
 const CollectionsCard = ({ name, imageUrl }) => {
   const navigate = useNavigate();
-
   const handleClick = () => {
     navigate(`/collections/${encodeURIComponent(name)}`);
   };
-
   return (
     <div
       onClick={handleClick}
@@ -17,7 +15,6 @@ const CollectionsCard = ({ name, imageUrl }) => {
           src={imageUrl}
           alt={name}
           className="w-full h-full object-cover"
-          
         />
       </div>
       <p className="mt-2 text-sm sm:text-base font-medium">

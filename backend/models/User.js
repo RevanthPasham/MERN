@@ -5,7 +5,6 @@ const userSchema = new mongoose.Schema({
   password: { type: String },
   provider: {
     type: String,
-
     enum: ["local", "google"],
     default: "local"
   },

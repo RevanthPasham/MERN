@@ -5,7 +5,6 @@ const CommentSchema= new mongoose.Schema(
             type:mongoose.Schema.Types.ObjectId,
             ref:"Collection",
             required:true,
-           
         },
         userId:{
             type:mongoose.Schema.Types.ObjectId,
@@ -16,9 +15,7 @@ const CommentSchema= new mongoose.Schema(
         star:{type:Number},
           
     },
-    {timestamps:true}
-    
-   
+    {timestamps:true} 
 )
 
 module.exports= mongoose.model("Comment", CommentSchema)

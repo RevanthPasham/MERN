@@ -1,7 +1,4 @@
 const express= require("express")
-
-
-
 const router = express.Router();
 
 const {getProducts,getProductsById,getCollectionProducts}= require("../controllers/ProductsControllers")

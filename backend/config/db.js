@@ -1,14 +1,19 @@
-const mongoose = require('mongoose');
-const connectdb =async()=>
-{
-    try 
-    {
-        await   mongoose.connect(process.env.MONGO_URL,)
-        console.log("Database connected");
-    }
-    catch(err)
-    {
-        console.log(err);
-    }
-}
-module.exports= connectdb;
+import mongoose from "mongoose";
+
+const connectDB = async (): Promise<void> => {
+  const mongoUrl = process.env.MONGO_URL;
+
+  if (!mongoUrl) {
+    throw new Error("MONGO_URL is not defined in environment variables");
+  }
+
+  try {
+    await mongoose.connect(mongoUrl);
+    console.log("Database connected");
+  } catch (error) {
+    console.error("MongoDB connection failed:", error);
+    process.exit(1);
+  }
+};
+
+export default connectDB;

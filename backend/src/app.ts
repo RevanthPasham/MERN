@@ -1,4 +1,5 @@
 import express from "express";
+import collectionRoutes from "./routes/CollectionRoutes";
 
 const app = express();
 
@@ -10,5 +11,8 @@ app.use(express.urlencoded({ extended: true }));
 app.get("/", (req, res) => {
   res.send("API is running...");
 });
+
+// 🔹 ADD THIS
+app.use("/api", collectionRoutes);
 
 export default app;

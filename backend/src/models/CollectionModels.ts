@@ -25,10 +25,7 @@ const CollectionsSchema = new Schema(
   }
 );
 
-/**
- * TypeScript type inferred directly from schema
- * This is the CORRECT way now
- */
+
 export type ICollection = InferSchemaType<typeof CollectionsSchema>;
 
 const CollectionsModel = model("Collections", CollectionsSchema);

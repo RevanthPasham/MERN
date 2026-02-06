@@ -26,7 +26,6 @@ exports.getCollectionProducts = async (req, res) => {
     if (!collection) {
       return res.status(404).json({ message: "Collection not found" });
     }
-    // Extract array from projected doc
     const categories = collection.category;
 
     const products = await ProductsModel.find({

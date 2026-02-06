@@ -8,7 +8,6 @@ const path = require("path");
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
-/* ================= REGISTER ================= */
 exports.register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -40,7 +39,6 @@ exports.register = async (req, res) => {
   }
 };
 
-/* ================= LOGIN ================= */
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -74,7 +72,6 @@ exports.login = async (req, res) => {
   }
 };
 
-/* ================= GOOGLE LOGIN (NO JWT) ================= */
 exports.googleLogin = async (req, res) => {
   try {
     const { token: googleToken } = req.body;
@@ -100,7 +97,6 @@ exports.googleLogin = async (req, res) => {
 
     console.log("CHECK 1: isFirstLogin =", user.isFirstLogin);
 
-    // ✅ EMAIL LOGIC MUST BE HERE
     if (user.isFirstLogin) {
       console.log("CHECK 2: Entered first-login block");
 
@@ -156,7 +152,6 @@ exports.googleLogin = async (req, res) => {
 
 
 
-/* ================= CATEGORY ================= */
 exports.createcatogory = async (req, res) => {
   try {
     const data = new catago(req.body);
@@ -176,7 +171,6 @@ exports.getcattogory = async (req, res) => {
   }
 };
 
-/* ================= COLLECTION ================= */
 exports.createCollection = async (req, res) => {
   try {
     const data = new Collectionmodel(req.body);

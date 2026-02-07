@@ -3,7 +3,6 @@ import mongoose from "mongoose";
 import Comment from "../src/models/CommentModel";
 import { User } from "../src/models/User";
 
-// ---- Types ----
 interface AuthRequest extends Request {
   user?: {
     userId: string;
@@ -19,7 +18,6 @@ interface ProductParams {
   productId: string;
 }
 
-// ---- Controllers ----
 
 export const addComment = async (
   req: AuthRequest,

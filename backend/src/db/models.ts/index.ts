@@ -5,7 +5,7 @@ import {
   getProductsByCategory,
   insertProduct,
   Product
-} from "./product";
+} from "./products";
 
 import {
   createCollectionTable,
@@ -21,18 +21,15 @@ export async function initModels() {
   await sql(createCollectionTable);
 }
 
-/* ---------- RE-EXPORT EVERYTHING ---------- */
+/* ---------- EXPORT ---------- */
 
 export {
-  // types
   Product,
   Collection,
 
-  // product
   getProductsByCategory,
   insertProduct,
 
-  // collection
   getCollectionCategories,
   insertCollection
 };

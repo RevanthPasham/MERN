@@ -7,7 +7,7 @@ export type Product = {
   urls: string[];
   weight: string;
   discount: number;
-  category: string;
+  category: string[];   // array categories
 };
 
 /* ---------- TABLE ---------- */
@@ -20,22 +20,26 @@ CREATE TABLE IF NOT EXISTS products (
   urls TEXT[] NOT NULL,
   weight TEXT NOT NULL,
   discount NUMERIC NOT NULL,
-  category TEXT NOT NULL
+  category TEXT[] NOT NULL
 );
 `;
 
 /* ---------- QUERIES ---------- */
 
-export async function getProductsByCategory(category: string) {
+// match ANY category
+export async function getProductsByCategory(cat: string) {
   return sql<Product[]>`
-    SELECT * FROM products
-    WHERE category ILIKE ${category}
+    SELECT *
+    FROM products
+    WHERE ${cat} = ANY(category)
   `;
 }
 
+// INSERT (fixed column names)
 export async function insertProduct(p: Omit<Product, "id">) {
   return sql`
     INSERT INTO products
+    (id, name, price, urls, weight, discount, category)
     VALUES (
       gen_random_uuid()::text,
       ${p.name},

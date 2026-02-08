@@ -5,7 +5,7 @@ export type Collection = {
   name: string;
   image_url: string;
   description: string;
-  categories: string[];
+  category: string[];
 };
 
 /* ---------- TABLE ---------- */
@@ -16,15 +16,15 @@ CREATE TABLE IF NOT EXISTS collections (
   name TEXT NOT NULL,
   image_url TEXT NOT NULL,
   description TEXT,
-  categories TEXT[] NOT NULL
+  category TEXT[] NOT NULL
 );
 `;
 
 /* ---------- QUERIES ---------- */
 
 export async function getCollectionCategories(id: string) {
-  return sql<{ categories: string[] }[]>`
-    SELECT categories
+  return sql<{ category: string[] }[]>`
+    SELECT category
     FROM collections
     WHERE id = ${id}
   `;
@@ -33,12 +33,13 @@ export async function getCollectionCategories(id: string) {
 export async function insertCollection(c: Omit<Collection, "id">) {
   return sql`
     INSERT INTO collections
+    (id, name, image_url, description, category)
     VALUES (
       gen_random_uuid()::text,
       ${c.name},
       ${c.image_url},
       ${c.description},
-      ${c.categories}
+      ${c.category}
     )
   `;
 }

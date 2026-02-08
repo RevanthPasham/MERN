@@ -1,0 +1,149 @@
+ products
+[
+  {
+    _id: ObjectId('696e8770a1a433a826b8aa74'),
+    name: 'Aura Braclet',
+    price: [ 2 ],
+    url: [
+      'https://res.cloudinary.com/dibdn6wv6/image/upload/v1768850567/midnightgalaxy_1_cc6j4k.webp'
+    ],
+    weight: [ '172g' ],
+    discount: [ '10%' ],
+    category: [ 'Braclets' ]
+  },
+  {
+    _id: ObjectId('696e87e9a1a433a826b8aa7b'),
+    name: 'Midnight Galaxy Bracelet',
+    price: [ 1 ],
+    url: [
+      'https://res.cloudinary.com/dibdn6wv6/image/upload/v1768850567/Crossed_Bracelet2_c3m5jy.webp'
+    ],
+    weight: [ '250g' ],
+    discount: [ '15%' ],
+    category: [ 'Bracelets' ]
+  },
+  {
+    _id: ObjectId('696e87e9a1a433a826b8aa7c'),
+    name: 'Crossed Chain Bracelet',
+    price: [ 2 ],
+    url: [
+      'https://res.cloudinary.com/dibdn6wv6/image/upload/v1768850566/Crossed_Bracelet_kylifs.webp'
+    ],
+    weight: [ '170g' ],
+    discount: [ '8%' ],
+    category: [ 'Bracelets' ]
+  },
+  {
+    _id: ObjectId('696e87e9a1a433a826b8aa79'),
+    name: 'Aura Stone Bracelet',
+    price: [ 2 ],
+    url: [
+      'https://res.cloudinary.com/dibdn6wv6/image/upload/v1768850567/midnightgalaxy_1_cc6j4k.webp'
+    ],
+    weight: [ '172g' ],
+    discount: [ '10%' ],
+    category: [ 'Bracelets' ]
+  },
+  {
+    _id: ObjectId('6970998ea10216799daca660'),
+    name: 'Double Butterfly Chain',
+    price: [ 2299 ],
+    url: [
+      'https://example.com/chain2.jpg',
+      'https://example.com/chain3.jpg',
+      'https://res.cloudinary.com/dibdn6wv6/image/upload/v1768986354/butterflychain2_kmib1a.webp'
+    ],
+    weight: [ '18g' ],
+    discount: [ '15%' ],
+    category: [ 'Chains' ]
+  },
+  {
+    _id: ObjectId('6970998ea10216799daca65e'),
+    name: 'Butterfly Chain',
+    price: [ 1999 ],
+    url: [
+      'https://example.com/chain1.jpg',
+      'https://example.com/chain2.jpg',
+      'https://res.cloudinary.com/dibdn6wv6/image/upload/v1768986354/butterflychain2_kmib1a.webp'
+    ],
+    weight: [ '12g' ],
+    discount: [ '10%' ],
+    category: [ 'Chains' ]
+  },
+  {
+    _id: ObjectId('6970998ea10216799daca65f'),
+    name: 'Fish Pendant Chain',
+    price: [ 1799 ],
+    url: [
+      'https://example.com/chain1.jpg',
+      'https://example.com/chain3.jpg',
+      'https://res.cloudinary.com/dibdn6wv6/image/upload/v1768986354/butterflychain2_kmib1a.webp'
+    ],
+    weight: [ '15g' ],
+    discount: [ '12%' ],
+    category: [ 'Chains' ]
+  },
+  {
+    _id: ObjectId('6970998ea10216799daca661'),
+    name: 'Minimal Fish Chain',
+    price: [ 1599 ],
+    url: [
+      'https://example.com/chain1.jpg',
+      'https://example.com/chain2.jpg',
+      'https://example.com/chain3.jpg',
+      'https://res.cloudinary.com/dibdn6wv6/image/upload/v1768986354/butterflychain2_kmib1a.webp'
+    ],
+    weight: [ '10g' ],
+    discount: [ '8%' ],
+    category: [ 'Chains' ]
+  },
+  {
+    _id: ObjectId('6970998ea10216799daca662'),
+    name: 'Butterfly Charm Chain',
+    price: [ 2499 ],
+    url: [
+      'https://example.com/chain2.jpg',
+      'https://example.com/chain3.jpg',
+      'https://res.cloudinary.com/dibdn6wv6/image/upload/v1768986354/butterflychain2_kmib1a.webp'
+    ],
+    weight: [ '20g' ],
+    discount: [ '20%' ],
+    category: [ 'Chains' ]
+  }
+]
+
+
+
+collections 
+
+[
+  {
+    _id: ObjectId('696f5bff7f608098740e9ebb'),
+    imageUrl: 'https://res.cloudinary.com/dibdn6wv6/image/upload/v1768905155/Men_Collection_ukacau.webp',
+    category: [ 'Chains' ],
+    discription: 'Lightweight cotton summer shirt for daily wear',
+    name: 'Men Collection'
+  },
+  {
+    _id: ObjectId('696f5bff7f608098740e9ebc'),
+    imageUrl: 'https://res.cloudinary.com/dibdn6wv6/image/upload/v1768905155/genx_rglm34.webp',
+    category: [ 'toys' ],
+    discription: 'Wireless over-ear headphones with noise cancellation',
+    name: 'Toys Collection'
+  },
+  {
+    _id: ObjectId('696f5bff7f608098740e9ebe'),
+    imageUrl: 'https://res.cloudinary.com/dibdn6wv6/image/upload/v1768905155/braclets_sfceu9.webp',
+    category: [ 'braclets', 'all' ],
+    discription: 'Complete skincare kit for daily cleansing and hydration',
+    name: 'Bracelets Collection'
+  },
+  {
+    _id: ObjectId('696f5bff7f608098740e9ebd'),
+    imageUrl: 'https://res.cloudinary.com/dibdn6wv6/image/upload/v1768905155/chainCollections_tvrheg.webp',
+    category: [ 'Chains' ],
+    discription: 'Solid wood dining chair with ergonomic back support',
+    name: 'Chains Collection'
+  }
+]
+Atlas atlas-b5ok9k-shard-0 [primary] test>

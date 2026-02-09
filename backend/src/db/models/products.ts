@@ -7,7 +7,7 @@ export type Product = {
   urls: string[];
   weight: string;
   discount: number;
-  category: string[];   // array categories
+  category: string[];
 };
 
 /* ---------- TABLE ---------- */
@@ -26,16 +26,16 @@ CREATE TABLE IF NOT EXISTS products (
 
 /* ---------- QUERIES ---------- */
 
-// match ANY category
 export async function getProductsByCategory(cat: string) {
-  return sql<Product[]>`
+  const result = await sql`
     SELECT *
     FROM products
     WHERE ${cat} = ANY(category)
   `;
+
+  return result as unknown as Product[];
 }
 
-// INSERT (fixed column names)
 export async function insertProduct(p: Omit<Product, "id">) {
   return sql`
     INSERT INTO products

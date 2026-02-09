@@ -23,11 +23,13 @@ CREATE TABLE IF NOT EXISTS collections (
 /* ---------- QUERIES ---------- */
 
 export async function getCollectionCategories(id: string) {
-  return sql<{ category: string[] }[]>`
+  const result = await sql`
     SELECT category
     FROM collections
     WHERE id = ${id}
   `;
+
+  return result as unknown as { category: string[] }[];
 }
 
 export async function insertCollection(c: Omit<Collection, "id">) {

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { createCollectionService, getCategoriesService } from "../services/collection.service";
+import { createCollectionService, getCategoriesService } from "../services/collection.services";
 
 export async function createCollection(req: Request, res: Response) {
   try {

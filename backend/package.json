@@ -18,11 +18,14 @@
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.0.1",
     "nodemailer": "^7.0.12",
-    "razorpay": "^2.9.6"
+    "pg": "^8.11.3",
+    "razorpay": "^2.9.6",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",
     "@types/node": "^20.12.7",
+    "@types/pg": "^8.16.0",
     "nodemon": "^3.1.11",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"

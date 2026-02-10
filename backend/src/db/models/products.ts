@@ -1,6 +1,6 @@
-import { sql } from "../../config/neon";
+import { pool } from "../../config/db";
 
-export type Product = {
+export type ProductDB = {
   id: string;
   name: string;
   price: number;
@@ -27,27 +27,21 @@ CREATE TABLE IF NOT EXISTS products (
 /* ---------- QUERIES ---------- */
 
 export async function getProductsByCategory(cat: string) {
-  const result = await sql`
-    SELECT *
-    FROM products
-    WHERE ${cat} = ANY(category)
-  `;
+  const result = await pool.query(
+    `SELECT * FROM products WHERE $1 = ANY(category)`,
+    [cat]
+  );
 
-  return result as unknown as Product[];
+  return result.rows as ProductDB[];
 }
 
-export async function insertProduct(p: Omit<Product, "id">) {
-  return sql`
-    INSERT INTO products
-    (id, name, price, urls, weight, discount, category)
-    VALUES (
-      gen_random_uuid()::text,
-      ${p.name},
-      ${p.price},
-      ${p.urls},
-      ${p.weight},
-      ${p.discount},
-      ${p.category}
-    )
-  `;
+export async function insertProduct(p: Omit<ProductDB, "id">) {
+  const result = await pool.query(
+    `INSERT INTO products (id, name, price, urls, weight, discount, category)
+     VALUES (gen_random_uuid()::text, $1, $2, $3, $4, $5, $6)
+     RETURNING *`,
+    [p.name, p.price, p.urls, p.weight, p.discount, p.category]
+  );
+
+  return result.rows[0];
 }

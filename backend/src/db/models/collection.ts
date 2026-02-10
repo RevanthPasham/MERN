@@ -1,4 +1,4 @@
-import { sql } from "../../config/neon";
+import { pool } from "../../config/db";
 
 export type Collection = {
   id: string;
@@ -23,25 +23,21 @@ CREATE TABLE IF NOT EXISTS collections (
 /* ---------- QUERIES ---------- */
 
 export async function getCollectionCategories(id: string) {
-  const result = await sql`
-    SELECT category
-    FROM collections
-    WHERE id = ${id}
-  `;
+  const result = await pool.query(
+    `SELECT category FROM collections WHERE id = $1`,
+    [id]
+  );
 
-  return result as unknown as { category: string[] }[];
+  return result.rows as { category: string[] }[];
 }
 
 export async function insertCollection(c: Omit<Collection, "id">) {
-  return sql`
-    INSERT INTO collections
-    (id, name, image_url, description, category)
-    VALUES (
-      gen_random_uuid()::text,
-      ${c.name},
-      ${c.image_url},
-      ${c.description},
-      ${c.category}
-    )
-  `;
+  const result = await pool.query(
+    `INSERT INTO collections (id, name, image_url, description, category)
+     VALUES (gen_random_uuid()::text, $1, $2, $3, $4)
+     RETURNING *`,
+    [c.name, c.image_url, c.description, c.category]
+  );
+
+  return result.rows[0];
 }

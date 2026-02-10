@@ -1,13 +1,7 @@
-import 'dotenv/config';
 import app from "./app";
-import { initModels } from "./db/models";
 
-async function start() {
-  await initModels();
+const PORT = process.env.PORT || 4000;
 
-  app.listen(4000, () => {
-    console.log("server running on 4000");
-  });
-}
-
-start();
+app.listen(PORT, () => {
+  console.log(`Server running on ${PORT}`);
+});

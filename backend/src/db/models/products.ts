@@ -10,19 +10,7 @@ export type ProductDB = {
   category: string[];
 };
 
-/* ---------- TABLE ---------- */
-
-export const createProductTable = `
-CREATE TABLE IF NOT EXISTS products (
-  id TEXT PRIMARY KEY,
-  name TEXT NOT NULL,
-  price NUMERIC NOT NULL,
-  urls TEXT[] NOT NULL,
-  weight TEXT NOT NULL,
-  discount NUMERIC NOT NULL,
-  category TEXT[] NOT NULL
-);
-`;
+/* Table is created in init.ts from model definitions */
 
 /* ---------- QUERIES ---------- */
 

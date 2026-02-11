@@ -8,17 +8,7 @@ export type Collection = {
   category: string[];
 };
 
-/* ---------- TABLE ---------- */
-
-export const createCollectionTable = `
-CREATE TABLE IF NOT EXISTS collections (
-  id TEXT PRIMARY KEY,
-  name TEXT NOT NULL,
-  image_url TEXT NOT NULL,
-  description TEXT,
-  category TEXT[] NOT NULL
-);
-`;
+/* Table is created in init.ts from model definitions */
 
 /* ---------- QUERIES ---------- */
 

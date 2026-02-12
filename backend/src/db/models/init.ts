@@ -1,9 +1,10 @@
 import { pool } from "../../config/db";
+import { initializeCollectionsTable } from "./collection";
 
 /**
  * Table definitions derived from models only (no separate SQL files).
  * Products table matches ProductRow in product.model.ts
- * Collections table matches Collection in collection.ts
+ * Collections table is created from collection.ts model
  */
 
 const createProductsTable = `
@@ -23,18 +24,8 @@ CREATE TABLE IF NOT EXISTS products (
 );
 `;
 
-const createCollectionsTable = `
-CREATE TABLE IF NOT EXISTS collections (
-  id TEXT PRIMARY KEY,
-  name TEXT NOT NULL,
-  image_url TEXT NOT NULL,
-  description TEXT,
-  category TEXT[] NOT NULL
-);
-`;
-
 export async function initializeTables(): Promise<void> {
   await pool.query(createProductsTable);
-  await pool.query(createCollectionsTable);
+  await initializeCollectionsTable();
   console.log("Tables initialized from models");
 }

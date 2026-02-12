@@ -8,7 +8,21 @@ export type Collection = {
   category: string[];
 };
 
-/* Table is created in init.ts from model definitions */
+/* ---------- TABLE CREATION (runs on app start via init.ts) ---------- */
+
+const createCollectionsTableSql = `
+CREATE TABLE IF NOT EXISTS collections (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  image_url TEXT NOT NULL,
+  description TEXT,
+  category TEXT[] NOT NULL
+);
+`;
+
+export async function initializeCollectionsTable(): Promise<void> {
+  await pool.query(createCollectionsTableSql);
+}
 
 /* ---------- QUERIES ---------- */
 
@@ -31,5 +45,20 @@ export async function insertCollection(c: Omit<Collection, "id">) {
     [c.name, c.image_url, c.description, c.category]
   );
 
-  return result.rows[0];
+  return result.rows[0] as Collection;
+}
+
+export async function getAllCollections(): Promise<Collection[]> {
+  const result = await pool.query(
+    `SELECT id, name, image_url, description, category FROM collections ORDER BY name`
+  );
+  return result.rows as Collection[];
+}
+
+export async function getCollectionById(id: string): Promise<Collection | null> {
+  const result = await pool.query(
+    `SELECT id, name, image_url, description, category FROM collections WHERE id = $1`,
+    [id]
+  );
+  return (result.rows[0] as Collection) ?? null;
 }

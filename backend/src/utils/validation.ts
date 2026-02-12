@@ -32,3 +32,16 @@ export const getProductsQuerySchema = z.object({
 export const productIdSchema = z.object({
   id: z.string().uuid("Invalid product ID"),
 });
+
+/* ---------- Collection validation ---------- */
+
+export const createCollectionSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  image_url: z.string().url("Valid image URL is required"),
+  description: z.string().optional().default(""),
+  category: z.array(z.string()).min(1, "At least one category is required"),
+});
+
+export const collectionIdSchema = z.object({
+  id: z.string().min(1, "Collection ID is required"),
+});

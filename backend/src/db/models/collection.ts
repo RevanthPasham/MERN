@@ -21,6 +21,8 @@ export async function getCollectionCategories(id: string) {
   return result.rows as { category: string[] }[];
 }
 
+
+
 export async function insertCollection(c: Omit<Collection, "id">) {
   const result = await pool.query(
     `INSERT INTO collections (id, name, image_url, description, category)

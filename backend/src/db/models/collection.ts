@@ -48,6 +48,8 @@ export async function insertCollection(c: Omit<Collection, "id">) {
   return result.rows[0] as Collection;
 }
 
+
+
 export async function getAllCollections(): Promise<Collection[]> {
   const result = await pool.query(
     `SELECT id, name, image_url, description, category FROM collections ORDER BY name`

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getProducts } from "../services/product.service";
-import ProductList from "../components/product/ProductList";
+import ProductList from "./product/ProductList";
 const ProductsPage = () => {
   const [products, setProducts] = useState([]);
   const navigate = useNavigate();

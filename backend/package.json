@@ -20,6 +20,7 @@
     "nodemailer": "^7.0.12",
     "pg": "^8.11.3",
     "razorpay": "^2.9.6",
+    "sequelize": "^6.37.7",
     "zod": "^3.25.76"
   },
   "devDependencies": {

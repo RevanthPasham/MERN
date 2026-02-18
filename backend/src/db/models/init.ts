@@ -1,31 +1,31 @@
-import { pool } from "../../config/db";
-import { initializeCollectionsTable } from "./collection";
+import { sequelize } from "../../config/db";
 
-/**
- * Table definitions derived from models only (no separate SQL files).
- * Products table matches ProductRow in product.model.ts
- * Collections table is created from collection.ts model
- */
+import { Category } from "./category.model";
+import { Product } from "./product.model";
+import { ProductVariant } from "./productVariant.model";
+import { ProductImage } from "./productImage.model";
 
-const createProductsTable = `
-CREATE TABLE IF NOT EXISTS products (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  name TEXT NOT NULL,
-  description TEXT,
-  categories TEXT[] NOT NULL DEFAULT '{}',
-  price NUMERIC[] NOT NULL DEFAULT '{}',
-  discount NUMERIC[] NOT NULL DEFAULT '{}',
-  links TEXT[] NOT NULL DEFAULT '{}',
-  images TEXT[] NOT NULL DEFAULT '{}',
-  size_chart JSONB,
-  is_active BOOLEAN NOT NULL DEFAULT true,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
-);
-`;
+/* ================= RELATIONS ================= */
 
-export async function initializeTables(): Promise<void> {
-  await pool.query(createProductsTable);
-  await initializeCollectionsTable();
-  console.log("Tables initialized from models");
-}
+// Category → Products
+Category.hasMany(Product, { foreignKey: "category_id", as: "products" });
+Product.belongsTo(Category, { foreignKey: "category_id", as: "category" });
+
+// Product → Variants
+Product.hasMany(ProductVariant, { foreignKey: "product_id", as: "variants" });
+ProductVariant.belongsTo(Product, { foreignKey: "product_id", as: "product" });
+
+// Product → Images
+Product.hasMany(ProductImage, { foreignKey: "product_id", as: "images" });
+ProductImage.belongsTo(Product, { foreignKey: "product_id", as: "product" });
+
+// Variant → Images
+ProductVariant.hasMany(ProductImage, { foreignKey: "variant_id", as: "variantImages" });
+ProductImage.belongsTo(ProductVariant, { foreignKey: "variant_id", as: "variant" });
+
+/* ================= INIT ================= */
+
+export const initModels = async () => {
+  await sequelize.sync({ alter: true });
+  console.log("Models initialized");
+};

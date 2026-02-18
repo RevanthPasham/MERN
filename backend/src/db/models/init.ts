@@ -4,6 +4,7 @@ import { Category } from "./category.model";
 import { Product } from "./product.model";
 import { ProductVariant } from "./productVariant.model";
 import { ProductImage } from "./productImage.model";
+import { Collection } from "./collection.model";
 
 /* ================= RELATIONS ================= */
 

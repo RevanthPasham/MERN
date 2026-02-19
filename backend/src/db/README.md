@@ -3,14 +3,10 @@
 ## First-time setup
 
 1. Set `DATABASE_URL` in `.env`.
-2. If you had an **old `collections` table** (from the previous raw-SQL setup), drop it so the new schema can be applied:
-   ```sql
-   DROP TABLE IF EXISTS product_collections CASCADE;
-   DROP TABLE IF EXISTS collections CASCADE;
-   ```
-   Or drop all app tables and let Sequelize recreate them.
-3. Start the server (creates/alters tables): `npm run dev`
-4. Seed sample data: `npm run seed`
+2. Start the server — **tables are created automatically** when the backend runs: `npm run dev`
+3. (Optional) Seed sample data: `npm run seed`
+
+Note: `sync({ force: true })` drops and recreates all tables on every startup so you never need to run SQL by hand. For production, switch to migrations and remove `force: true`.
 
 ## Postman
 

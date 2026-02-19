@@ -70,7 +70,8 @@ export function associate(): void {
 
 export async function initModels(): Promise<void> {
   associate();
-  await sequelize.sync({ alter: true });
+  // force: true = drop and recreate all tables on startup (no manual SQL needed)
+  await sequelize.sync({ force: true });
   console.log("Models initialized and synced");
 }
 

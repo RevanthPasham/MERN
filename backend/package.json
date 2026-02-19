@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "ts-node src/server.ts",
     "build": "tsc",
-    "start": "node dist/server.js"
+    "start": "node dist/server.js",
+    "seed": "ts-node src/db/seed.ts"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.2",

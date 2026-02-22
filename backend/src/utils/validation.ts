@@ -33,6 +33,29 @@ export const productIdSchema = z.object({
   id: z.string().uuid("Invalid product ID"),
 });
 
+/* ---------- Product create: accepts your Postman shape (name, price, urls, etc.) ---------- */
+
+export const createProductBodySchema = z
+  .object({
+    name: z.string().min(1, "Name is required").optional(),
+    title: z.string().min(1).optional(),
+    slug: z.string().min(1).optional(),
+    description: z.string().optional().nullable(),
+    categoryId: z.string().uuid().optional().nullable(),
+    brand: z.string().optional().nullable(),
+    material: z.string().optional().nullable(),
+    isActive: z.boolean().optional().default(true),
+    price: z.number().optional(),
+    urls: z.array(z.string()).optional(),
+    weight: z.string().optional(),
+    discount: z.number().optional(),
+    category: z.array(z.string()).optional(),
+  })
+  .refine((data) => (data.name && data.name.length > 0) || (data.title && data.title.length > 0), {
+    message: "Either name or title is required",
+    path: ["name"],
+  });
+
 /* ---------- Collection validation ---------- */
 
 export const createCollectionSchema = z.object({

@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { ZodError } from "zod";
+import { ValidationError as SequelizeValidationError } from "sequelize";
 
 export class AppError extends Error {
   statusCode: number;
@@ -34,6 +35,17 @@ export const errorHandler = (
     return res.status(err.statusCode).json({
       success: false,
       error: err.message,
+    });
+  }
+
+  if (err instanceof SequelizeValidationError) {
+    return res.status(400).json({
+      success: false,
+      error: "Validation error",
+      details: err.errors.map((e) => ({
+        path: e.path,
+        message: e.message,
+      })),
     });
   }
 

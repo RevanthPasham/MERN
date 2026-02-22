@@ -8,6 +8,12 @@ import { VariantAttributeValue } from "./variantAttributeValue.model";
 import { ProductImage } from "./productImage.model";
 import { ProductCollection } from "./productCollection.model";
 import { SizeChart } from "./sizeChart.model";
+import { User } from "./user.model";
+import { Banner } from "./banner.model";
+import { ProductReview } from "./productReview.model";
+import { Order } from "./order.model";
+import { OrderItem } from "./orderItem.model";
+import { CartItem } from "./cartItem.model";
 import { sequelize } from "../../config/db";
 
 /* ================= ASSOCIATIONS ================= */
@@ -64,14 +70,31 @@ export function associate(): void {
     otherKey: "variantId",
     as: "variants",
   });
+
+  Product.hasMany(ProductReview, { foreignKey: "productId", as: "reviews" });
+  ProductReview.belongsTo(Product, { foreignKey: "productId", as: "product" });
+  User.hasMany(ProductReview, { foreignKey: "userId", as: "reviews" });
+  ProductReview.belongsTo(User, { foreignKey: "userId", as: "user" });
+
+  User.hasMany(Order, { foreignKey: "userId", as: "orders" });
+  Order.belongsTo(User, { foreignKey: "userId", as: "user" });
+  Order.hasMany(OrderItem, { foreignKey: "orderId", as: "items" });
+  OrderItem.belongsTo(Order, { foreignKey: "orderId", as: "order" });
+  OrderItem.belongsTo(Product, { foreignKey: "productId", as: "product" });
+  Product.hasMany(OrderItem, { foreignKey: "productId", as: "orderItems" });
+
+  User.hasMany(CartItem, { foreignKey: "userId", as: "cartItems" });
+  CartItem.belongsTo(User, { foreignKey: "userId", as: "user" });
+  CartItem.belongsTo(Product, { foreignKey: "productId", as: "product" });
+  Product.hasMany(CartItem, { foreignKey: "productId", as: "cartItems" });
 }
 
 /* ================= INIT ================= */
 
 export async function initModels(): Promise<void> {
   associate();
-  // force: true = drop and recreate all tables on startup (no manual SQL needed)
-  await sequelize.sync({ force: true });
+  // Create tables if they don't exist; do not drop so DB data persists across restarts
+  await sequelize.sync();
   console.log("Models initialized and synced");
 }
 
@@ -87,3 +110,9 @@ export { VariantAttributeValue } from "./variantAttributeValue.model";
 export { ProductImage } from "./productImage.model";
 export { ProductCollection } from "./productCollection.model";
 export { SizeChart } from "./sizeChart.model";
+export { User } from "./user.model";
+export { Banner } from "./banner.model";
+export { ProductReview } from "./productReview.model";
+export { Order } from "./order.model";
+export { OrderItem } from "./orderItem.model";
+export { CartItem } from "./cartItem.model";

@@ -1,5 +1,20 @@
 @import "tailwindcss";
 
+html {
+  min-height: 100%;
+  background: #fff;
+}
+body {
+  min-height: 100%;
+  margin: 0;
+  background: #fff;
+  color: #111;
+}
+#root {
+  min-height: 100%;
+  background: #fff;
+}
+
 @keyframes slideInFromRight {
   from {
     opacity: 0;

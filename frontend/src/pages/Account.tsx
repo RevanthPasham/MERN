@@ -6,11 +6,14 @@ export default function Account() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
+
   useEffect(() => {
     if (!user) navigate("/login", { replace: true });
   }, [user, navigate]);
 
+
   if (!user) return null;
+
 
   return (
     <main className="max-w-4xl mx-auto px-4 py-8 md:py-12">
@@ -31,6 +34,7 @@ export default function Account() {
             </svg>
             Log out
           </button>
+
 
           <h2 className="text-xl font-semibold text-gray-900 mt-8 mb-2">Order history</h2>
           <p className="text-gray-600">You haven&apos;t placed any orders yet.</p>

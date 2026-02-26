@@ -186,6 +186,7 @@ export default function ProductDetails() {
             </p>
           </div>
 
+
           <div className="mt-4">
             <h3 className="text-sm font-semibold text-gray-900">Save Extra with these Offers</h3>
             <ul className="mt-2 space-y-2">
@@ -200,6 +201,7 @@ export default function ProductDetails() {
               </li>
             </ul>
           </div>
+
 
           {sizes.length > 0 && (
             <div className="mt-6">
@@ -222,6 +224,7 @@ export default function ProductDetails() {
               </div>
             </div>
           )}
+
 
           <div className="mt-6 flex items-center gap-2">
             <span className="text-sm font-medium text-gray-700">Quantity</span>
@@ -247,6 +250,7 @@ export default function ProductDetails() {
                 onClick={() => setQuantity((q) => q + 1)}
                 className="w-10 h-10 flex items-center justify-center border-l"
               >
+
                 +
               </button>
             </div>
@@ -307,6 +311,7 @@ export default function ProductDetails() {
         <h2 className="text-xl font-bold text-gray-900 mb-4">Reviews</h2>
         {reviewsData && (
           <>
+          
             <div className="flex flex-wrap items-center gap-4 mb-4">
               <span className="text-2xl font-bold text-gray-900">
                 {reviewsData.averageRating.toFixed(1)}

@@ -306,7 +306,7 @@ export default function ProductDetails() {
         </div>
       )}
 
-      {/* Reviews - stars, total, list, then Add review (only if purchased) */}
+     
       <div className="mt-12 border-t pt-8">
         <h2 className="text-xl font-bold text-gray-900 mb-4">Reviews</h2>
         {reviewsData && (

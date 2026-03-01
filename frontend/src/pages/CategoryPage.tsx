@@ -64,8 +64,8 @@ export default function CategoryPage() {
 
   if (loading) {
     return (
-      <main className="max-w-7xl mx-auto px-4 py-12 text-center text-gray-500">
-        Loading...
+      <main className="max-w-  mx-auto px-4 py-12 text-center text-gray-500">
+        Loading....
       </main>
     );
   }

@@ -25,7 +25,7 @@ export default function Checkout() {
       const currency = (data && typeof data.currency === "string" && data.currency.trim()) ? data.currency.trim() : "INR";
       const key = (data && typeof data.key === "string" && data.key.trim()) ? data.key.trim() : "";
       if (!orderId || !key) throw new Error("Invalid order response from server");
-      if (!Number.isFinite(amount) || amount < 100) throw new Error("Invalid payment amount");
+      if (!Number.isFinite(amount) || amount < 100) throw new Error("Invalid payment amount Please Check");
       const payload = { orderId, amount, items };
       await openRazorpay({
         orderId,

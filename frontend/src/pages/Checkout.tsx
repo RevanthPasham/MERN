@@ -50,7 +50,7 @@ export default function Checkout() {
       });
     } catch (err: unknown) {
       setPaying(false);
-      let msg = "Payment could not be opened.";
+      let msg = "Payment could not be opened..";
       if (axios.isAxiosError(err)) {
         const d = err.response?.data;
         msg = (d && (d.error ?? d.message)) ? String(d.error ?? d.message) : msg;

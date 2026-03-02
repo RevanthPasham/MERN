@@ -1,14 +1,18 @@
-import "dotenv/config";
 import app from "../src/app";
-import { initModels } from "../src/db/models";
+import { sequelize } from "../src/config/db";
+import serverless from "serverless-http";
 
-let isInitialized = false;
+let isConnected = false;
+
+async function connectDB() {
+  if (isConnected) return;
+
+  await sequelize.authenticate();
+  console.log("Database connected");
+  isConnected = true;
+}
 
 export default async function handler(req: any, res: any) {
-  if (!isInitialized) {
-    await initModels();
-    isInitialized = true;
-  }
-
-  return app(req, res);
+  await connectDB();
+  return serverless(app)(req, res);
 }

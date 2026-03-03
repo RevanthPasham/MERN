@@ -1,16 +1,9 @@
 import { Sequelize } from "sequelize";
-import dotenv from "dotenv";
+import pg from "pg";
 
-dotenv.config();
-
-if (!process.env.DATABASE_URL) {
-  throw new Error("DATABASE_URL missing in .env");
-}
-
-
-
-export const sequelize = new Sequelize(process.env.DATABASE_URL, {
+export const sequelize = new Sequelize(process.env.DATABASE_URL as string, {
   dialect: "postgres",
+  dialectModule: pg,
   dialectOptions: {
     ssl: {
       require: true,

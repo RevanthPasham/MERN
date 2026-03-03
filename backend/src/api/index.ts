@@ -1,17 +1,19 @@
 import serverless from "serverless-http";
 import app from "../app";
-import { sequelize } from "../config/db";
+import { initModels } from "../db/models";
 
-let isConnected = false;
+let initialized = false;
 
-async function connectDB() {
-  if (!isConnected) {
-    await sequelize.authenticate();
-    isConnected = true;
+async function init() {
+  if (!initialized) {
+    await initModels();
+    initialized = true;
   }
 }
 
-export default async function handler(req: any, res: any) {
-  await connectDB();
+const handler = async (req: any, res: any) => {
+  await init();
   return serverless(app)(req, res);
-}
+};
+
+export default handler;

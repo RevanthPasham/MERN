@@ -8,5 +8,8 @@ app.use(cors());
 app.use(express.json());
 app.use("/api", routes);
 app.use(errorHandler);
+app.get("/", (req, res) => {
+  res.send("API is running");
+});
 
 export default app;

@@ -1,6 +1,6 @@
 import serverless from "serverless-http";
-import app from "../app";
-import { initModels } from "../db/models";
+import app from "../src/app";
+import { initModels } from "../src/db/models";
 
 let initialized = false;
 

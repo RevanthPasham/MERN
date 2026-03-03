@@ -10,7 +10,6 @@
     "seed": "ts-node src/db/seed.ts"
   },
   "dependencies": {
-    "@neondatabase/serverless": "^1.0.2",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.4",

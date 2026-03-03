@@ -94,7 +94,8 @@ export function associate(): void {
 export async function initModels(): Promise<void> {
   associate();
   // Create tables if they don't exist; do not drop so DB data persists across restarts
-  await sequelize.sync();
+  // await sequelize.sync();
+  await sequelize.authenticate();
   console.log("Models initialized and synced");
 }
 

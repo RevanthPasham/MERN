@@ -1,6 +1,6 @@
 import serverless from "serverless-http";
-import app from "../src/app";
-import { sequelize } from "../src/config/db";
+import app from "../app";
+import { sequelize } from "../config/db";
 
 let isConnected = false;
 

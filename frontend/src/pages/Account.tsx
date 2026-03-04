@@ -1,19 +1,26 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { getAddresses, getOrders } from "../api/client";
 
 export default function Account() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-
+  const [addressCount, setAddressCount] = useState(0);
+  const [orderCount, setOrderCount] = useState(0);
 
   useEffect(() => {
     if (!user) navigate("/login", { replace: true });
   }, [user, navigate]);
 
+  useEffect(() => {
+    if (user) {
+      getAddresses().then((a) => setAddressCount(a.length)).catch(() => {});
+      getOrders().then((o) => setOrderCount(o.length)).catch(() => {});
+    }
+  }, [user]);
 
   if (!user) return null;
-
 
   return (
     <main className="max-w-4xl mx-auto px-4 py-8 md:py-12">
@@ -35,14 +42,20 @@ export default function Account() {
             Log out
           </button>
 
-
           <h2 className="text-xl font-semibold text-gray-900 mt-8 mb-2">Order history</h2>
-          <p className="text-gray-600">You haven&apos;t placed any orders yet.</p>
+          <p className="text-gray-600 mb-2">
+            {orderCount === 0
+              ? "You haven't placed any orders yet."
+              : `You have ${orderCount} order${orderCount === 1 ? "" : "s"}.`}
+          </p>
+          <Link to="/account/orders" className="text-blue-600 hover:underline">
+            View order history
+          </Link>
         </div>
         <div>
           <h2 className="text-xl font-semibold text-gray-900 mb-2">Account details</h2>
           <Link to="/account/addresses" className="text-gray-700 hover:text-gray-900 underline">
-            View addresses (0)
+            View addresses ({addressCount})
           </Link>
         </div>
       </div>

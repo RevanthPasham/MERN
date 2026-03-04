@@ -7,7 +7,8 @@
     "dev": "ts-node src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
-    "seed": "ts-node src/db/seed.ts"
+    "seed": "ts-node src/db/seed.ts",
+    "db:migrate": "ts-node scripts/run-migration.ts"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",

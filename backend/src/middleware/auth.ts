@@ -38,3 +38,26 @@ export function optionalAuth(req: AuthRequest, res: Response, next: NextFunction
   }
   next();
 }
+
+/** Admin auth: JWT must contain role: 'admin' and adminId (from admin login) */
+export interface AdminRequest extends Request {
+  adminId?: string;
+}
+
+export function requireAdmin(req: AdminRequest, res: Response, next: NextFunction) {
+  const authHeader = req.headers.authorization;
+  const token = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : null;
+  if (!token) {
+    return res.status(401).json({ success: false, error: "Unauthorized" });
+  }
+  try {
+    const payload = jwt.verify(token, JWT_SECRET) as { adminId?: string; role?: string };
+    if (payload.role !== "admin" || !payload.adminId) {
+      return res.status(403).json({ success: false, error: "Admin access required" });
+    }
+    req.adminId = payload.adminId;
+    next();
+  } catch {
+    return res.status(401).json({ success: false, error: "Invalid or expired token" });
+  }
+}

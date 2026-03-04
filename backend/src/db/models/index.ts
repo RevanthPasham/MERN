@@ -15,6 +15,7 @@ import { Order } from "./order.model";
 import { OrderItem } from "./orderItem.model";
 import { CartItem } from "./cartItem.model";
 import { Address } from "./address.model";
+import { Admin } from "./admin.model";
 import { sequelize } from "../../config/db";
 
 /* ================= ASSOCIATIONS ================= */
@@ -124,3 +125,4 @@ export { Order } from "./order.model";
 export { OrderItem } from "./orderItem.model";
 export { CartItem } from "./cartItem.model";
 export { Address } from "./address.model";
+export { Admin } from "./admin.model";

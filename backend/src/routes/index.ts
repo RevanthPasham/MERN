@@ -7,10 +7,12 @@ import bannerRoutes from "./banner.routes";
 import orderRoutes from "./order.routes";
 import cartRoutes from "./cart.routes";
 import addressRoutes from "./address.routes";
+import adminRoutes from "./admin.routes";
 
 const router = Router();
 
 router.use("/auth", authRoutes);
+router.use("/admin", adminRoutes);
 router.use("/banners", bannerRoutes);
 router.use("/orders", orderRoutes);
 router.use("/cart", cartRoutes);

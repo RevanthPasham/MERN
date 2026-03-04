@@ -1,0 +1,214 @@
+import axios from "axios";
+
+const BASE = import.meta.env.VITE_API_URL || "http://localhost:4000/api";
+
+export const api = axios.create({
+  baseURL: `${BASE}/admin`,
+  headers: { "Content-Type": "application/json" },
+});
+
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("adminToken");
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
+
+api.interceptors.response.use(
+  (r) => r,
+  (err) => {
+    if (err.response?.status === 401) {
+      localStorage.removeItem("adminToken");
+      window.location.href = "/login";
+    }
+    return Promise.reject(err);
+  }
+);
+
+export async function adminLogin(email: string, password: string) {
+  const { data } = await api.post<{ success: boolean; data: { admin: { id: string; email: string; name: string | null }; token: string } }>(
+    "/auth/login",
+    { email, password }
+  );
+  return data;
+}
+
+export async function getOrders(filter?: "all" | "new" | "completed") {
+  const { data } = await api.get<{ success: boolean; data: OrderDto[] }>("/orders", {
+    params: filter ? { filter } : {},
+  });
+  return data.data;
+}
+
+export async function getOrderById(id: string) {
+  const { data } = await api.get<{ success: boolean; data: OrderDto }>(`/orders/${id}`);
+  return data.data;
+}
+
+export async function updateOrderStatus(id: string, orderStatus: string) {
+  const { data } = await api.patch<{ success: boolean; data: OrderDto }>(`/orders/${id}/status`, { orderStatus });
+  return data.data;
+}
+
+export async function getProducts() {
+  const { data } = await api.get<{ success: boolean; data: ProductListItem[] }>("/products");
+  return data.data;
+}
+
+export async function getProductById(id: string) {
+  const { data } = await api.get<{ success: boolean; data: unknown }>(`/products/${id}`);
+  return data.data;
+}
+
+export async function createProduct(body: { title: string; slug: string; description?: string; categoryId?: string; brand?: string; material?: string; isActive?: boolean }) {
+  const { data } = await api.post<{ success: boolean; data: unknown }>("/products", body);
+  return data.data;
+}
+
+export async function updateProduct(id: string, body: Partial<{ title: string; slug: string; description: string; categoryId: string; brand: string; material: string; isActive: boolean }>) {
+  const { data } = await api.patch<{ success: boolean; data: unknown }>(`/products/${id}`, body);
+  return data.data;
+}
+
+export async function getCollections() {
+  const { data } = await api.get<{ success: boolean; data: CollectionDto[] }>("/collections");
+  return data.data;
+}
+
+export async function getCollectionById(id: string) {
+  const { data } = await api.get<{ success: boolean; data: CollectionDto }>(`/collections/${id}`);
+  return data.data;
+}
+
+export async function getCollectionProducts(id: string) {
+  const { data } = await api.get<{ success: boolean; data: { collection: CollectionDto; products: { id: string; title: string; slug: string; price: number | null; imageUrl: string | null }[] } }>(`/collections/${id}/products`);
+  return data.data;
+}
+
+export async function setCollectionProducts(id: string, productIds: string[]) {
+  const { data } = await api.patch<{ success: boolean; data: unknown }>(`/collections/${id}/products`, { productIds });
+  return data.data;
+}
+
+export async function createCollection(body: { name: string; slug: string; description?: string; bannerImage?: string; isActive?: boolean }) {
+  const { data } = await api.post<{ success: boolean; data: CollectionDto }>("/collections", body);
+  return data.data;
+}
+
+export async function updateCollection(id: string, body: Partial<{ name: string; slug: string; description: string; bannerImage: string; isActive: boolean }>) {
+  const { data } = await api.patch<{ success: boolean; data: CollectionDto }>(`/collections/${id}`, body);
+  return data.data;
+}
+
+export async function getBanners() {
+  const { data } = await api.get<{ success: boolean; data: BannerDto[] }>("/banners");
+  return data.data;
+}
+
+export async function getBannerById(id: string) {
+  const { data } = await api.get<{ success: boolean; data: BannerDto }>(`/banners/${id}`);
+  return data.data;
+}
+
+export async function createBanner(body: { title: string; highlight: string; subtitle?: string; cta: string; collectionSlug: string; imageUrl: string; sortOrder?: number; isActive?: boolean }) {
+  const { data } = await api.post<{ success: boolean; data: BannerDto }>("/banners", body);
+  return data.data;
+}
+
+export async function updateBanner(id: string, body: Partial<{ title: string; highlight: string; subtitle: string; cta: string; collectionSlug: string; imageUrl: string; sortOrder: number; isActive: boolean }>) {
+  const { data } = await api.patch<{ success: boolean; data: BannerDto }>(`/banners/${id}`, body);
+  return data.data;
+}
+
+export async function getCarts() {
+  const { data } = await api.get<{ success: boolean; data: CartSummaryDto[] }>("/carts");
+  return data.data;
+}
+
+export async function getAnalytics() {
+  const { data } = await api.get<{ success: boolean; data: AnalyticsDto }>("/analytics");
+  return data.data;
+}
+
+export async function uploadImage(imageDataUri: string, folder?: string) {
+  const { data } = await api.post<{ success: boolean; data: { url: string } }>("/upload", { image: imageDataUri, folder });
+  return data.data.url;
+}
+
+export interface OrderDto {
+  id: string;
+  userId: string | null;
+  user: { id: string; email: string; name: string | null } | null;
+  address: {
+    fullName: string;
+    phoneNumber: string;
+    streetAddress: string;
+    area: string;
+    city: string;
+    state: string;
+    postalCode: string;
+    country: string;
+    landmark: string | null;
+  } | null;
+  totalAmount: number;
+  paymentMethod: string;
+  paymentStatus: string;
+  orderStatus: string;
+  createdAt: string;
+  items: { id: string; productId: string; productName: string; productPrice: number; quantity: number; subtotal: number }[];
+}
+
+export interface ProductListItem {
+  id: string;
+  title: string;
+  slug: string;
+  description: string | null;
+  categoryId: string | null;
+  category: { id: string; name: string; slug: string } | null;
+  brand: string | null;
+  material: string | null;
+  isActive: boolean;
+  price: number | null;
+  compareAtPrice: number | null;
+  imageUrl: string | null;
+  variantCount: number;
+  collectionIds: string[];
+  collectionSlugs: string[];
+}
+
+export interface CollectionDto {
+  id: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  bannerImage: string | null;
+  isActive: boolean;
+  createdAt?: string;
+}
+
+export interface BannerDto {
+  id: string;
+  title: string;
+  highlight: string;
+  subtitle: string;
+  cta: string;
+  collectionSlug: string;
+  imageUrl: string;
+  sortOrder: number;
+  isActive: boolean;
+  createdAt?: string;
+}
+
+export interface CartSummaryDto {
+  userId: string;
+  user: { id: string; email: string; name: string | null } | null;
+  items: { productId: string; productTitle: string; productSlug: string; imageUrl: string | null; price: number | null; size: string; quantity: number; updatedAt: string }[];
+  itemCount: number;
+}
+
+export interface AnalyticsDto {
+  totalRevenue: number;
+  totalOrders: number;
+  ordersByStatus: Record<string, number>;
+  topSelling: { productId: string; productName: string; quantity: number; revenue: number }[];
+  leastSelling: { productId: string; productName: string; quantity: number; revenue: number }[];
+}

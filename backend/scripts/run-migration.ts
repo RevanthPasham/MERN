@@ -1,31 +1,35 @@
 /**
- * Run the address/order migration.
- * Usage: npm run db:migrate (from backend folder) or: npx ts-node scripts/run-migration.ts
+ * Run all migrations in backend/src/db/migrations/ (sorted by name).
+ * Usage: npm run db:migrate (from backend folder)
  */
 import "dotenv/config";
 import * as fs from "fs";
 import * as path from "path";
 import { sequelize } from "../src/config/db";
 
-const MIGRATION_FILE = path.join(__dirname, "../src/db/migrations/001_address_and_order_updates.sql");
+const MIGRATIONS_DIR = path.join(__dirname, "../src/db/migrations");
 
 async function run() {
-  if (!fs.existsSync(MIGRATION_FILE)) {
-    console.error("Migration file not found:", MIGRATION_FILE);
+  if (!fs.existsSync(MIGRATIONS_DIR)) {
+    console.error("Migrations dir not found:", MIGRATIONS_DIR);
     process.exit(1);
   }
-  const sql = fs.readFileSync(MIGRATION_FILE, "utf8");
-  console.log("Running migration...");
-  try {
-    await sequelize.query(sql);
-    console.log("Migration completed successfully.");
-  } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : String(err);
-    console.error("Migration failed:", msg);
-    process.exit(1);
-  } finally {
-    await sequelize.close();
+  const files = fs.readdirSync(MIGRATIONS_DIR).filter((f) => f.endsWith(".sql")).sort();
+  for (const file of files) {
+    const filePath = path.join(MIGRATIONS_DIR, file);
+    const sql = fs.readFileSync(filePath, "utf8");
+    console.log("Running", file, "...");
+    try {
+      await sequelize.query(sql);
+      console.log(file, "completed.");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error("Migration failed:", msg);
+      process.exit(1);
+    }
   }
+  console.log("All migrations completed successfully.");
+  await sequelize.close();
 }
 
 run();

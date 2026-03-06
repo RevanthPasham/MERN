@@ -66,7 +66,7 @@ export async function createProduct(body: { title: string; slug: string; descrip
   return data.data;
 }
 
-export async function updateProduct(id: string, body: Partial<{ title: string; slug: string; description: string; categoryId: string; brand: string; material: string; isActive: boolean }>) {
+export async function updateProduct(id: string, body: Partial<{ title: string; slug: string; description: string; categoryId: string; brand: string; material: string; isActive: boolean; imageUrl: string | null }>) {
   const { data } = await api.patch<{ success: boolean; data: unknown }>(`/products/${id}`, body);
   return data.data;
 }
@@ -96,7 +96,7 @@ export async function createCollection(body: { name: string; slug: string; descr
   return data.data;
 }
 
-export async function updateCollection(id: string, body: Partial<{ name: string; slug: string; description: string; bannerImage: string; isActive: boolean }>) {
+export async function updateCollection(id: string, body: Partial<{ name: string; slug: string; description: string; bannerImage: string | null; isActive: boolean }>) {
   const { data } = await api.patch<{ success: boolean; data: CollectionDto }>(`/collections/${id}`, body);
   return data.data;
 }
@@ -134,6 +134,10 @@ export async function getAnalytics() {
 export async function uploadImage(imageDataUri: string, folder?: string) {
   const { data } = await api.post<{ success: boolean; data: { url: string } }>("/upload", { image: imageDataUri, folder });
   return data.data.url;
+}
+
+export async function deleteImageFromCloudinary(url: string) {
+  await api.post("/upload/delete", { url });
 }
 
 export interface OrderDto {
@@ -194,7 +198,7 @@ export interface BannerDto {
   subtitle: string;
   cta: string;
   collectionSlug: string;
-  imageUrl: string;
+  imageUrl: string | null;
   sortOrder: number;
   isActive: boolean;
   createdAt?: string;

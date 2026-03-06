@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { getProducts, createProduct, updateProduct, type ProductListItem } from "../api/client";
+import { getProducts, createProduct, updateProduct, uploadImage, deleteImageFromCloudinary, type ProductListItem } from "../api/client";
+import ImageField from "../components/ImageField";
 
 export default function Products() {
   const [products, setProducts] = useState<ProductListItem[]>([]);
@@ -37,10 +38,10 @@ export default function Products() {
     }
   };
 
-  const handleUpdate = async (id: string, updates: Partial<{ title: string; slug: string; description: string; isActive: boolean }>) => {
+  const handleUpdate = async (id: string, updates: Partial<{ title: string; slug: string; description: string; isActive: boolean; imageUrl: string | null }>) => {
     try {
       await updateProduct(id, updates);
-      setEditingId(null);
+      if (updates.imageUrl === undefined) setEditingId(null);
       load();
     } catch (err) {
       alert(err instanceof Error ? err.message : "Failed");
@@ -81,6 +82,7 @@ export default function Products() {
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>
               <tr style={{ background: "#f8fafc" }}>
+                <th style={{ padding: "0.75rem 1rem", textAlign: "left", borderBottom: "1px solid #e2e8f0" }}>Image</th>
                 <th style={{ padding: "0.75rem 1rem", textAlign: "left", borderBottom: "1px solid #e2e8f0" }}>Product</th>
                 <th style={{ padding: "0.75rem 1rem", textAlign: "left", borderBottom: "1px solid #e2e8f0" }}>Slug</th>
                 <th style={{ padding: "0.75rem 1rem", textAlign: "left", borderBottom: "1px solid #e2e8f0" }}>Price</th>
@@ -92,6 +94,24 @@ export default function Products() {
             <tbody>
               {products.map((p) => (
                 <tr key={p.id} style={{ borderBottom: "1px solid #e2e8f0" }}>
+                  <td style={{ padding: "0.75rem 1rem", verticalAlign: "top" }}>
+                    {editingId === p.id ? (
+                      <ImageField
+                        label=""
+                        currentUrl={p.imageUrl}
+                        folder="products"
+                        onUpload={(dataUri) => uploadImage(dataUri, "products")}
+                        onRemove={async () => {
+                          if (p.imageUrl?.includes("cloudinary")) await deleteImageFromCloudinary(p.imageUrl!);
+                        }}
+                        onSaveUrl={async (url) => handleUpdate(p.id, { imageUrl: url || null })}
+                      />
+                    ) : p.imageUrl ? (
+                      <img src={p.imageUrl} alt="" style={{ width: 56, height: 56, objectFit: "cover", borderRadius: 6, border: "1px solid #e2e8f0" }} />
+                    ) : (
+                      <span style={{ color: "#94a3b8", fontSize: "0.8125rem" }}>No image</span>
+                    )}
+                  </td>
                   <td style={{ padding: "0.75rem 1rem" }}>{p.title}</td>
                   <td style={{ padding: "0.75rem 1rem" }}>{p.slug}</td>
                   <td style={{ padding: "0.75rem 1rem" }}>{p.price != null ? `₹${p.price}` : "—"}</td>

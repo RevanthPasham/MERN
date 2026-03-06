@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { getBanners, getCollections, createBanner, updateBanner, type BannerDto, type CollectionDto } from "../api/client";
+import { getBanners, getCollections, createBanner, updateBanner, uploadImage, deleteImageFromCloudinary, type BannerDto, type CollectionDto } from "../api/client";
+import ImageField from "../components/ImageField";
 
 export default function Banners() {
   const [banners, setBanners] = useState<BannerDto[]>([]);
@@ -65,8 +66,8 @@ export default function Banners() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.title || !form.highlight || !form.cta || !form.collectionSlug || !form.imageUrl) {
-      alert("Title, highlight, CTA, collection slug, and image URL are required.");
+    if (!form.title || !form.highlight || !form.cta || !form.collectionSlug) {
+      alert("Title, highlight, CTA, and collection slug are required.");
       return;
     }
     try {
@@ -109,7 +110,16 @@ export default function Banners() {
               <option key={c.id} value={c.slug}>{c.name} ({c.slug})</option>
             ))}
           </select>
-          <input placeholder="Image URL" value={form.imageUrl} onChange={(e) => setForm((f) => ({ ...f, imageUrl: e.target.value }))} required style={{ width: "100%", marginBottom: "0.5rem", padding: "0.5rem" }} />
+          <ImageField
+            label="Banner image (upload to Cloudinary)"
+            currentUrl={form.imageUrl || null}
+            folder="banners"
+            onUpload={(dataUri) => uploadImage(dataUri, "banners")}
+            onRemove={async () => {
+              if (form.imageUrl && form.imageUrl.includes("cloudinary")) await deleteImageFromCloudinary(form.imageUrl);
+            }}
+            onSaveUrl={async (url) => setForm((f) => ({ ...f, imageUrl: url }))}
+          />
           <input type="number" placeholder="Sort order" value={form.sortOrder} onChange={(e) => setForm((f) => ({ ...f, sortOrder: Number(e.target.value) || 0 }))} style={{ width: "100%", marginBottom: "0.5rem", padding: "0.5rem" }} />
           <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.5rem" }}>
             <input type="checkbox" checked={form.isActive} onChange={(e) => setForm((f) => ({ ...f, isActive: e.target.checked }))} />
@@ -128,6 +138,7 @@ export default function Banners() {
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>
               <tr style={{ background: "#f8fafc" }}>
+                <th style={{ padding: "0.75rem 1rem", textAlign: "left", borderBottom: "1px solid #e2e8f0" }}>Image</th>
                 <th style={{ padding: "0.75rem 1rem", textAlign: "left", borderBottom: "1px solid #e2e8f0" }}>Title / Highlight</th>
                 <th style={{ padding: "0.75rem 1rem", textAlign: "left", borderBottom: "1px solid #e2e8f0" }}>Collection</th>
                 <th style={{ padding: "0.75rem 1rem", textAlign: "left", borderBottom: "1px solid #e2e8f0" }}>Order</th>
@@ -138,6 +149,13 @@ export default function Banners() {
             <tbody>
               {banners.map((b) => (
                 <tr key={b.id} style={{ borderBottom: "1px solid #e2e8f0" }}>
+                  <td style={{ padding: "0.75rem 1rem" }}>
+                    {b.imageUrl ? (
+                      <img src={b.imageUrl} alt="" style={{ width: 56, height: 56, objectFit: "cover", borderRadius: 6, border: "1px solid #e2e8f0" }} />
+                    ) : (
+                      <span style={{ color: "#94a3b8", fontSize: "0.8125rem" }}>No image</span>
+                    )}
+                  </td>
                   <td style={{ padding: "0.75rem 1rem" }}>{b.title} — {b.highlight}</td>
                   <td style={{ padding: "0.75rem 1rem" }}>{b.collectionSlug}</td>
                   <td style={{ padding: "0.75rem 1rem" }}>{b.sortOrder}</td>

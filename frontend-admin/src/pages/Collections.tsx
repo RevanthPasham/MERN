@@ -6,9 +6,12 @@ import {
   createCollection,
   updateCollection,
   getProducts,
+  uploadImage,
+  deleteImageFromCloudinary,
   type CollectionDto,
   type ProductListItem,
 } from "../api/client";
+import ImageField from "../components/ImageField";
 
 export default function Collections() {
   const [collections, setCollections] = useState<CollectionDto[]>([]);
@@ -117,12 +120,15 @@ export default function Collections() {
           ) : (
             <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
               {collections.map((c) => (
-                <li key={c.id}>
+                <li key={c.id} style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.25rem" }}>
+                  {c.bannerImage && (
+                    <img src={c.bannerImage} alt="" style={{ width: 36, height: 36, objectFit: "cover", borderRadius: 4, flexShrink: 0 }} />
+                  )}
                   <button
                     type="button"
                     onClick={() => setSelectedId(c.id)}
                     style={{
-                      width: "100%",
+                      flex: 1,
                       padding: "0.5rem",
                       textAlign: "left",
                       border: "none",
@@ -142,6 +148,21 @@ export default function Collections() {
           {detail ? (
             <>
               <h3 style={{ margin: "0 0 0.5rem" }}>{detail.collection.name}</h3>
+              <ImageField
+                label="Collection banner image"
+                currentUrl={detail.collection.bannerImage}
+                folder="collections"
+                onUpload={(dataUri) => uploadImage(dataUri, "collections")}
+                onRemove={async () => {
+                  if (detail.collection.bannerImage?.includes("cloudinary")) await deleteImageFromCloudinary(detail.collection.bannerImage!);
+                }}
+                onSaveUrl={async (url) => {
+                  if (!selectedId) return;
+                  await updateCollection(selectedId, { bannerImage: url || null });
+                  getCollectionProducts(selectedId).then(setDetail);
+                  load();
+                }}
+              />
               <p style={{ fontSize: "0.875rem", color: "#64748b", marginBottom: "1rem" }}>
                 Products in this collection (used when customers visit /collections/{detail.collection.slug}). Select products to add/remove:
               </p>

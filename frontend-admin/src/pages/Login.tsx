@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
@@ -10,10 +10,11 @@ export default function Login() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  if (token) {
-    navigate("/", { replace: true });
-    return null;
-  }
+  useEffect(() => {
+    if (token) navigate("/", { replace: true });
+  }, [token, navigate]);
+
+  if (token) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

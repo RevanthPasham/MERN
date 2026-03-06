@@ -125,7 +125,7 @@ export default function Layout() {
                 transition: "background 0.15s, color 0.15s",
               })}
             >
-              <span style={{ opacity: isActive ? 1 : 0.85 }}><Icon /></span>
+              <span style={{ opacity: 1 }}><Icon /></span>
               {label}
             </NavLink>
           ))}

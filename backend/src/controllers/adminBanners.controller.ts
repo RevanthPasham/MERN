@@ -24,10 +24,10 @@ export async function getById(req: AdminRequest, res: Response, next: NextFuncti
 export async function create(req: AdminRequest, res: Response, next: NextFunction) {
   try {
     const body = req.body;
-    if (!body?.title || !body?.highlight || !body?.cta || !body?.collectionSlug || !body?.imageUrl) {
+    if (!body?.title || !body?.highlight || !body?.cta || !body?.collectionSlug) {
       return res.status(400).json({
         success: false,
-        error: "title, highlight, cta, collectionSlug, imageUrl required",
+        error: "title, highlight, cta, collectionSlug required",
       });
     }
     const data = await adminBannersService.create(body);

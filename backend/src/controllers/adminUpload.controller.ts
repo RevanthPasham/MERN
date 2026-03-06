@@ -20,3 +20,26 @@ export async function upload(req: AdminRequest, res: Response, next: NextFunctio
     next(e);
   }
 }
+
+export async function deleteUpload(req: AdminRequest, res: Response, next: NextFunction) {
+  try {
+    if (!cloudinaryService.isCloudinaryConfigured()) {
+      return res.status(503).json({
+        success: false,
+        error: "Cloudinary is not configured.",
+      });
+    }
+    const { url } = req.body;
+    if (!url || typeof url !== "string") {
+      return res.status(400).json({ success: false, error: "url (Cloudinary image URL) required" });
+    }
+    await cloudinaryService.deleteImage(url);
+    return res.json({ success: true });
+  } catch (e: unknown) {
+    const err = e as Error;
+    if (err.message?.includes("Invalid Cloudinary")) {
+      return res.status(400).json({ success: false, error: err.message });
+    }
+    next(e);
+  }
+}

@@ -35,3 +35,21 @@ export async function uploadImage(dataUriOrUrl: string, folder = "houseof"): Pro
   });
   return result.secure_url;
 }
+
+/** Extract public_id from a Cloudinary secure_url (for delete). */
+function getPublicIdFromUrl(secureUrl: string): string | null {
+  const match = secureUrl.match(/\/upload\/(?:v\d+\/)?(.+)$/);
+  if (!match) return null;
+  const path = match[1];
+  const lastDot = path.lastIndexOf(".");
+  const withoutExt = lastDot > 0 ? path.slice(0, lastDot) : path;
+  return decodeURIComponent(withoutExt);
+}
+
+export async function deleteImage(secureUrl: string): Promise<void> {
+  ensureConfig();
+  if (!configured) throw new Error("Cloudinary is not configured");
+  const publicId = getPublicIdFromUrl(secureUrl);
+  if (!publicId) throw new Error("Invalid Cloudinary URL");
+  await cloudinary.uploader.destroy(publicId, { resource_type: "image", invalidate: true });
+}

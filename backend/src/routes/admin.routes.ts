@@ -51,5 +51,6 @@ router.get("/analytics/export", adminAnalyticsController.exportExcel);
 
 // Upload image (Cloudinary)
 router.post("/upload", adminUploadController.upload);
+router.post("/upload/delete", adminUploadController.deleteUpload);
 
 export default router;

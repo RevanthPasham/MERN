@@ -47,7 +47,7 @@ export async function create(body: Partial<BannerCreationAttributes>) {
     subtitle: body.subtitle ?? "",
     cta: body.cta!,
     collectionSlug: body.collectionSlug!,
-    imageUrl: body.imageUrl!,
+    imageUrl: body.imageUrl ?? null,
     sortOrder: body.sortOrder ?? 0,
     isActive: body.isActive !== false,
   });
@@ -63,7 +63,7 @@ export async function update(id: string, body: Partial<BannerCreationAttributes>
     ...(body.subtitle !== undefined && { subtitle: body.subtitle }),
     ...(body.cta !== undefined && { cta: body.cta }),
     ...(body.collectionSlug !== undefined && { collectionSlug: body.collectionSlug }),
-    ...(body.imageUrl !== undefined && { imageUrl: body.imageUrl }),
+    ...(body.imageUrl !== undefined && { imageUrl: body.imageUrl === "" ? null : body.imageUrl }),
     ...(body.sortOrder !== undefined && { sortOrder: body.sortOrder }),
     ...(body.isActive !== undefined && { isActive: !!body.isActive }),
   });

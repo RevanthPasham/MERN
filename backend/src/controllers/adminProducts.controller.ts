@@ -49,7 +49,18 @@ export async function create(req: AdminRequest, res: Response, next: NextFunctio
 export async function update(req: AdminRequest, res: Response, next: NextFunction) {
   try {
     const body = req.body;
-    const data = await adminProductsService.update(req.params.id, {
+    const id = req.params.id;
+
+    if (body.imageUrl !== undefined) {
+      if (body.imageUrl === null || body.imageUrl === "") {
+        await adminProductsService.clearProductPrimaryImage(id);
+      } else {
+        const ok = await adminProductsService.setProductPrimaryImage(id, String(body.imageUrl));
+        if (!ok) return res.status(400).json({ success: false, error: "Product has no variant; add a variant first to set image" });
+      }
+    }
+
+    const data = await adminProductsService.update(id, {
       ...(body.title !== undefined && { title: body.title }),
       ...(body.slug !== undefined && { slug: body.slug }),
       ...(body.description !== undefined && { description: body.description }),

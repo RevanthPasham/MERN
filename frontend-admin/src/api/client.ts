@@ -16,7 +16,9 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (r) => r,
   (err) => {
-    if (err.response?.status === 401) {
+    // Don't redirect on 401 when the failed request was login (so user sees error message)
+    const isLoginRequest = err.config?.url?.includes("/auth/login");
+    if (err.response?.status === 401 && !isLoginRequest) {
       localStorage.removeItem("adminToken");
       window.location.href = "/login";
     }

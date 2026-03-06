@@ -25,13 +25,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   const login = useCallback(async (email: string, password: string) => {
-    const res = await adminLogin(email, password);
-    if (!res.success || !res.data?.token) throw new Error("Login failed");
-    const t = res.data.token;
-    const a = res.data.admin;
-    localStorage.setItem(TOKEN_KEY, t);
-    setToken(t);
-    setAdmin(a);
+    try {
+      const res = await adminLogin(email, password);
+      if (!res.success || !res.data?.token) throw new Error("Login failed");
+      const t = res.data.token;
+      const a = res.data.admin;
+      localStorage.setItem(TOKEN_KEY, t);
+      setToken(t);
+      setAdmin(a);
+    } catch (err: unknown) {
+      const msg =
+        err && typeof err === "object" && "response" in err
+          ? (err as { response?: { data?: { error?: string } } }).response?.data?.error
+          : null;
+      throw new Error(msg || (err instanceof Error ? err.message : "Login failed"));
+    }
   }, []);
 
   const logout = useCallback(() => {

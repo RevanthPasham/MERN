@@ -1,18 +1,21 @@
 import { DataTypes, Model, Optional } from "sequelize";
 import { sequelize } from "../../config/db";
 
+export type AdminRole = "super_admin" | "admin" | "sub_admin";
+
 export interface AdminAttributes {
   id: string;
   email: string;
   passwordHash: string;
   name: string | null;
+  role: AdminRole;
   createdAt: Date;
   updatedAt: Date;
 }
 
 export type AdminCreationAttributes = Optional<
   AdminAttributes,
-  "id" | "name" | "createdAt" | "updatedAt"
+  "id" | "name" | "role" | "createdAt" | "updatedAt"
 >;
 
 export class Admin
@@ -23,6 +26,7 @@ export class Admin
   declare email: string;
   declare passwordHash: string;
   declare name: string | null;
+  declare role: AdminRole;
   declare createdAt: Date;
   declare updatedAt: Date;
 }
@@ -47,6 +51,11 @@ Admin.init(
     name: {
       type: DataTypes.STRING(120),
       allowNull: true,
+    },
+    role: {
+      type: DataTypes.STRING(40),
+      allowNull: false,
+      defaultValue: "admin",
     },
     createdAt: {
       type: DataTypes.DATE(6),

@@ -27,10 +27,10 @@ api.interceptors.response.use(
 );
 
 export async function adminLogin(email: string, password: string) {
-  const { data } = await api.post<{ success: boolean; data: { admin: { id: string; email: string; name: string | null }; token: string } }>(
-    "/auth/login",
-    { email, password }
-  );
+  const { data } = await api.post<{
+    success: boolean;
+    data: { admin: { id: string; email: string; name: string | null; role?: string }; token: string };
+  }>("/auth/login", { email, password });
   return data;
 }
 

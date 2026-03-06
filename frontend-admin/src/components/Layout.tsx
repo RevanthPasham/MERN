@@ -131,6 +131,11 @@ export default function Layout() {
           ))}
         </nav>
         <div style={{ padding: "1rem 1.25rem", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+          {admin?.role && (
+            <div style={{ fontSize: "0.75rem", color: "#64748b", marginBottom: 2, textTransform: "capitalize" }}>
+              {admin.role.replace("_", " ")}
+            </div>
+          )}
           <div style={{ fontSize: "0.8125rem", color: "#94a3b8", marginBottom: 4 }}>
             {admin?.email}
           </div>

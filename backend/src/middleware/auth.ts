@@ -52,7 +52,8 @@ export function requireAdmin(req: AdminRequest, res: Response, next: NextFunctio
   }
   try {
     const payload = jwt.verify(token, JWT_SECRET) as { adminId?: string; role?: string };
-    if (payload.role !== "admin" || !payload.adminId) {
+    const adminRoles = ["super_admin", "admin", "sub_admin"];
+    if (!payload.adminId || !payload.role || !adminRoles.includes(payload.role)) {
       return res.status(403).json({ success: false, error: "Admin access required" });
     }
     req.adminId = payload.adminId;

@@ -1,18 +1,21 @@
 import { DataTypes, Model, Optional } from "sequelize";
 import { sequelize } from "../../config/db";
 
+export type UserRole = "customer" | "candidate";
+
 export interface UserAttributes {
   id: string;
   email: string;
   passwordHash: string;
   name: string | null;
+  role: UserRole;
   createdAt: Date;
   updatedAt: Date;
 }
 
 export type UserCreationAttributes = Optional<
   UserAttributes,
-  "id" | "name" | "createdAt" | "updatedAt"
+  "id" | "name" | "role" | "createdAt" | "updatedAt"
 >;
 
 export class User
@@ -23,6 +26,7 @@ export class User
   declare email: string;
   declare passwordHash: string;
   declare name: string | null;
+  declare role: UserRole;
   declare createdAt: Date;
   declare updatedAt: Date;
 }
@@ -47,6 +51,11 @@ User.init(
     name: {
       type: DataTypes.STRING(120),
       allowNull: true,
+    },
+    role: {
+      type: DataTypes.STRING(40),
+      allowNull: false,
+      defaultValue: "customer",
     },
     createdAt: {
       type: DataTypes.DATE(6),

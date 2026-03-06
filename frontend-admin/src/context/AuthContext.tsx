@@ -7,6 +7,7 @@ interface Admin {
   id: string;
   email: string;
   name: string | null;
+  role?: string;
 }
 
 interface AuthContextValue {

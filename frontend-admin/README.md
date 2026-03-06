@@ -13,15 +13,16 @@ Separate frontend for store admins. Login with email/password (OTP can be added 
      ```
 
 2. **Environment**
-   - Create `.env` in `admin-frontend` with:
+   - Create `.env` in `frontend-admin` with:
      ```
      VITE_API_URL=http://localhost:4000/api
      ```
    - For production, set `VITE_API_URL` to your backend API base (e.g. `https://your-api.vercel.app/api`).
+   - **If login returns 401:** ensure the backend uses the same database where you created the admin (same `DATABASE_URL` in backend `.env` when you run `create-admin` and when you run the server).
 
 3. **Install and run**
    ```bash
-   cd admin-frontend
+   cd frontend-admin
    npm install
    npm run dev
    ```

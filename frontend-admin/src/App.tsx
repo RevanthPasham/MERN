@@ -29,7 +29,7 @@ function AppRoutes() {
           </PrivateRoute>
         }
       >
-        <Route index element={<Navigate to="/orders" replace />} />
+        <Route index element={<Dashboard />} />
         <Route path="orders" element={<Orders />} />
         <Route path="products" element={<Products />} />
         <Route path="collections" element={<Collections />} />

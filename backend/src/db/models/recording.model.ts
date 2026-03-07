@@ -118,7 +118,7 @@ Recording.init(
       { fields: ["user_id"] },
       { fields: ["session_id"] },
       { fields: ["recording_type"] },
-      { fields: ["created_at"], order: [["created_at", "DESC"]] },
+      { fields: ["created_at"] },
     ],
   }
 );

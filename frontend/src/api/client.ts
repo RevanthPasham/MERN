@@ -131,12 +131,82 @@ export async function addProductReview(
   return data.data;
 }
 
-export async function confirmOrder(razorpayOrderId: string, amountPaise: number, items: { productId: string; quantity: number }[]): Promise<void> {
+export async function confirmOrder(
+  razorpayOrderId: string,
+  amountPaise: number,
+  items: { productId: string; quantity: number }[],
+  addressId?: string | null
+): Promise<void> {
   await api.post("/orders/confirm", {
     razorpayOrderId,
     amountPaise,
     items,
+    addressId: addressId ?? null,
   });
+}
+
+/* ========== Addresses (requires auth) ========== */
+
+export type { AddressDto } from "../types";
+
+export async function getAddresses(): Promise<import("../types").AddressDto[]> {
+  const { data } = await api.get<{ success: boolean; data: import("../types").AddressDto[] }>("/addresses");
+  return Array.isArray(data?.data) ? data.data : [];
+}
+
+export async function getAddressById(id: string): Promise<import("../types").AddressDto | null> {
+  try {
+    const { data } = await api.get<{ success: boolean; data: import("../types").AddressDto }>(`/addresses/${id}`);
+    return data?.data ?? null;
+  } catch {
+    return null;
+  }
+}
+
+export interface CreateAddressBody {
+  fullName: string;
+  phoneNumber: string;
+  country: string;
+  state: string;
+  city: string;
+  area: string;
+  streetAddress: string;
+  landmark?: string | null;
+  postalCode: string;
+  addressType?: import("../types").AddressType;
+  isDefault?: boolean;
+}
+
+export async function createAddress(body: CreateAddressBody): Promise<import("../types").AddressDto> {
+  const { data } = await api.post<{ success: boolean; data: import("../types").AddressDto }>("/addresses", body);
+  if (!data?.data) throw new Error("Invalid response");
+  return data.data;
+}
+
+export async function updateAddress(
+  id: string,
+  body: Partial<CreateAddressBody>
+): Promise<import("../types").AddressDto> {
+  const { data } = await api.patch<{ success: boolean; data: import("../types").AddressDto }>(`/addresses/${id}`, body);
+  if (!data?.data) throw new Error("Invalid response");
+  return data.data;
+}
+
+export async function setDefaultAddress(id: string): Promise<import("../types").AddressDto> {
+  const { data } = await api.post<{ success: boolean; data: import("../types").AddressDto }>(`/addresses/${id}/set-default`);
+  if (!data?.data) throw new Error("Invalid response");
+  return data.data;
+}
+
+export async function deleteAddress(id: string): Promise<void> {
+  await api.delete(`/addresses/${id}`);
+}
+
+/* ========== Order history (requires auth) ========== */
+
+export async function getOrders(): Promise<import("../types").OrderDto[]> {
+  const { data } = await api.get<{ success: boolean; data: import("../types").OrderDto[] }>("/orders");
+  return Array.isArray(data?.data) ? data.data : [];
 }
 
 /* ========== Cart (requires auth) ========== */

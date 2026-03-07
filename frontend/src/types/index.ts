@@ -91,3 +91,54 @@ export interface LoginResponse {
   user: AuthUser;
   token: string;
 }
+
+export type AddressType = "Home" | "Work" | "Other";
+
+export interface AddressDto {
+  id: string;
+  fullName: string;
+  phoneNumber: string;
+  country: string;
+  state: string;
+  city: string;
+  area: string;
+  streetAddress: string;
+  landmark: string | null;
+  postalCode: string;
+  addressType: AddressType;
+  isDefault: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface OrderItemDto {
+  id: string;
+  productId: string;
+  productName: string;
+  productPrice: number;
+  quantity: number;
+  subtotal: number;
+}
+
+export interface OrderDto {
+  id: string;
+  addressId: string | null;
+  totalAmount: number;
+  paymentMethod: string;
+  paymentStatus: string;
+  orderStatus: string;
+  createdAt: string;
+  items: OrderItemDto[];
+  address?: {
+    fullName: string;
+    phoneNumber: string;
+    streetAddress: string;
+    area: string;
+    city: string;
+    state: string;
+    postalCode: string;
+    country: string;
+    landmark: string | null;
+    addressType: string;
+  } | null;
+}

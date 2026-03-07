@@ -5,14 +5,17 @@ export interface OrderItemAttributes {
   id: string;
   orderId: string;
   productId: string;
+  productName: string;
+  productPrice: number;
   quantity: number;
+  subtotal: number;
   createdAt: Date;
   updatedAt: Date;
 }
 
 export type OrderItemCreationAttributes = Optional<
   OrderItemAttributes,
-  "id" | "createdAt" | "updatedAt"
+  "id" | "productName" | "productPrice" | "subtotal" | "createdAt" | "updatedAt"
 >;
 
 export class OrderItem
@@ -22,7 +25,10 @@ export class OrderItem
   declare id: string;
   declare orderId: string;
   declare productId: string;
+  declare productName: string;
+  declare productPrice: number;
   declare quantity: number;
+  declare subtotal: number;
   declare createdAt: Date;
   declare updatedAt: Date;
 }
@@ -48,10 +54,28 @@ OrderItem.init(
       references: { model: "products", key: "id" },
       onDelete: "CASCADE",
     },
+    productName: {
+      type: DataTypes.STRING(255),
+      allowNull: false,
+      defaultValue: "",
+      field: "product_name",
+    },
+    productPrice: {
+      type: DataTypes.DECIMAL(12, 2),
+      allowNull: false,
+      defaultValue: 0,
+      field: "product_price",
+    },
     quantity: {
       type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 1,
+    },
+    subtotal: {
+      type: DataTypes.DECIMAL(12, 2),
+      allowNull: false,
+      defaultValue: 0,
+      field: "subtotal",
     },
     createdAt: {
       type: DataTypes.DATE(6),

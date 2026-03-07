@@ -49,6 +49,19 @@ export const errorHandler = (
     });
   }
 
+  const message = err instanceof Error ? err.message : String(err);
+  if (
+    typeof message === "string" &&
+    (message.includes("does not exist") || message.includes("relation") || message.includes("column"))
+  ) {
+    console.error("Database schema error (run migration?):", err);
+    return res.status(503).json({
+      success: false,
+      error:
+        "Database schema is missing or outdated. Run the migration: from backend folder run 'npm run db:migrate' then restart the server.",
+    });
+  }
+
   console.error("Unexpected error:", err);
   return res.status(500).json({
     success: false,

@@ -5,7 +5,7 @@ import { registerBodySchema, loginBodySchema } from "../utils/validation";
 export const register = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const body = registerBodySchema.parse(req.body);
-    const data = await authService.register(body.email, body.password, body.name);
+    const data = await authService.register(body.email, body.password, body.name, body.role);
     res.status(201).json({ success: true, data });
   } catch (e: unknown) {
     const err = e as Error;

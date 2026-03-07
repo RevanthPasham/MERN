@@ -1,6 +1,6 @@
 import { Response, NextFunction } from "express";
 import Razorpay from "razorpay";
-import { Order, OrderItem } from "../db/models";
+import * as orderService from "../services/order.service";
 import type { AuthRequest } from "../middleware/auth";
 
 function getRazorpay() {
@@ -75,14 +75,15 @@ export const createOrder = async (req: AuthRequest, res: Response, next: NextFun
   }
 };
 
-/** Call after payment success: records order + items so user is eligible to review purchased products */
+/** Call after payment success: records order + items with address and product snapshot */
 export const confirmOrder = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const userId = req.userId;
     if (!userId) return res.status(401).json({ success: false, error: "Unauthorized" });
-    const { razorpayOrderId, amountPaise, items } = req.body as {
+    const { razorpayOrderId, amountPaise, addressId, items } = req.body as {
       razorpayOrderId?: string;
       amountPaise?: number;
+      addressId?: string | null;
       items?: { productId: string; quantity: number }[];
     };
     const orderId = razorpayOrderId?.trim();
@@ -91,24 +92,26 @@ export const confirmOrder = async (req: AuthRequest, res: Response, next: NextFu
       return res.status(400).json({ success: false, error: "razorpayOrderId and items required" });
     }
     const amount = Math.round(Number(amountPaise) || 0);
-    const order = await Order.create({
+    const result = await orderService.confirmOrder({
       userId,
       razorpayOrderId: orderId,
       amountPaise: amount,
-      status: "paid",
+      addressId: addressId ?? null,
+      items: list,
     });
-    for (const it of list) {
-      const productId = it.productId;
-      const quantity = Math.max(1, Math.min(99, Number(it.quantity) || 1));
-      if (productId) {
-        await OrderItem.create({
-          orderId: (order as any).id,
-          productId,
-          quantity,
-        });
-      }
-    }
-    res.json({ success: true, data: { orderId: (order as any).id } });
+    res.json({ success: true, data: { orderId: result.orderId } });
+  } catch (e) {
+    next(e);
+  }
+};
+
+/** GET /api/orders - List authenticated user's orders (order history) */
+export const listOrders = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.userId;
+    if (!userId) return res.status(401).json({ success: false, error: "Unauthorized" });
+    const data = await orderService.listOrdersByUserId(userId);
+    return res.json({ success: true, data });
   } catch (e) {
     next(e);
   }

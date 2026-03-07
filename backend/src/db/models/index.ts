@@ -14,6 +14,8 @@ import { ProductReview } from "./productReview.model";
 import { Order } from "./order.model";
 import { OrderItem } from "./orderItem.model";
 import { CartItem } from "./cartItem.model";
+import { Address } from "./address.model";
+import { Admin } from "./admin.model";
 import { sequelize } from "../../config/db";
 
 /* ================= ASSOCIATIONS ================= */
@@ -76,8 +78,13 @@ export function associate(): void {
   User.hasMany(ProductReview, { foreignKey: "userId", as: "reviews" });
   ProductReview.belongsTo(User, { foreignKey: "userId", as: "user" });
 
+  User.hasMany(Address, { foreignKey: "userId", as: "addresses" });
+  Address.belongsTo(User, { foreignKey: "userId", as: "user" });
+
   User.hasMany(Order, { foreignKey: "userId", as: "orders" });
   Order.belongsTo(User, { foreignKey: "userId", as: "user" });
+  Order.belongsTo(Address, { foreignKey: "addressId", as: "address" });
+  Address.hasMany(Order, { foreignKey: "addressId", as: "orders" });
   Order.hasMany(OrderItem, { foreignKey: "orderId", as: "items" });
   OrderItem.belongsTo(Order, { foreignKey: "orderId", as: "order" });
   OrderItem.belongsTo(Product, { foreignKey: "productId", as: "product" });
@@ -94,7 +101,8 @@ export function associate(): void {
 export async function initModels(): Promise<void> {
   associate();
   // Create tables if they don't exist; do not drop so DB data persists across restarts
-  await sequelize.sync();
+  // await sequelize.sync();
+  await sequelize.authenticate();
   console.log("Models initialized and synced");
 }
 
@@ -116,3 +124,5 @@ export { ProductReview } from "./productReview.model";
 export { Order } from "./order.model";
 export { OrderItem } from "./orderItem.model";
 export { CartItem } from "./cartItem.model";
+export { Address } from "./address.model";
+export { Admin } from "./admin.model";

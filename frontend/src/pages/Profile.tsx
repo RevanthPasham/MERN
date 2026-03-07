@@ -50,13 +50,15 @@ export default function Profile() {
 
           <section>
             <h2 className="text-lg font-semibold text-gray-900 mb-2">Order history</h2>
-            <p className="text-gray-600">You haven&apos;t placed any orders yet.</p>
+            <Link to="/account/orders" className="text-blue-600 hover:underline">
+              View order history
+            </Link>
           </section>
 
           <section>
             <h2 className="text-lg font-semibold text-gray-900 mb-2">Account details</h2>
             <Link to="/account/addresses" className="text-gray-700 hover:text-gray-900 underline">
-              View addresses (0)
+              View addresses
             </Link>
           </section>
         </div>

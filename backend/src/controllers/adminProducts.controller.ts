@@ -35,6 +35,7 @@ export async function create(req: AdminRequest, res: Response, next: NextFunctio
       brand: body.brand ?? null,
       material: body.material ?? null,
       isActive: body.isActive !== false,
+      initialPrice: body.initialPrice != null ? Number(body.initialPrice) : 0,
     });
     return res.status(201).json({ success: true, data });
   } catch (e: unknown) {
@@ -68,6 +69,8 @@ export async function update(req: AdminRequest, res: Response, next: NextFunctio
       ...(body.brand !== undefined && { brand: body.brand }),
       ...(body.material !== undefined && { material: body.material }),
       ...(body.isActive !== undefined && { isActive: !!body.isActive }),
+      ...(body.price !== undefined && { price: body.price }),
+      ...(body.stockQuantity !== undefined && { stockQuantity: body.stockQuantity }),
     });
     if (!data) return res.status(404).json({ success: false, error: "Product not found" });
     return res.json({ success: true, data });

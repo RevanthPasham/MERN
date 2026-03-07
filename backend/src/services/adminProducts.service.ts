@@ -2,6 +2,20 @@ import { Product, ProductVariant, ProductImage, Category, Collection } from "../
 import type { ProductCreationAttributes } from "../db/models/product.model";
 import * as productService from "./product.service";
 
+/** Create product with a default variant so images can be set. */
+export async function create(body: ProductCreationAttributes & { initialPrice?: number }) {
+  const { initialPrice = 0, ...rest } = body;
+  const product = await productService.create(rest);
+  const sku = `${(product as any).slug}-S`.replace(/\s+/g, "-");
+  await ProductVariant.create({
+    productId: (product as any).id,
+    sku: sku + "-" + Date.now(),
+    price: Math.max(0, Number(initialPrice) || 0),
+    stockQuantity: 0,
+  });
+  return productService.getById((product as any).id);
+}
+
 export async function listAll() {
   const products = await Product.findAll({
     order: [["title", "ASC"]],
@@ -43,27 +57,49 @@ export async function getById(id: string) {
   return productService.getById(id);
 }
 
-export async function create(body: ProductCreationAttributes) {
-  return productService.create(body);
-}
-
-export async function update(id: string, body: Partial<ProductCreationAttributes>) {
+export async function update(
+  id: string,
+  body: Partial<ProductCreationAttributes & { price?: number; stockQuantity?: number }>
+) {
   const product = await Product.findByPk(id);
   if (!product) return null;
-  await (product as any).update(body);
+
+  const { price, stockQuantity, ...productFields } = body;
+  if (Object.keys(productFields).length > 0) {
+    await (product as any).update(productFields);
+  }
+
+  if (price !== undefined || stockQuantity !== undefined) {
+    const variant = await ProductVariant.findOne({ where: { productId: id }, order: [["price", "ASC"]] });
+    if (variant) {
+      const updates: Record<string, unknown> = {};
+      if (price !== undefined) updates.price = Math.max(0, Number(price));
+      if (stockQuantity !== undefined) updates.stockQuantity = Math.max(0, Number(stockQuantity) || 0);
+      if (Object.keys(updates).length > 0) await (variant as any).update(updates);
+    }
+  }
+
   return productService.getById(id);
 }
 
-/** Set the primary (first) image for a product (first variant's first image). Creates image row if none. */
+/** Set the primary (first) image for a product (first variant's first image). Creates variant if none. */
 export async function setProductPrimaryImage(productId: string, url: string): Promise<boolean> {
   const product = await Product.findByPk(productId, {
     include: [{ model: ProductVariant, as: "variants", include: [{ model: ProductImage, as: "images" }] }],
   });
   if (!product) return false;
   const p = product as any;
-  const variants = (p.variants || []).sort((a: any, b: any) => Number(a.price) - Number(b.price));
-  const variant = variants[0];
-  if (!variant) return false;
+  let variants = (p.variants || []).sort((a: any, b: any) => Number(a.price) - Number(b.price));
+  let variant = variants[0];
+  if (!variant) {
+    const sku = `${p.slug}-S-${Date.now()}`.replace(/\s+/g, "-");
+    variant = await ProductVariant.create({
+      productId,
+      sku,
+      price: 0,
+      stockQuantity: 0,
+    });
+  }
   const images = (variant.images || []).sort((a: any, b: any) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
   const first = images[0];
   if (first) {

@@ -61,12 +61,12 @@ export async function getProductById(id: string) {
   return data.data;
 }
 
-export async function createProduct(body: { title: string; slug: string; description?: string; categoryId?: string; brand?: string; material?: string; isActive?: boolean }) {
+export async function createProduct(body: { title: string; slug: string; description?: string; categoryId?: string; brand?: string; material?: string; isActive?: boolean; initialPrice?: number }) {
   const { data } = await api.post<{ success: boolean; data: unknown }>("/products", body);
   return data.data;
 }
 
-export async function updateProduct(id: string, body: Partial<{ title: string; slug: string; description: string; categoryId: string; brand: string; material: string; isActive: boolean; imageUrl: string | null }>) {
+export async function updateProduct(id: string, body: Partial<{ title: string; slug: string; description: string; categoryId: string; brand: string; material: string; isActive: boolean; imageUrl: string | null; price: number; stockQuantity: number }>) {
   const { data } = await api.patch<{ success: boolean; data: unknown }>(`/products/${id}`, body);
   return data.data;
 }
@@ -124,6 +124,25 @@ export async function updateBanner(id: string, body: Partial<{ title: string; hi
 export async function getCarts() {
   const { data } = await api.get<{ success: boolean; data: CartSummaryDto[] }>("/carts");
   return data.data;
+}
+
+export async function inviteSubAdmin(email: string) {
+  await api.post("/invite", { email });
+}
+
+export async function setPasswordFromToken(token: string, password: string) {
+  const { data } = await api.post<{ success: boolean; data: { admin: { id: string; email: string; name: string | null; role: string }; token: string } }>("/set-password", { token, password });
+  return data.data;
+}
+
+export async function getRefundPolicy() {
+  const { data } = await api.get<{ success: boolean; data: { refundPolicy: string } }>("/settings/refund-policy");
+  return data.data.refundPolicy;
+}
+
+export async function updateRefundPolicy(refundPolicy: string) {
+  const { data } = await api.patch<{ success: boolean; data: { refundPolicy: string } }>("/settings/refund-policy", { refundPolicy });
+  return data.data.refundPolicy;
 }
 
 export async function getAnalytics() {

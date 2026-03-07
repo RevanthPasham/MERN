@@ -202,6 +202,17 @@ export async function deleteAddress(id: string): Promise<void> {
   await api.delete(`/addresses/${id}`);
 }
 
+/* ========== Settings (public) ========== */
+
+export async function getRefundPolicy(): Promise<string> {
+  try {
+    const { data } = await api.get<{ success: boolean; data: { refundPolicy: string } }>("/settings/refund-policy");
+    return data?.data?.refundPolicy ?? "";
+  } catch {
+    return "";
+  }
+}
+
 /* ========== Order history (requires auth) ========== */
 
 export async function getOrders(): Promise<import("../types").OrderDto[]> {

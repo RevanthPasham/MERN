@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { getOrders } from "../api/client";
+import { getOrders, getRefundPolicy } from "../api/client";
 import type { OrderDto } from "../types";
 
 function formatAddress(addr: OrderDto["address"]) {
@@ -33,6 +33,7 @@ export default function OrderHistory() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [orders, setOrders] = useState<OrderDto[]>([]);
+  const [refundPolicy, setRefundPolicy] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -40,8 +41,11 @@ export default function OrderHistory() {
       navigate("/login", { replace: true });
       return;
     }
-    getOrders()
-      .then(setOrders)
+    Promise.all([getOrders(), getRefundPolicy()])
+      .then(([ordersList, policy]) => {
+        setOrders(ordersList);
+        setRefundPolicy(policy);
+      })
       .catch(() => setOrders([]))
       .finally(() => setLoading(false));
   }, [user, navigate]);
@@ -55,6 +59,12 @@ export default function OrderHistory() {
         ← Back to account
       </Link>
 
+      {refundPolicy && orders.length > 0 && (
+        <div className="mb-6 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+          <h3 className="font-semibold mb-2">Refund policy</h3>
+          <p className="whitespace-pre-wrap">{refundPolicy}</p>
+        </div>
+      )}
       {loading ? (
         <p className="text-gray-500">Loading...</p>
       ) : orders.length === 0 ? (

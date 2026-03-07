@@ -55,7 +55,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsLoading(false);
       return;
     }
-    setAdmin({ id: "", email: "", name: null });
+    try {
+      const payload = JSON.parse(atob(token.split(".")[1] || "{}"));
+      setAdmin({ id: payload.adminId || "", email: payload.email || "", name: null, role: payload.role });
+    } catch {
+      setAdmin({ id: "", email: "", name: null });
+    }
     setIsLoading(false);
   }, [token]);
 

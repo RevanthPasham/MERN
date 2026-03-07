@@ -5,7 +5,7 @@ import {
   DeleteObjectCommand,
 } from "@aws-sdk/client-s3";
 import { Readable } from "stream";
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "crypto";
 import * as path from "path";
 
 let client: S3Client | null = null;
@@ -60,7 +60,7 @@ export async function uploadToR2(
   contentType = "video/webm"
 ): Promise<string> {
   const ext = path.extname(originalFilename) || ".webm";
-  const key = buildKey(subFolder, sessionId, `${uuidv4()}${ext}`);
+  const key = buildKey(subFolder, sessionId, `${randomUUID()}${ext}`);
   const cmd = new PutObjectCommand({
     Bucket: getBucketName(),
     Key: key,

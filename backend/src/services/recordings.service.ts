@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "crypto";
 import * as path from "path";
 import * as fs from "fs";
 import FormData from "form-data";
@@ -247,7 +247,7 @@ export async function uploadRecordings(
   recordingType: RecordingType,
   userId: string | null
 ): Promise<MockInterviewUploadResult | TabRecordingUploadResult> {
-  const sessionId = uuidv4();
+  const sessionId = randomUUID();
 
   if (recordingType === "mock_interview") {
     return processMockInterview(files, sessionId, userId);

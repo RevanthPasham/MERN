@@ -222,17 +222,7 @@ export default function Products() {
                   <tr style={{ borderBottom: "1px solid var(--admin-border)" }}>
                     <td style={{ padding: "0.75rem 1rem", verticalAlign: "top" }}>
                       {editingId === p.id ? (
-                        <div style={{ display: "flex", alignItems: "center", gap: 4, flexWrap: "wrap" }}>
-                          {imagesLoading ? (
-                            <span style={{ fontSize: "0.8125rem", color: "var(--admin-muted)" }}>Loading…</span>
-                          ) : productImages.length > 0 ? (
-                            productImages.slice(0, 3).map((img) => (
-                              <img key={img.id} src={img.url} alt="" style={{ width: 40, height: 40, objectFit: "cover", borderRadius: 4, border: "1px solid var(--admin-border)" }} />
-                            ))
-                          ) : null}
-                          {productImages.length > 3 && <span style={{ fontSize: "0.75rem", color: "var(--admin-muted)" }}>+{productImages.length - 3}</span>}
-                          {!imagesLoading && productImages.length === 0 && <span style={{ fontSize: "0.8125rem", color: "var(--admin-muted)" }}>Add below</span>}
-                        </div>
+                        <span style={{ fontSize: "0.8125rem", color: "var(--admin-muted)" }}>See below</span>
                       ) : p.imageUrl ? (
                         <img src={p.imageUrl} alt="" style={{ width: 56, height: 56, objectFit: "cover", borderRadius: 6, border: "1px solid var(--admin-border)" }} />
                       ) : (

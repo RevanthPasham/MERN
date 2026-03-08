@@ -1,4 +1,4 @@
-import { Response } from "express";
+import { Request, Response } from "express";
 import multer from "multer";
 import * as path from "path";
 import * as fs from "fs";
@@ -10,12 +10,12 @@ import { AppError } from "../utils/errors";
 const UPLOAD_DIR = process.env.UPLOAD_DIR || path.join(process.cwd(), "uploads", "recordings");
 
 const storage = multer.diskStorage({
-  destination: (_req, _file, cb) => {
+  destination: (_req: Request, _file: Express.Multer.File, cb: (err: Error | null, dest: string) => void) => {
     const dir = path.join(UPLOAD_DIR, "temp");
     fs.mkdirSync(dir, { recursive: true });
     cb(null, dir);
   },
-  filename: (_req, file, cb) => {
+  filename: (_req: Request, file: Express.Multer.File, cb: (err: Error | null, filename: string) => void) => {
     const ext = path.extname(file.originalname) || ".webm";
     cb(null, `${Date.now()}-${Math.random().toString(36).slice(2)}${ext}`);
   },
@@ -34,12 +34,17 @@ export const uploadRecordingsMulter = upload.fields([
   { name: "recording", maxCount: 1 },
 ]);
 
-export async function handleUpload(req: AuthRequest, res: Response): Promise<void> {
+/** Request after upload.fields() - files is { [fieldname: string]: Express.Multer.File[] } */
+export interface RecordingsUploadRequest extends AuthRequest {
+  files?: { [fieldname: string]: Express.Multer.File[] };
+}
+
+export async function handleUpload(req: RecordingsUploadRequest, res: Response): Promise<void> {
   const userId = req.userId ?? null;
   const recordingType = (req.body?.recordingType as RecordingType) || "mock_interview";
 
   if (recordingType === "mock_interview") {
-    const files = req.files as { [fieldname: string]: Express.Multer.File[] } | undefined;
+    const files = req.files;
     if (!files?.screen?.[0] || !files?.mic?.[0] || !files?.ai?.[0]) {
       throw new AppError("Mock interview requires screen.webm, mic.webm, ai.webm", 400);
     }
@@ -57,7 +62,7 @@ export async function handleUpload(req: AuthRequest, res: Response): Promise<voi
   }
 
   if (recordingType === "tab_recording") {
-    const files = req.files as { [fieldname: string]: Express.Multer.File[] } | undefined;
+    const files = req.files;
     const file = files?.recording?.[0];
     if (!file) throw new AppError("Tab recording requires recording.webm", 400);
     const result = await uploadRecordings(

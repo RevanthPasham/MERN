@@ -132,8 +132,24 @@ export async function getCarts() {
   return data.data;
 }
 
-export async function inviteSubAdmin(email: string) {
-  await api.post("/invite", { email });
+export async function inviteSubAdmin(email: string, role?: "super_admin" | "sub_admin" | "admin") {
+  await api.post("/invite", { email, role: role || "sub_admin" });
+}
+
+export interface AdminListItem {
+  id: string;
+  email: string;
+  name: string | null;
+  role: string;
+}
+
+export async function getAdmins() {
+  const { data } = await api.get<{ success: boolean; data: AdminListItem[] }>("/admins");
+  return data.data;
+}
+
+export async function removeAdmin(id: string) {
+  await api.delete(`/admins/${id}`);
 }
 
 export async function setPasswordFromToken(token: string, password: string) {
@@ -149,6 +165,30 @@ export async function getRefundPolicy() {
 export async function updateRefundPolicy(refundPolicy: string) {
   const { data } = await api.patch<{ success: boolean; data: { refundPolicy: string } }>("/settings/refund-policy", { refundPolicy });
   return data.data.refundPolicy;
+}
+
+export interface RefundRequestDto {
+  id: string;
+  order_id: string;
+  user_id: string | null;
+  message: string;
+  status: string;
+  created_at: string;
+  order_total?: number;
+  order_status?: string;
+  user_email?: string | null;
+  user_name?: string | null;
+  items?: { productName: string; quantity: number; subtotal: number; productId: string }[];
+}
+
+export async function getRefundRequests() {
+  const { data } = await api.get<{ success: boolean; data: RefundRequestDto[] }>("/refund-requests");
+  return data.data;
+}
+
+export async function updateRefundRequestStatus(id: string, status: "approved" | "rejected") {
+  const { data } = await api.patch<{ success: boolean; data: { status: string } }>(`/refund-requests/${id}`, { status });
+  return data.data;
 }
 
 export async function getAnalytics() {

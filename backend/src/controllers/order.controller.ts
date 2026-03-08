@@ -1,6 +1,8 @@
 import { Response, NextFunction } from "express";
 import Razorpay from "razorpay";
 import * as orderService from "../services/order.service";
+import * as refundRequestService from "../services/refundRequest.service";
+import { Order } from "../db/models";
 import type { AuthRequest } from "../middleware/auth";
 
 function getRazorpay() {
@@ -112,6 +114,25 @@ export const listOrders = async (req: AuthRequest, res: Response, next: NextFunc
     if (!userId) return res.status(401).json({ success: false, error: "Unauthorized" });
     const data = await orderService.listOrdersByUserId(userId);
     return res.json({ success: true, data });
+  } catch (e) {
+    next(e);
+  }
+};
+
+/** POST /api/orders/:orderId/refund-request - User requests refund for their order (with message) */
+export const requestRefund = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.userId ?? null;
+    const orderId = req.params.orderId;
+    const message = typeof req.body?.message === "string" ? req.body.message.trim() : "";
+    if (!orderId) return res.status(400).json({ success: false, error: "Order ID required" });
+    if (!message) return res.status(400).json({ success: false, error: "Message required to describe your refund request" });
+    const order = await Order.findByPk(orderId, { attributes: ["id", "userId"] });
+    if (!order) return res.status(404).json({ success: false, error: "Order not found" });
+    const o = order as { userId?: string | null };
+    if (userId && o.userId !== userId) return res.status(403).json({ success: false, error: "You can only request refund for your own orders" });
+    const result = await refundRequestService.createRefundRequest(orderId, userId, message);
+    return res.status(201).json({ success: true, data: { id: result.id } });
   } catch (e) {
     next(e);
   }

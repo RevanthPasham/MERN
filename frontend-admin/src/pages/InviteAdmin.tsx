@@ -2,9 +2,16 @@ import { useState } from "react";
 import { inviteSubAdmin } from "../api/client";
 import { useAuth } from "../context/AuthContext";
 
+const ROLES = [
+  { value: "sub_admin", label: "Sub admin" },
+  { value: "admin", label: "Admin" },
+  { value: "super_admin", label: "Super admin" },
+] as const;
+
 export default function InviteAdmin() {
   const { admin } = useAuth();
   const [email, setEmail] = useState("");
+  const [role, setRole] = useState<"super_admin" | "sub_admin" | "admin">("sub_admin");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -18,8 +25,8 @@ export default function InviteAdmin() {
     setError("");
     setMessage("");
     try {
-      await inviteSubAdmin(email.trim());
-      setMessage("Invitation sent to " + email.trim());
+      await inviteSubAdmin(email.trim(), role);
+      setMessage("Invitation sent to " + email.trim() + " as " + ROLES.find((r) => r.value === role)?.label);
       setEmail("");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to send invitation");
@@ -61,9 +68,21 @@ export default function InviteAdmin() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            placeholder="subadmin@example.com"
+            placeholder="admin@example.com"
             style={{ width: "100%", padding: "0.625rem 0.875rem", border: "1px solid var(--admin-border)", borderRadius: 6, fontSize: "0.9375rem" }}
           />
+        </div>
+        <div style={{ marginBottom: "1rem" }}>
+          <label style={{ display: "block", marginBottom: "0.375rem", fontSize: "0.875rem", fontWeight: 500 }}>Role</label>
+          <select
+            value={role}
+            onChange={(e) => setRole(e.target.value as "super_admin" | "sub_admin" | "admin")}
+            style={{ width: "100%", padding: "0.625rem 0.875rem", border: "1px solid var(--admin-border)", borderRadius: 6, fontSize: "0.9375rem" }}
+          >
+            {ROLES.map((r) => (
+              <option key={r.value} value={r.value}>{r.label}</option>
+            ))}
+          </select>
         </div>
         <button
           type="submit"

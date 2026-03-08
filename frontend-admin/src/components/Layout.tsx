@@ -1,16 +1,27 @@
 import { Outlet, NavLink, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
-const nav = [
+const navItems: { to: string; label: string; icon: () => JSX.Element; superAdminOnly?: boolean }[] = [
   { to: "/orders", label: "Orders", icon: OrderIcon },
-  { to: "/invite", label: "Invite sub admin", icon: InviteIcon },
+  { to: "/admins", label: "Admins", icon: InviteIcon, superAdminOnly: true },
+  { to: "/invite", label: "Invite", icon: InviteIcon },
   { to: "/products", label: "Products", icon: ProductIcon },
   { to: "/collections", label: "Collections", icon: CollectionIcon },
   { to: "/banners", label: "Banners", icon: BannerIcon },
   { to: "/carts", label: "Carts", icon: CartIcon },
   { to: "/analytics", label: "Analytics", icon: ChartIcon },
+  { to: "/refund-policy", label: "Refund policy", icon: RefundIcon },
   { to: "/settings", label: "Settings", icon: SettingsIcon },
 ];
+
+function RefundIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="1 4 1 10 7 10" />
+      <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
+    </svg>
+  );
+}
 
 function InviteIcon() {
   return (
@@ -128,7 +139,7 @@ export default function Layout() {
           <div style={{ fontSize: "0.75rem", color: "#94a3b8", marginTop: 2 }}>Admin</div>
         </div>
         <nav style={{ flex: 1 }}>
-          {nav.map(({ to, label, icon: Icon }) => (
+          {navItems.filter((item) => !item.superAdminOnly || admin?.role === "super_admin").map(({ to, label, icon: Icon }) => (
             <NavLink
               key={to}
               to={to}

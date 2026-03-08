@@ -12,6 +12,8 @@ import Carts from "./pages/Carts";
 import Analytics from "./pages/Analytics";
 import Settings from "./pages/Settings";
 import InviteAdmin from "./pages/InviteAdmin";
+import RefundPolicy from "./pages/RefundPolicy";
+import Admins from "./pages/Admins";
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { token, isLoading } = useAuth();
@@ -40,8 +42,10 @@ function AppRoutes() {
         <Route path="banners" element={<Banners />} />
         <Route path="carts" element={<Carts />} />
         <Route path="analytics" element={<Analytics />} />
+        <Route path="refund-policy" element={<RefundPolicy />} />
         <Route path="settings" element={<Settings />} />
         <Route path="invite" element={<InviteAdmin />} />
+        <Route path="admins" element={<Admins />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

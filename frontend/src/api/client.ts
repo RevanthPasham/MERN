@@ -220,6 +220,10 @@ export async function getOrders(): Promise<import("../types").OrderDto[]> {
   return Array.isArray(data?.data) ? data.data : [];
 }
 
+export async function requestRefund(orderId: string, message: string): Promise<void> {
+  await api.post(`/orders/${orderId}/refund-request`, { message });
+}
+
 /* ========== Cart (requires auth) ========== */
 
 export interface CartItemDto {

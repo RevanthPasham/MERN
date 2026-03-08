@@ -12,6 +12,7 @@ export default function Products() {
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ title: "", slug: "", description: "", brand: "", material: "", isActive: true, initialPrice: 0 });
   const [page, setPage] = useState(1);
+  const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved">("idle");
 
   const load = () => {
     setLoading(true);
@@ -57,17 +58,22 @@ export default function Products() {
   };
 
   const handleUpdate = async (id: string, updates: Partial<{ title: string; slug: string; description: string; brand: string; material: string; isActive: boolean; imageUrl: string | null; price: number }>) => {
+    setSaveStatus("saving");
     try {
       await updateProduct(id, updates);
       if (updates.imageUrl === undefined) setEditingId(null);
       load();
+      setSaveStatus("saved");
+      setTimeout(() => setSaveStatus("idle"), 2000);
     } catch (err) {
+      setSaveStatus("idle");
       alert(err instanceof Error ? err.message : "Failed");
     }
   };
 
   const handleSaveEdit = async () => {
     if (!editingId) return;
+    setSaveStatus("saving");
     try {
       await updateProduct(editingId, {
         title: editForm.title,
@@ -80,7 +86,10 @@ export default function Products() {
       });
       setEditingId(null);
       load();
+      setSaveStatus("saved");
+      setTimeout(() => setSaveStatus("idle"), 2000);
     } catch (err) {
+      setSaveStatus("idle");
       alert(err instanceof Error ? err.message : "Failed");
     }
   };
@@ -99,7 +108,10 @@ export default function Products() {
 
   return (
     <div>
-      <h1 style={{ margin: "0 0 1rem", fontSize: "1.5rem", fontWeight: 600, color: "var(--admin-text, #1e293b)" }}>Products</h1>
+      <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "1rem", flexWrap: "wrap" }}>
+        <h1 style={{ margin: 0, fontSize: "1.5rem", fontWeight: 600, color: "var(--admin-text, #1e293b)" }}>Products</h1>
+        {saveStatus === "saved" && <span style={{ fontSize: "0.875rem", color: "#22c55e", fontWeight: 500 }}>✓ Saved</span>}
+      </div>
       <button
         type="button"
         onClick={() => setShowForm(true)}
@@ -173,9 +185,11 @@ export default function Products() {
                     <td style={{ padding: "0.75rem 1rem" }}>{p.isActive ? "Yes" : "No"}</td>
                     <td style={{ padding: "0.75rem 1rem" }}>
                       {editingId === p.id ? (
-                        <div style={{ display: "flex", gap: "0.25rem", flexWrap: "wrap" }}>
-                          <button type="button" onClick={handleSaveEdit} style={{ padding: "0.25rem 0.5rem", fontSize: "0.875rem", background: "var(--admin-accent)", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer" }}>Save</button>
-                          <button type="button" onClick={() => setEditingId(null)} style={{ padding: "0.25rem 0.5rem", fontSize: "0.875rem", border: "1px solid var(--admin-border)", borderRadius: 4, cursor: "pointer", background: "#fff" }}>Cancel</button>
+                        <div style={{ display: "flex", gap: "0.25rem", flexWrap: "wrap", alignItems: "center" }}>
+                          <button type="button" onClick={handleSaveEdit} disabled={saveStatus === "saving"} style={{ padding: "0.25rem 0.5rem", fontSize: "0.875rem", background: saveStatus === "saved" ? "#22c55e" : "var(--admin-accent)", color: "#fff", border: "none", borderRadius: 4, cursor: saveStatus === "saving" ? "wait" : "pointer" }}>
+                            {saveStatus === "saving" ? "Saving…" : saveStatus === "saved" ? "Saved" : "Save"}
+                          </button>
+                          <button type="button" onClick={() => setEditingId(null)} disabled={saveStatus === "saving"} style={{ padding: "0.25rem 0.5rem", fontSize: "0.875rem", border: "1px solid var(--admin-border)", borderRadius: 4, cursor: "pointer", background: "#fff" }}>Cancel</button>
                         </div>
                       ) : (
                         <button type="button" onClick={() => handleEditStart(p)} style={{ padding: "0.25rem 0.5rem", fontSize: "0.875rem", border: "1px solid var(--admin-border)", borderRadius: 4, cursor: "pointer", background: "#fff" }}>Edit</button>

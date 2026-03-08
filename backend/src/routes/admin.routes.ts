@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { requireAdmin } from "../middleware/auth";
+import { requireAdmin, requireRole } from "../middleware/auth";
 import * as adminAuthController from "../controllers/adminAuth.controller";
 import * as adminOrdersController from "../controllers/adminOrders.controller";
 import * as adminProductsController from "../controllers/adminProducts.controller";
@@ -10,6 +10,8 @@ import * as adminAnalyticsController from "../controllers/adminAnalytics.control
 import * as adminUploadController from "../controllers/adminUpload.controller";
 import * as adminInviteController from "../controllers/adminInvite.controller";
 import * as adminSettingsController from "../controllers/adminSettings.controller";
+import * as adminRefundRequestsController from "../controllers/adminRefundRequests.controller";
+import * as adminAdminsController from "../controllers/adminAdmins.controller";
 import * as setPasswordController from "../controllers/setPassword.controller";
 
 const router = Router();
@@ -51,6 +53,10 @@ router.patch("/banners/:id", adminBannersController.update);
 // Carts (users with cart items)
 router.get("/carts", adminCartsController.list);
 
+// Settings (refund policy text)
+router.get("/settings/refund-policy", adminSettingsController.getRefundPolicy);
+router.patch("/settings/refund-policy", adminSettingsController.updateRefundPolicy);
+
 // Analytics & export
 router.get("/analytics", adminAnalyticsController.get);
 router.get("/analytics/export", adminAnalyticsController.exportExcel);
@@ -58,5 +64,14 @@ router.get("/analytics/export", adminAnalyticsController.exportExcel);
 // Upload image (Cloudinary)
 router.post("/upload", adminUploadController.upload);
 router.post("/upload/delete", adminUploadController.deleteUpload);
+
+// Refund requests (view + update status)
+router.get("/refund-requests", adminRefundRequestsController.list);
+router.patch("/refund-requests/:id", adminRefundRequestsController.updateStatus);
+
+// Admins (super_admin only: list, delete). Invite is POST /invite with requireRole below.
+router.get("/admins", requireRole(["super_admin"]), adminAdminsController.list);
+router.delete("/admins/:id", requireRole(["super_admin"]), adminAdminsController.remove);
+router.post("/invite", requireRole(["super_admin"]), adminInviteController.invite);
 
 export default router;

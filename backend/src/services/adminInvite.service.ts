@@ -7,17 +7,20 @@ import * as emailService from "./email.service";
 const INVITE_EXPIRY_HOURS = 24;
 const ADMIN_BASE_URL = process.env.ADMIN_BASE_URL || process.env.FRONTEND_URL || "http://localhost:5173";
 
-export async function inviteSubAdmin(email: string): Promise<void> {
+const ALLOWED_ROLES = ["super_admin", "sub_admin", "admin"] as const;
+
+export async function inviteSubAdmin(email: string, role: string = "sub_admin"): Promise<void> {
   const existingAdmin = await Admin.findOne({ where: { email: email.toLowerCase().trim() } });
   if (existingAdmin) throw new Error("Admin with this email already exists");
 
+  const inviteRole = ALLOWED_ROLES.includes(role as any) ? role : "sub_admin";
   const token = crypto.randomBytes(32).toString("hex");
   const expiresAt = new Date(Date.now() + INVITE_EXPIRY_HOURS * 60 * 60 * 1000);
 
   await sequelize.query(
-    `INSERT INTO admin_invitations (email, token, role, expires_at) VALUES (:email, :token, 'sub_admin', :expiresAt)`,
+    `INSERT INTO admin_invitations (email, token, role, expires_at) VALUES (:email, :token, :role, :expiresAt)`,
     {
-      replacements: { email: email.toLowerCase().trim(), token, expiresAt },
+      replacements: { email: email.toLowerCase().trim(), token, role: inviteRole, expiresAt },
     }
   );
 

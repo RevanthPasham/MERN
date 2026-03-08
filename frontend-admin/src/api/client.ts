@@ -9,18 +9,24 @@ export const api = axios.create({
 
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("adminToken");
-  if (token) config.headers.Authorization = `Bearer ${token}`;
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
   return config;
 });
 
 api.interceptors.response.use(
   (r) => r,
   (err) => {
-    // Don't redirect on 401 when the failed request was login (so user sees error message)
     const isLoginRequest = err.config?.url?.includes("/auth/login");
     if (err.response?.status === 401 && !isLoginRequest) {
       localStorage.removeItem("adminToken");
+      const msg = err.response?.data?.error || "Session expired. Please sign in again.";
       window.location.href = "/login";
+      return Promise.reject(new Error(msg));
+    }
+    if (err.response?.data?.error) {
+      return Promise.reject(new Error(err.response.data.error));
     }
     return Promise.reject(err);
   }

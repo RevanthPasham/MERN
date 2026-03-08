@@ -51,7 +51,10 @@ export function requireAdmin(req: AdminRequest, res: Response, next: NextFunctio
   const authHeader = req.headers.authorization;
   const token = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : null;
   if (!token) {
-    return res.status(401).json({ success: false, error: "Unauthorized" });
+    return res.status(401).json({
+      success: false,
+      error: "Unauthorized. Please sign in to the admin panel again.",
+    });
   }
   try {
     const payload = jwt.verify(token, JWT_SECRET) as { adminId?: string; role?: string };
@@ -63,7 +66,10 @@ export function requireAdmin(req: AdminRequest, res: Response, next: NextFunctio
     req.adminRole = payload.role as AdminRole;
     next();
   } catch {
-    return res.status(401).json({ success: false, error: "Invalid or expired token" });
+    return res.status(401).json({
+      success: false,
+      error: "Invalid or expired token. Please sign in again.",
+    });
   }
 }
 

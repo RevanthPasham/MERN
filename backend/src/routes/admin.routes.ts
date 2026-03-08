@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { requireAdmin, requireRole } from "../middleware/auth";
+import { requireAdmin } from "../middleware/auth";
 import * as adminAuthController from "../controllers/adminAuth.controller";
 import * as adminOrdersController from "../controllers/adminOrders.controller";
 import * as adminProductsController from "../controllers/adminProducts.controller";
@@ -28,25 +28,25 @@ router.get("/orders", adminOrdersController.list);
 router.get("/orders/:id", adminOrdersController.getById);
 router.patch("/orders/:id/status", adminOrdersController.updateStatus);
 
-// Products (admin role cannot add/edit - only view)
+// Products – any admin can add/edit
 router.get("/products", adminProductsController.list);
 router.get("/products/:id", adminProductsController.getById);
-router.post("/products", requireRole(["super_admin", "sub_admin"]), adminProductsController.create);
-router.patch("/products/:id", requireRole(["super_admin", "sub_admin"]), adminProductsController.update);
+router.post("/products", adminProductsController.create);
+router.patch("/products/:id", adminProductsController.update);
 
-// Collections (admin role cannot add/edit - only view)
+// Collections – any admin can add/edit
 router.get("/collections", adminCollectionsController.list);
 router.get("/collections/:id", adminCollectionsController.getById);
-router.post("/collections", requireRole(["super_admin", "sub_admin"]), adminCollectionsController.create);
-router.patch("/collections/:id", requireRole(["super_admin", "sub_admin"]), adminCollectionsController.update);
+router.post("/collections", adminCollectionsController.create);
+router.patch("/collections/:id", adminCollectionsController.update);
 router.get("/collections/:id/products", adminCollectionsController.getProducts);
 router.patch("/collections/:id/products", adminCollectionsController.setProducts);
 
-// Banners (admin role cannot add/edit - only view)
+// Banners – any admin can add/edit
 router.get("/banners", adminBannersController.list);
 router.get("/banners/:id", adminBannersController.getById);
-router.post("/banners", requireRole(["super_admin", "sub_admin"]), adminBannersController.create);
-router.patch("/banners/:id", requireRole(["super_admin", "sub_admin"]), adminBannersController.update);
+router.post("/banners", adminBannersController.create);
+router.patch("/banners/:id", adminBannersController.update);
 
 // Carts (users with cart items)
 router.get("/carts", adminCartsController.list);

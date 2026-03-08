@@ -13,6 +13,7 @@ import Analytics from "./pages/Analytics";
 import Settings from "./pages/Settings";
 import InviteAdmin from "./pages/InviteAdmin";
 import RefundPolicy from "./pages/RefundPolicy";
+import SizeCharts from "./pages/SizeCharts";
 import Admins from "./pages/Admins";
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
@@ -43,6 +44,7 @@ function AppRoutes() {
         <Route path="carts" element={<Carts />} />
         <Route path="analytics" element={<Analytics />} />
         <Route path="refund-policy" element={<RefundPolicy />} />
+        <Route path="size-charts" element={<SizeCharts />} />
         <Route path="settings" element={<Settings />} />
         <Route path="invite" element={<InviteAdmin />} />
         <Route path="admins" element={<Admins />} />

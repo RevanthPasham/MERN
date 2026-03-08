@@ -12,6 +12,8 @@ export interface RefundRequestRow {
   order_status?: string;
   user_email?: string | null;
   user_name?: string | null;
+  phone_number?: string | null;
+  address_full_name?: string | null;
   items?: { productName: string; quantity: number; subtotal: number; productId: string }[];
 }
 
@@ -31,11 +33,13 @@ export async function createRefundRequest(orderId: string, userId: string | null
 export async function listRefundRequestsForAdmin(): Promise<RefundRequestRow[]> {
   const [rows] = await sequelize.query(
     `SELECT rr.id, rr.order_id, rr.user_id, rr.message, rr.status, rr.created_at,
-            o.total_amount AS order_total, o.order_status,
-            u.email AS user_email, u.name AS user_name
+            o.total_amount AS order_total, o.order_status, o.address_id,
+            u.email AS user_email, u.name AS user_name,
+            a.phone_number AS phone_number, a.full_name AS address_full_name
      FROM refund_requests rr
      JOIN orders o ON o.id = rr.order_id
      LEFT JOIN users u ON u.id = rr.user_id
+     LEFT JOIN addresses a ON a.id = o.address_id
      ORDER BY rr.created_at DESC`
   );
   const list = (Array.isArray(rows) ? rows : []) as (RefundRequestRow & { order_id: string })[];

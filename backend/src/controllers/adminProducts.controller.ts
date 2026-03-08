@@ -4,7 +4,8 @@ import * as adminProductsService from "../services/adminProducts.service";
 
 export async function list(req: AdminRequest, res: Response, next: NextFunction) {
   try {
-    const data = await adminProductsService.listAll();
+    const search = typeof req.query.search === "string" ? req.query.search.trim() : undefined;
+    const data = await adminProductsService.listAll(search);
     return res.json({ success: true, data });
   } catch (e) {
     next(e);

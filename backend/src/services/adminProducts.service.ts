@@ -16,8 +16,20 @@ export async function create(body: ProductCreationAttributes & { initialPrice?: 
   return productService.getById((product as any).id);
 }
 
-export async function listAll() {
+export async function listAll(search?: string) {
+  const { Op } = await import("sequelize");
+  const term = search && typeof search === "string" && search.trim() ? search.trim() : "";
+  const where = term
+    ? {
+        [Op.or]: [
+          { title: { [Op.iLike]: `%${term}%` } },
+          { slug: { [Op.iLike]: `%${term}%` } },
+          { brand: { [Op.iLike]: `%${term}%` } },
+        ],
+      }
+    : undefined;
   const products = await Product.findAll({
+    where,
     order: [["title", "ASC"]],
     include: [
       { model: Category, as: "category", attributes: ["id", "name", "slug"], required: false },

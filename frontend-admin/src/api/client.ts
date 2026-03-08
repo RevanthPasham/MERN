@@ -57,8 +57,10 @@ export async function updateOrderStatus(id: string, orderStatus: string) {
   return data.data;
 }
 
-export async function getProducts() {
-  const { data } = await api.get<{ success: boolean; data: ProductListItem[] }>("/products");
+export async function getProducts(search?: string) {
+  const { data } = await api.get<{ success: boolean; data: ProductListItem[] }>("/products", {
+    params: search ? { search: search.trim() } : {},
+  });
   return data.data;
 }
 
@@ -152,6 +154,25 @@ export async function getCarts() {
   return data.data;
 }
 
+export interface SizeChartDto {
+  id: string | null;
+  categoryId: string;
+  categoryName: string;
+  categorySlug: string;
+  imageUrl: string | null;
+  description: string | null;
+}
+
+export async function getSizeCharts(): Promise<SizeChartDto[]> {
+  const { data } = await api.get<{ success: boolean; data: SizeChartDto[] }>("/size-charts");
+  return data.data;
+}
+
+export async function upsertSizeChart(categoryId: string, body: { imageUrl?: string | null; description?: string | null }): Promise<SizeChartDto> {
+  const { data } = await api.put<{ success: boolean; data: SizeChartDto }>(`/size-charts/${categoryId}`, body);
+  return data.data;
+}
+
 export async function inviteSubAdmin(email: string, role?: "super_admin" | "sub_admin" | "admin") {
   await api.post("/invite", { email, role: role || "sub_admin" });
 }
@@ -198,6 +219,8 @@ export interface RefundRequestDto {
   order_status?: string;
   user_email?: string | null;
   user_name?: string | null;
+  phone_number?: string | null;
+  address_full_name?: string | null;
   items?: { productName: string; quantity: number; subtotal: number; productId: string }[];
 }
 

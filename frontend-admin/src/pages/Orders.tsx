@@ -56,12 +56,12 @@ export default function Orders() {
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>
               <tr style={{ background: "#f8fafc", textAlign: "left" }}>
-                <th style={{ padding: "0.75rem 1rem", borderBottom: "1px solid #e2e8f0" }}>Order</th>
-                <th style={{ padding: "0.75rem 1rem", borderBottom: "1px solid #e2e8f0" }}>User</th>
+                <th style={{ padding: "0.75rem 1rem", borderBottom: "1px solid #e2e8f0" }}>Order ID / Date</th>
+                <th style={{ padding: "0.75rem 1rem", borderBottom: "1px solid #e2e8f0" }}>Customer (Name / Email / Phone)</th>
                 <th style={{ padding: "0.75rem 1rem", borderBottom: "1px solid #e2e8f0" }}>Total</th>
                 <th style={{ padding: "0.75rem 1rem", borderBottom: "1px solid #e2e8f0" }}>Status</th>
                 <th style={{ padding: "0.75rem 1rem", borderBottom: "1px solid #e2e8f0" }}>Payment</th>
-                <th style={{ padding: "0.75rem 1rem", borderBottom: "1px solid #e2e8f0" }}>Actions</th>
+                <th style={{ padding: "0.75rem 1rem", borderBottom: "1px solid #e2e8f0" }}>Update status</th>
               </tr>
             </thead>
             <tbody>
@@ -75,9 +75,9 @@ export default function Orders() {
                     </span>
                   </td>
                   <td style={{ padding: "0.75rem 1rem" }}>
-                    {o.user?.email ?? "—"}
-                    {o.user?.name && <br />}
-                    {o.user?.name && <span style={{ fontSize: "0.875rem", color: "#64748b" }}>{o.user.name}</span>}
+                    <div style={{ fontWeight: 500 }}>{o.address?.fullName ?? o.user?.name ?? "—"}</div>
+                    {o.user?.email && <div style={{ fontSize: "0.8125rem", color: "#64748b" }}>{o.user.email}</div>}
+                    {o.address?.phoneNumber && <div style={{ fontSize: "0.8125rem", color: "#0f172a" }}>{o.address.phoneNumber}</div>}
                   </td>
                   <td style={{ padding: "0.75rem 1rem" }}>₹{Number(o.totalAmount).toLocaleString("en-IN")}</td>
                   <td style={{ padding: "0.75rem 1rem" }}>{o.orderStatus}</td>
@@ -102,27 +102,32 @@ export default function Orders() {
         </div>
       )}
       {orders.length > 0 && (
-        <div style={{ marginTop: "1rem" }}>
-          <details>
-            <summary style={{ cursor: "pointer", fontWeight: 500 }}>Order details (address & items)</summary>
-            <div style={{ marginTop: "0.5rem" }}>
-              {orders.map((o) => (
-                <div key={o.id} style={{ marginBottom: "1rem", padding: "1rem", background: "#f8fafc", borderRadius: 6 }}>
-                  <strong>Order {o.id.slice(0, 8)}</strong>
-                  {o.address && (
-                    <p style={{ margin: "0.5rem 0", fontSize: "0.875rem" }}>
-                      Address: {o.address.fullName}, {o.address.phoneNumber}, {o.address.streetAddress}, {o.address.area}, {o.address.city}, {o.address.state} {o.address.postalCode}, {o.address.country}
-                    </p>
-                  )}
-                  <ul style={{ margin: "0.5rem 0", paddingLeft: "1.25rem", fontSize: "0.875rem" }}>
-                    {o.items.map((i) => (
-                      <li key={i.id}>{i.productName} × {i.quantity} — ₹{Number(i.subtotal).toLocaleString("en-IN")}</li>
-                    ))}
-                  </ul>
+        <div style={{ marginTop: "1.5rem" }}>
+          <h2 style={{ margin: "0 0 0.75rem", fontSize: "1.125rem", fontWeight: 600 }}>Order details (address & products)</h2>
+          <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+            {orders.map((o) => (
+              <div key={o.id} style={{ padding: "1rem", background: "#fff", borderRadius: 8, border: "1px solid #e2e8f0", boxShadow: "0 1px 2px rgba(0,0,0,0.04)" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "0.75rem", flexWrap: "wrap", gap: "0.5rem" }}>
+                  <strong style={{ fontSize: "0.9375rem" }}>Order #{o.id.slice(0, 8).toUpperCase()}</strong>
+                  <span style={{ fontSize: "0.875rem", color: "#64748b" }}>{new Date(o.createdAt).toLocaleString()}</span>
                 </div>
-              ))}
-            </div>
-          </details>
+                {o.address && (
+                  <div style={{ marginBottom: "0.75rem", padding: "0.5rem 0", borderBottom: "1px solid #f1f5f9" }}>
+                    <div style={{ fontSize: "0.75rem", color: "#64748b", marginBottom: 2 }}>Delivery address</div>
+                    <div style={{ fontSize: "0.875rem" }}>
+                      {o.address.fullName}, {o.address.phoneNumber} — {o.address.streetAddress}, {o.address.area}, {o.address.city}, {o.address.state} {o.address.postalCode}, {o.address.country}
+                    </div>
+                  </div>
+                )}
+                <div style={{ fontSize: "0.75rem", color: "#64748b", marginBottom: 4 }}>Products</div>
+                <ul style={{ margin: 0, paddingLeft: "1.25rem", fontSize: "0.875rem" }}>
+                  {o.items.map((i) => (
+                    <li key={i.id} style={{ marginBottom: 2 }}>{i.productName} × {i.quantity} — ₹{Number(i.subtotal).toLocaleString("en-IN")}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>

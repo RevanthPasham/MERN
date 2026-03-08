@@ -11,6 +11,7 @@ import * as adminUploadController from "../controllers/adminUpload.controller";
 import * as adminInviteController from "../controllers/adminInvite.controller";
 import * as adminSettingsController from "../controllers/adminSettings.controller";
 import * as adminRefundRequestsController from "../controllers/adminRefundRequests.controller";
+import * as adminSizeChartsController from "../controllers/adminSizeCharts.controller";
 import * as adminAdminsController from "../controllers/adminAdmins.controller";
 import * as setPasswordController from "../controllers/setPassword.controller";
 
@@ -71,6 +72,11 @@ router.post("/upload/delete", adminUploadController.deleteUpload);
 // Refund requests (view + update status)
 router.get("/refund-requests", adminRefundRequestsController.list);
 router.patch("/refund-requests/:id", adminRefundRequestsController.updateStatus);
+
+// Size charts (per category)
+router.get("/size-charts", adminSizeChartsController.list);
+router.get("/size-charts/:categoryId", adminSizeChartsController.getByCategoryId);
+router.put("/size-charts/:categoryId", adminSizeChartsController.upsert);
 
 // Admins (super_admin only: list, delete). Invite is POST /invite with requireRole below.
 router.get("/admins", requireRole(["super_admin"]), adminAdminsController.list);

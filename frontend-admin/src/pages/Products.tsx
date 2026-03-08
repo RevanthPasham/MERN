@@ -22,6 +22,7 @@ export default function Products() {
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ title: "", slug: "", description: "", brand: "", material: "", isActive: true, initialPrice: 0 });
   const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved">("idle");
   const [productImages, setProductImages] = useState<ProductImageDto[]>([]);
   const [imagesLoading, setImagesLoading] = useState(false);
@@ -31,12 +32,12 @@ export default function Products() {
 
   const load = () => {
     setLoading(true);
-    getProducts().then(setProducts).catch(() => setProducts([])).finally(() => setLoading(false));
+    getProducts(search || undefined).then(setProducts).catch(() => setProducts([])).finally(() => setLoading(false));
   };
 
   useEffect(() => {
     load();
-  }, []);
+  }, [search]);
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -171,6 +172,19 @@ export default function Products() {
       <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "1rem", flexWrap: "wrap" }}>
         <h1 style={{ margin: 0, fontSize: "1.5rem", fontWeight: 600, color: "var(--admin-text, #1e293b)" }}>Products</h1>
         {saveStatus === "saved" && <span style={{ fontSize: "0.875rem", color: "#22c55e", fontWeight: 500 }}>✓ Saved</span>}
+        <input
+          type="search"
+          placeholder="Search by title, slug, or brand..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          style={{
+            padding: "0.5rem 0.75rem",
+            border: "1px solid var(--admin-border, #e2e8f0)",
+            borderRadius: 6,
+            fontSize: "0.9375rem",
+            minWidth: 220,
+          }}
+        />
       </div>
       <button
         type="button"

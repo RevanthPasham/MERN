@@ -124,7 +124,7 @@ export default function RefundPolicy() {
               <thead>
                 <tr style={{ borderBottom: "1px solid var(--admin-border)", textAlign: "left" }}>
                   <th style={{ padding: "0.5rem 0.75rem", color: "#64748b", fontWeight: 600 }}>Order</th>
-                  <th style={{ padding: "0.5rem 0.75rem", color: "#64748b", fontWeight: 600 }}>User</th>
+                  <th style={{ padding: "0.5rem 0.75rem", color: "#64748b", fontWeight: 600 }}>Name / Email / Phone</th>
                   <th style={{ padding: "0.5rem 0.75rem", color: "#64748b", fontWeight: 600 }}>Products</th>
                   <th style={{ padding: "0.5rem 0.75rem", color: "#64748b", fontWeight: 600 }}>Message</th>
                   <th style={{ padding: "0.5rem 0.75rem", color: "#64748b", fontWeight: 600 }}>Status</th>
@@ -140,8 +140,9 @@ export default function RefundPolicy() {
                       <span style={{ fontSize: "0.8125rem", color: "#64748b" }}>₹{Number(r.order_total ?? 0).toLocaleString()}</span>
                     </td>
                     <td style={{ padding: "0.75rem", verticalAlign: "top" }}>
-                      {r.user_email ?? "—"}
-                      {r.user_name && <div style={{ fontSize: "0.8125rem", color: "#64748b" }}>{r.user_name}</div>}
+                      <div style={{ fontWeight: 500 }}>{r.address_full_name || r.user_name || "—"}</div>
+                      {r.user_email && <div style={{ fontSize: "0.8125rem", color: "#64748b" }}>{r.user_email}</div>}
+                      {r.phone_number && <div style={{ fontSize: "0.8125rem", color: "#0f172a" }}>{r.phone_number}</div>}
                     </td>
                     <td style={{ padding: "0.75rem", verticalAlign: "top", maxWidth: 200 }}>
                       <ul style={{ margin: 0, paddingLeft: "1.25rem" }}>

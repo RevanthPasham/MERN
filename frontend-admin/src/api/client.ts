@@ -77,6 +77,26 @@ export async function updateProduct(id: string, body: Partial<{ title: string; s
   return data.data;
 }
 
+export interface ProductImageDto {
+  id: string;
+  url: string;
+  sortOrder: number;
+}
+
+export async function getProductImages(productId: string): Promise<ProductImageDto[]> {
+  const { data } = await api.get<{ success: boolean; data: { images: ProductImageDto[] } }>(`/products/${productId}/images`);
+  return data.data.images;
+}
+
+export async function addProductImage(productId: string, url: string): Promise<ProductImageDto> {
+  const { data } = await api.post<{ success: boolean; data: ProductImageDto }>(`/products/${productId}/images`, { url });
+  return data.data;
+}
+
+export async function removeProductImage(productId: string, imageId: string): Promise<void> {
+  await api.delete(`/products/${productId}/images/${imageId}`);
+}
+
 export async function getCollections() {
   const { data } = await api.get<{ success: boolean; data: CollectionDto[] }>("/collections");
   return data.data;

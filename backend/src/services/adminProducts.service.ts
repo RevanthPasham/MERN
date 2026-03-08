@@ -129,3 +129,63 @@ export async function clearProductPrimaryImage(productId: string): Promise<boole
   if (first) await (first as any).destroy();
   return true;
 }
+
+/** Get all images for a product (first variant's images, sorted by sortOrder). */
+export async function getProductImages(productId: string): Promise<{ id: string; url: string; sortOrder: number }[]> {
+  const product = await Product.findByPk(productId, {
+    include: [{ model: ProductVariant, as: "variants", include: [{ model: ProductImage, as: "images" }] }],
+  });
+  if (!product) return [];
+  const p = product as any;
+  const variants = (p.variants || []).sort((a: any, b: any) => Number(a.price) - Number(b.price));
+  const variant = variants[0];
+  if (!variant) return [];
+  const images = (variant.images || []).sort((a: any, b: any) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
+  return images.map((img: any) => ({ id: img.id, url: img.url, sortOrder: img.sortOrder ?? 0 }));
+}
+
+/** Add an image to the product (first variant). Creates variant if none. */
+export async function addProductImage(productId: string, url: string): Promise<{ id: string; url: string; sortOrder: number }> {
+  const product = await Product.findByPk(productId, {
+    include: [{ model: ProductVariant, as: "variants", include: [{ model: ProductImage, as: "images" }] }],
+  });
+  if (!product) throw new Error("Product not found");
+  const p = product as any;
+  let variants = (p.variants || []).sort((a: any, b: any) => Number(a.price) - Number(b.price));
+  let variant = variants[0];
+  if (!variant) {
+    const sku = `${p.slug}-S-${Date.now()}`.replace(/\s+/g, "-");
+    variant = await ProductVariant.create({
+      productId,
+      sku,
+      price: 0,
+      stockQuantity: 0,
+    });
+  }
+  const images = (variant.images || []).sort((a: any, b: any) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
+  const maxOrder = images.length > 0 ? Math.max(...images.map((i: any) => i.sortOrder ?? 0)) : -1;
+  const created = await ProductImage.create({
+    variantId: variant.id,
+    url,
+    sortOrder: maxOrder + 1,
+  });
+  return { id: (created as any).id, url: (created as any).url, sortOrder: (created as any).sortOrder ?? 0 };
+}
+
+/** Remove one image by id. Image must belong to a variant of this product. */
+export async function removeProductImage(productId: string, imageId: string): Promise<boolean> {
+  const product = await Product.findByPk(productId, {
+    include: [{ model: ProductVariant, as: "variants", include: [{ model: ProductImage, as: "images" }] }],
+  });
+  if (!product) return false;
+  const p = product as any;
+  const variants = p.variants || [];
+  for (const v of variants) {
+    const img = (v.images || []).find((i: any) => i.id === imageId);
+    if (img) {
+      await (img as any).destroy();
+      return true;
+    }
+  }
+  return false;
+}

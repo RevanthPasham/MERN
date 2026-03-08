@@ -1,6 +1,16 @@
-import { useEffect, useState, Fragment } from "react";
-import { getProducts, createProduct, updateProduct, uploadImage, deleteImageFromCloudinary, type ProductListItem } from "../api/client";
-import ImageField from "../components/ImageField";
+import { useEffect, useState, Fragment, useRef } from "react";
+import {
+  getProducts,
+  createProduct,
+  updateProduct,
+  uploadImage,
+  deleteImageFromCloudinary,
+  getProductImages,
+  addProductImage,
+  removeProductImage,
+  type ProductListItem,
+  type ProductImageDto,
+} from "../api/client";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -13,6 +23,11 @@ export default function Products() {
   const [form, setForm] = useState({ title: "", slug: "", description: "", brand: "", material: "", isActive: true, initialPrice: 0 });
   const [page, setPage] = useState(1);
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved">("idle");
+  const [productImages, setProductImages] = useState<ProductImageDto[]>([]);
+  const [imagesLoading, setImagesLoading] = useState(false);
+  const [addingImage, setAddingImage] = useState(false);
+  const [removingImageId, setRemovingImageId] = useState<string | null>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
 
   const load = () => {
     setLoading(true);
@@ -44,6 +59,14 @@ export default function Products() {
     }
   };
 
+  const loadProductImages = (id: string) => {
+    setImagesLoading(true);
+    getProductImages(id)
+      .then(setProductImages)
+      .catch(() => setProductImages([]))
+      .finally(() => setImagesLoading(false));
+  };
+
   const handleEditStart = (p: ProductListItem) => {
     setEditingId(p.id);
     setEditForm({
@@ -55,6 +78,7 @@ export default function Products() {
       isActive: p.isActive,
       price: p.price ?? 0,
     });
+    loadProductImages(p.id);
   };
 
   const handleUpdate = async (id: string, updates: Partial<{ title: string; slug: string; description: string; brand: string; material: string; isActive: boolean; imageUrl: string | null; price: number }>) => {
@@ -68,6 +92,42 @@ export default function Products() {
     } catch (err) {
       setSaveStatus("idle");
       alert(err instanceof Error ? err.message : "Failed");
+    }
+  };
+
+  const handleAddImage = async (productId: string, file: File) => {
+    if (!file.type.startsWith("image/")) return;
+    setAddingImage(true);
+    try {
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        const r = new FileReader();
+        r.onload = () => resolve(r.result as string);
+        r.onerror = reject;
+        r.readAsDataURL(file);
+      });
+      const url = await uploadImage(dataUrl, "products");
+      await addProductImage(productId, url);
+      loadProductImages(productId);
+      load();
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Upload failed");
+    } finally {
+      setAddingImage(false);
+      if (imageInputRef.current) imageInputRef.current.value = "";
+    }
+  };
+
+  const handleRemoveImage = async (productId: string, imageId: string, url: string) => {
+    setRemovingImageId(imageId);
+    try {
+      await removeProductImage(productId, imageId);
+      if (url?.includes("cloudinary")) await deleteImageFromCloudinary(url).catch(() => {});
+      loadProductImages(productId);
+      load();
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Remove failed");
+    } finally {
+      setRemovingImageId(null);
     }
   };
 
@@ -162,16 +222,17 @@ export default function Products() {
                   <tr style={{ borderBottom: "1px solid var(--admin-border)" }}>
                     <td style={{ padding: "0.75rem 1rem", verticalAlign: "top" }}>
                       {editingId === p.id ? (
-                        <ImageField
-                          label=""
-                          currentUrl={p.imageUrl}
-                          folder="products"
-                          onUpload={(dataUri) => uploadImage(dataUri, "products")}
-                          onRemove={async () => {
-                            if (p.imageUrl?.includes("cloudinary")) await deleteImageFromCloudinary(p.imageUrl!);
-                          }}
-                          onSaveUrl={async (url) => handleUpdate(p.id, { imageUrl: url || null })}
-                        />
+                        <div style={{ display: "flex", alignItems: "center", gap: 4, flexWrap: "wrap" }}>
+                          {imagesLoading ? (
+                            <span style={{ fontSize: "0.8125rem", color: "var(--admin-muted)" }}>Loading…</span>
+                          ) : productImages.length > 0 ? (
+                            productImages.slice(0, 3).map((img) => (
+                              <img key={img.id} src={img.url} alt="" style={{ width: 40, height: 40, objectFit: "cover", borderRadius: 4, border: "1px solid var(--admin-border)" }} />
+                            ))
+                          ) : null}
+                          {productImages.length > 3 && <span style={{ fontSize: "0.75rem", color: "var(--admin-muted)" }}>+{productImages.length - 3}</span>}
+                          {!imagesLoading && productImages.length === 0 && <span style={{ fontSize: "0.8125rem", color: "var(--admin-muted)" }}>Add below</span>}
+                        </div>
                       ) : p.imageUrl ? (
                         <img src={p.imageUrl} alt="" style={{ width: 56, height: 56, objectFit: "cover", borderRadius: 6, border: "1px solid var(--admin-border)" }} />
                       ) : (
@@ -199,7 +260,7 @@ export default function Products() {
                   {editingId === p.id && (
                     <tr key={`${p.id}-edit`}>
                       <td colSpan={7} style={{ padding: "1rem", background: "#f8fafc", borderBottom: "1px solid var(--admin-border)" }}>
-                        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "0.75rem", maxWidth: 800 }}>
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "0.75rem", maxWidth: 900 }}>
                           <div>
                             <label style={{ display: "block", fontSize: "0.75rem", fontWeight: 500, color: "var(--admin-muted)", marginBottom: 4 }}>Title</label>
                             <input value={editForm.title ?? ""} onChange={(e) => setEditForm((f) => ({ ...f, title: e.target.value }))} style={baseInput} />
@@ -229,6 +290,59 @@ export default function Products() {
                               <input type="checkbox" checked={editForm.isActive ?? true} onChange={(e) => setEditForm((f) => ({ ...f, isActive: e.target.checked }))} />
                               Active
                             </label>
+                          </div>
+                          <div style={{ gridColumn: "1 / -1" }}>
+                            <label style={{ display: "block", fontSize: "0.75rem", fontWeight: 500, color: "var(--admin-muted)", marginBottom: 6 }}>Product images</label>
+                            <div style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem", alignItems: "flex-start" }}>
+                              {imagesLoading ? (
+                                <span style={{ fontSize: "0.875rem", color: "var(--admin-muted)" }}>Loading images…</span>
+                              ) : (
+                                <>
+                                  {productImages.map((img) => (
+                                    <div key={img.id} style={{ position: "relative", flexShrink: 0 }}>
+                                      <img src={img.url} alt="" style={{ width: 80, height: 80, objectFit: "cover", borderRadius: 6, border: "1px solid var(--admin-border)" }} />
+                                      <button
+                                        type="button"
+                                        disabled={removingImageId === img.id}
+                                        onClick={() => handleRemoveImage(p.id, img.id, img.url)}
+                                        style={{
+                                          position: "absolute",
+                                          top: 4,
+                                          right: 4,
+                                          width: 22,
+                                          height: 22,
+                                          borderRadius: 4,
+                                          border: "none",
+                                          background: "rgba(0,0,0,0.6)",
+                                          color: "#fff",
+                                          fontSize: "0.75rem",
+                                          cursor: removingImageId === img.id ? "wait" : "pointer",
+                                          lineHeight: 1,
+                                          padding: 0,
+                                        }}
+                                        title="Remove image"
+                                      >
+                                        ×
+                                      </button>
+                                    </div>
+                                  ))}
+                                  <label style={{ width: 80, height: 80, display: "flex", alignItems: "center", justifyContent: "center", border: "1px dashed var(--admin-border)", borderRadius: 6, cursor: addingImage ? "wait" : "pointer", background: "#fff", fontSize: "0.8125rem", color: "var(--admin-muted)" }}>
+                                    <input
+                                      ref={imageInputRef}
+                                      type="file"
+                                      accept="image/*"
+                                      disabled={addingImage}
+                                      style={{ display: "none" }}
+                                      onChange={(e) => {
+                                        const file = e.target.files?.[0];
+                                        if (file) handleAddImage(p.id, file);
+                                      }}
+                                    />
+                                    {addingImage ? "Uploading…" : "+ Add image"}
+                                  </label>
+                                </>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </td>

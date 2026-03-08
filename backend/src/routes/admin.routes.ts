@@ -33,6 +33,9 @@ router.patch("/orders/:id/status", adminOrdersController.updateStatus);
 // Products – any admin can add/edit
 router.get("/products", adminProductsController.list);
 router.get("/products/:id", adminProductsController.getById);
+router.get("/products/:id/images", adminProductsController.getImages);
+router.post("/products/:id/images", adminProductsController.addImage);
+router.delete("/products/:id/images/:imageId", adminProductsController.removeImage);
 router.post("/products", adminProductsController.create);
 router.patch("/products/:id", adminProductsController.update);
 

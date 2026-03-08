@@ -8,14 +8,12 @@ import orderRoutes from "./order.routes";
 import cartRoutes from "./cart.routes";
 import addressRoutes from "./address.routes";
 import adminRoutes from "./admin.routes";
-import recordingsRoutes from "./recordings.routes";
 import settingsRoutes from "./settings.routes";
 
 const router = Router();
 
 router.use("/auth", authRoutes);
 router.use("/admin", adminRoutes);
-router.use("/recordings", recordingsRoutes);
 router.use("/settings", settingsRoutes);
 router.use("/banners", bannerRoutes);
 router.use("/orders", orderRoutes);

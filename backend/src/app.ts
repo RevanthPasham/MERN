@@ -5,7 +5,8 @@ import { errorHandler } from "./utils/errors";
 
 const app = express();
 app.use(cors());
-app.use(express.json());
+// Allow large JSON bodies for admin image upload (base64 data URIs)
+app.use(express.json({ limit: "15mb" }));
 app.use("/api", routes);
 app.use(errorHandler);
 app.get("/", (req, res) => {

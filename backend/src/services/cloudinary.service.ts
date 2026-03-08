@@ -4,14 +4,14 @@ let configured = false;
 
 function ensureConfig() {
   if (configured) return;
-  const name = process.env.CLOUDINARY_CLOUD_NAME;
-  const key = process.env.CLOUDINARY_API_KEY;
-  const secret = process.env.CLOUDINARY_API_SECRET;
+  const name = process.env.CLOUDINARY_CLOUD_NAME?.trim();
+  const key = process.env.CLOUDINARY_API_KEY?.trim();
+  const secret = process.env.CLOUDINARY_API_SECRET?.trim();
   if (name && key && secret) {
     cloudinary.config({
-      cloud_name: name.trim(),
-      api_key: key.trim(),
-      api_secret: secret.trim(),
+      cloud_name: name,
+      api_key: key,
+      api_secret: secret,
     });
     configured = true;
   }

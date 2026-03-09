@@ -10,6 +10,8 @@ import AccountAddresses from "../pages/AccountAddresses";
 import OrderHistory from "../pages/OrderHistory";
 import SearchPage from "../pages/SearchPage";
 import SizeChart from "../pages/SizeChart";
+import About from "../pages/About";
+import Help from "../pages/Help";
 
 export default function AppRoutes() {
   return (
@@ -20,6 +22,8 @@ export default function AppRoutes() {
       <Route path="/search" element={<SearchPage />} />
       <Route path="/pages/size-chart-crop-top" element={<SizeChart />} />
       <Route path="/pages/size-chart-crop-tank" element={<SizeChart />} />
+      <Route path="/pages/about" element={<About />} />
+      <Route path="/pages/help" element={<Help />} />
       <Route path="/checkout" element={<Checkout />} />
       <Route path="/login" element={<Login />} />
       <Route path="/profile" element={<Profile />} />

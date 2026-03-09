@@ -17,6 +17,8 @@ const SUGGESTION_TERMS = [
 const PAGE_LINKS = [
   { label: "Crop Top Size Chart", path: "/pages/size-chart-crop-top" },
   { label: "Crop Tank Size Chart", path: "/pages/size-chart-crop-tank" },
+  { label: "About store", path: "/pages/about" },
+  { label: "Help & support", path: "/pages/help" },
 ];
 
 interface SearchOverlayProps {

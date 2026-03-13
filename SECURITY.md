@@ -2,7 +2,7 @@
 
 ## Supported Versions
 
-\
+typescript :4.^
 
 | Version | Supported          |
 | ------- | ------------------ |

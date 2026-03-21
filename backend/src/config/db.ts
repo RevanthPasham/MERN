@@ -1,12 +1,16 @@
 import { Sequelize } from "sequelize";
 
-const DATABASE_URL = process.env.DATABASE_URL;
+const DATABASE_URL =
+  process.env.DATABASE_URL && typeof process.env.DATABASE_URL === "string"
+    ? process.env.DATABASE_URL.trim()
+    : "";
 
-if (!DATABASE_URL || typeof DATABASE_URL !== "string" || !DATABASE_URL.trim()) {
-  throw new Error("DATABASE_URL is missing. Set it in Vercel Environment Variables (or .env locally).");
-}
+// Avoid throwing at module import time on serverless cold starts.
+// If DATABASE_URL is missing, initModels().authenticate() will fail and api/index.ts
+// will return a controlled 503 JSON response instead of FUNCTION_INVOCATION_FAILED.
+const FALLBACK_DATABASE_URL = "postgresql://invalid:invalid@localhost:5432/invalid";
 
-export const sequelize = new Sequelize(DATABASE_URL.trim(), {
+export const sequelize = new Sequelize(DATABASE_URL || FALLBACK_DATABASE_URL, {
   dialect: "postgres",
   dialectOptions: {
     ssl: {

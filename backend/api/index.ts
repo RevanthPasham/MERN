@@ -31,7 +31,7 @@ async function init() {
   initPromise = (async () => {
     try {
       // Fail fast in serverless instead of hanging until platform timeout.
-      await withTimeout(initModels(), 15000);
+      await withTimeout(initModels(), 25000);
       initialized = true;
     } catch (err) {
       initError = err instanceof Error ? err : new Error(String(err));
@@ -88,7 +88,17 @@ const handler = async (req: any, res: any) => {
   }, 25000);
 
   try {
-    await Promise.resolve(serverlessHandler(req, res));
+    // serverless-http's promise can lag; also resolve when the response is fully sent.
+    const handlerPromise = Promise.resolve(serverlessHandler(req, res));
+    const responseEnded = new Promise<void>((resolve) => {
+      if (res.writableEnded) {
+        resolve();
+        return;
+      }
+      res.once("finish", () => resolve());
+      res.once("close", () => resolve());
+    });
+    await Promise.race([handlerPromise, responseEnded]);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     if (!res.headersSent && !res.writableEnded) {

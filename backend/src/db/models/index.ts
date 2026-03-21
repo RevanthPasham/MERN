@@ -100,10 +100,25 @@ export function associate(): void {
 
 export async function initModels(): Promise<void> {
   associate();
-  // Create tables if they don't exist; do not drop so DB data persists across restarts
-  // await sequelize.sync();
   await sequelize.authenticate();
-  console.log("Models initialized and synced");
+
+  // Create missing tables from models (no force/alter — safe for existing data).
+  // - Local / Neon in .env: runs by default so first connect creates tables.
+  // - Vercel: skipped by default (cold starts); set DATABASE_SYNC=true once, then remove or set false.
+  // - Disable anywhere: DATABASE_SYNC=false
+  const runSync =
+    process.env.DATABASE_SYNC === "true" ||
+    (!process.env.VERCEL && process.env.DATABASE_SYNC !== "false");
+
+  if (runSync) {
+    await sequelize.sync();
+  }
+
+  console.log(
+    runSync
+      ? "Models initialized; tables synced (CREATE IF NOT EXISTS)."
+      : "Models initialized (DATABASE_SYNC disabled on this runtime; tables not altered)."
+  );
 }
 
 /* ================= RE-EXPORTS ================= */

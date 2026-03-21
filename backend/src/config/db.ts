@@ -1,4 +1,5 @@
 import { Sequelize } from "sequelize";
+import pg from "pg";
 
 const DATABASE_URL =
   process.env.DATABASE_URL && typeof process.env.DATABASE_URL === "string"
@@ -12,6 +13,7 @@ const FALLBACK_DATABASE_URL = "postgresql://invalid:invalid@localhost:5432/inval
 
 export const sequelize = new Sequelize(DATABASE_URL || FALLBACK_DATABASE_URL, {
   dialect: "postgres",
+  dialectModule: pg,
   dialectOptions: {
     ssl: {
       require: true,

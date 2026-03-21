@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { getAnalytics, type AnalyticsDto } from "../api/client";
 
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:4000/api";
+const API_BASE = import.meta.env.VITE_API_URL;
 
 export default function Analytics() {
   const [data, setData] = useState<AnalyticsDto | null>(null);

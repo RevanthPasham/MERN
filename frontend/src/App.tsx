@@ -2,6 +2,7 @@ import AppRoutes from "./routes/AppRoutes";
 import Navbar from "./components/layout/Navbar";
 import TopBar from "./components/layout/TopBar";
 import CartSidebar from "./components/cart/CartSidebar";
+import Footer from "./components/layout/Footer";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { CartProvider } from "./context/CartContext";
 import { AuthProvider } from "./context/AuthContext";
@@ -18,6 +19,7 @@ export default function App() {
               <AppRoutes />
             </main>
             <CartSidebar />
+            <Footer />
           </div>
         </CartProvider>
       </AuthProvider>

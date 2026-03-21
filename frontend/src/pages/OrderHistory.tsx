@@ -5,7 +5,7 @@ import { getOrders } from "../api/client";
 import type { OrderDto } from "../types";
 
 function formatAddress(addr: OrderDto["address"]) {
-  if (!addr) return "—";
+  if (!addr) return "\u2014";
   const parts = [
     addr.streetAddress,
     addr.area,
@@ -50,9 +50,9 @@ export default function OrderHistory() {
 
   return (
     <main className="max-w-3xl mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold text-gray-900 mb-4">Order history</h1>
-      <Link to="/account" className="text-blue-600 hover:underline mb-4 inline-block">
-        ← Back to account
+      <h1 className="text-2xl font-bold text-gray-900 mb-2">Order history</h1>
+      <Link to="/account" className="text-[#1e3a5f] hover:underline mb-6 inline-block text-sm">
+        &#8592; Back to account
       </Link>
 
       {loading ? (
@@ -64,10 +64,10 @@ export default function OrderHistory() {
           {orders.map((order) => (
             <div
               key={order.id}
-              className="border border-gray-200 rounded-lg overflow-hidden"
+              className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm"
             >
-              <div className="bg-gray-50 px-4 py-3 flex flex-wrap items-center justify-between gap-2">
-                <span className="font-semibold text-gray-900">
+              <div className="bg-gray-50 px-5 py-4 flex flex-wrap items-center justify-between gap-3">
+                <span className="font-mono font-semibold text-gray-900">
                   Order #{order.id.slice(0, 8).toUpperCase()}
                 </span>
                 <span className="text-sm text-gray-500">
@@ -78,36 +78,39 @@ export default function OrderHistory() {
                   })}
                 </span>
                 <span
-                  className={`text-xs font-medium px-2 py-1 rounded ${orderStatusColor(
+                  className={`text-xs font-medium rounded-full px-3 py-1 ${orderStatusColor(
                     order.orderStatus
                   )}`}
                 >
                   {order.orderStatus}
                 </span>
               </div>
-              <div className="p-4 space-y-3">
+              <div className="px-5 py-4 space-y-3">
                 <ul className="space-y-1">
                   {order.items.map((item) => (
                     <li
                       key={item.id}
-                      className="flex justify-between text-sm text-gray-700"
+                      className="flex justify-between text-sm"
                     >
-                      <span>
-                        {item.productName} × {item.quantity}
+                      <span className="text-gray-800">
+                        {item.productName} &times; {item.quantity}
                       </span>
-                      <span>₹{Number(item.subtotal).toLocaleString("en-IN")}</span>
+                      <span className="text-gray-700">\u20B9{Number(item.subtotal).toLocaleString("en-IN")}</span>
                     </li>
                   ))}
                 </ul>
-                <p className="text-right font-semibold text-gray-900 pt-2 border-t border-gray-100">
-                  Total: ₹{Number(order.totalAmount).toLocaleString("en-IN")}
+                <p className="text-right font-bold text-gray-900 text-base pt-2 border-t border-gray-100">
+                  Total: \u20B9{Number(order.totalAmount).toLocaleString("en-IN")}
                 </p>
-                <div className="text-sm text-gray-600 pt-1">
-                  <span className="font-medium text-gray-700">Delivery address: </span>
+                <div className="text-sm text-gray-500 pt-1 flex items-start gap-1.5">
+                  <svg className="w-4 h-4 mt-0.5 shrink-0 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
                   {formatAddress(order.address)}
                 </div>
-                <div className="text-xs text-gray-500">
-                  Payment: {order.paymentStatus} · {order.paymentMethod}
+                <div className="text-xs text-gray-400">
+                  Payment: {order.paymentStatus} &middot; {order.paymentMethod}
                 </div>
               </div>
             </div>

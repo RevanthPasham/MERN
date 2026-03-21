@@ -14,32 +14,36 @@ function ProductCard({ product }: { product: ProductListItem }) {
       : 0;
 
   return (
-    <Link to={`/product/${product.id}`} className="group block text-left">
-      <div className="relative aspect-3/4 overflow-hidden bg-gray-100 rounded-lg">
+    <Link to={`/product/${product.id}`} className="group block text-left hover:shadow-md transition-shadow rounded-xl overflow-hidden">
+      <div className="relative aspect-3/4 overflow-hidden bg-gray-100 rounded-xl">
         <img
           src={product.imageUrl || PLACEHOLDER_PRODUCT}
           alt={product.title}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
         />
-      </div>
-      <h3 className="mt-2 text-sm font-medium text-gray-900 line-clamp-2">
-        {product.title}
-      </h3>
-      <p className="text-xs text-gray-500 mt-0.5">
-        {product.category?.name ?? "—"}
-      </p>
-      <div className="mt-1 flex flex-wrap items-baseline gap-1">
-        <span className="font-semibold text-gray-900">
-          ₹{product.price?.toLocaleString("en-IN") ?? "—"}
-        </span>
-        {product.compareAtPrice != null && (
-          <>
-            <span className="text-sm text-gray-400 line-through">
-              ₹{product.compareAtPrice.toLocaleString("en-IN")}
-            </span>
-            <span className="text-xs text-green-600">({discount}% Off)</span>
-          </>
+        {discount > 0 && (
+          <span className="absolute top-2 left-2 bg-[#1e3a5f] text-white text-xs font-semibold px-2 py-0.5 rounded-full">
+            {discount}% OFF
+          </span>
         )}
+      </div>
+      <div className="pt-2 px-0.5 pb-1">
+        <h3 className="mt-2 text-sm font-medium text-gray-900 line-clamp-2">
+          {product.title}
+        </h3>
+        <p className="text-xs text-gray-500 mt-0.5">
+          {product.category?.name ?? "\u2014"}
+        </p>
+        <div className="mt-1 flex flex-wrap items-baseline gap-1">
+          <span className="font-semibold text-gray-900">
+            \u20B9{product.price?.toLocaleString("en-IN") ?? "\u2014"}
+          </span>
+          {product.compareAtPrice != null && (
+            <span className="text-sm text-gray-400 line-through">
+              \u20B9{product.compareAtPrice.toLocaleString("en-IN")}
+            </span>
+          )}
+        </div>
       </div>
     </Link>
   );
@@ -64,8 +68,8 @@ export default function CategoryPage() {
 
   if (loading) {
     return (
-      <main className="max-w-  mx-auto px-4 py-12 text-center text-gray-500">
-        Loading....
+      <main className="max-w-7xl mx-auto px-4 py-12 text-center text-gray-500">
+        Loading...
       </main>
     );
   }
@@ -80,9 +84,10 @@ export default function CategoryPage() {
 
   return (
     <main className="max-w-7xl mx-auto px-4 md:px-8 py-6">
-      <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">
+      <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
         {collection.name}
       </h1>
+      <p className="text-sm text-gray-500 mb-6">{collection.products.length} products</p>
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
         {collection.products.map((product) => (
           <ProductCard key={product.id} product={product} />

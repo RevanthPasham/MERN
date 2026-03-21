@@ -161,12 +161,12 @@ export default function AccountAddresses() {
             {addresses.map((a) => (
               <div
                 key={a.id}
-                className={`border rounded-lg p-4 ${a.isDefault ? "border-green-600 bg-green-50/50" : "border-gray-200"}`}
+                className={`border rounded-lg p-4 ${a.isDefault ? "border-[#1e3a5f] bg-blue-50/30" : "border-gray-200"}`}
               >
                 <div className="flex justify-between items-start">
                   <div>
                     {a.isDefault && (
-                      <span className="text-xs font-medium text-green-700 bg-green-100 px-2 py-0.5 rounded mr-2">
+                      <span className="text-xs font-medium text-white bg-[#1e3a5f] px-2 py-0.5 rounded mr-2">
                         Default
                       </span>
                     )}
@@ -184,7 +184,7 @@ export default function AccountAddresses() {
                       <button
                         type="button"
                         onClick={() => handleSetDefault(a.id)}
-                        className="text-sm text-gray-600 hover:underline"
+                        className="text-sm text-[#1e3a5f] hover:underline"
                       >
                         Set default
                       </button>
@@ -212,7 +212,7 @@ export default function AccountAddresses() {
             <button
               type="button"
               onClick={openAdd}
-              className="px-4 py-2 border border-gray-300 rounded-lg font-medium hover:bg-gray-50"
+              className="px-4 py-2.5 bg-[#1e3a5f] text-white rounded-xl font-medium hover:bg-[#163050]"
             >
               + Add new address
             </button>
@@ -343,7 +343,7 @@ export default function AccountAddresses() {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-4 py-2 bg-gray-900 text-white rounded-lg font-medium hover:bg-gray-800 disabled:opacity-50"
+                  className="px-4 py-2 bg-[#1e3a5f] text-white rounded-xl font-medium hover:bg-[#163050] disabled:opacity-50"
                 >
                   {saving ? "Saving..." : editingId ? "Update" : "Save"}
                 </button>

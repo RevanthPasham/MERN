@@ -18,6 +18,7 @@ export const sequelize = new Sequelize(DATABASE_URL || FALLBACK_DATABASE_URL, {
     // Fail DB queries fast in serverless, instead of hanging until platform timeout.
     statement_timeout: 12000,
     query_timeout: 12000,
+    connectionTimeoutMillis: 10000,
     ssl: {
       require: true,
       rejectUnauthorized: false,

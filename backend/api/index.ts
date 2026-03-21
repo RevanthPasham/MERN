@@ -74,20 +74,35 @@ const handler = async (req: any, res: any) => {
     return;
   }
 
-  try {
-    await withTimeout(Promise.resolve(serverlessHandler(req, res)), 25000);
-  } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
-    if (!res.headersSent) {
+  const requestTimeout = setTimeout(() => {
+    if (!res.writableEnded) {
       res.statusCode = 504;
       res.setHeader("Content-Type", "application/json");
       res.end(
         JSON.stringify({
           success: false,
-          error: `Request timed out: ${message}`,
+          error: "Request timed out after 25s",
         })
       );
     }
+  }, 25000);
+
+  try {
+    await Promise.resolve(serverlessHandler(req, res));
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    if (!res.headersSent && !res.writableEnded) {
+      res.statusCode = 500;
+      res.setHeader("Content-Type", "application/json");
+      res.end(
+        JSON.stringify({
+          success: false,
+          error: `Serverless handler error: ${message}`,
+        })
+      );
+    }
+  } finally {
+    clearTimeout(requestTimeout);
   }
 };
 

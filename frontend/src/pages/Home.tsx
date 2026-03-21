@@ -9,6 +9,11 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const guard = setTimeout(() => {
+      setLoading(false);
+      setDataFailed(true);
+    }, 12000);
+
     Promise.all([getBanners(), getProducts()])
       .then(([banners, products]) => {
         if (
@@ -19,7 +24,12 @@ export default function Home() {
         }
       })
       .catch(() => setDataFailed(true))
-      .finally(() => setLoading(false));
+      .finally(() => {
+        clearTimeout(guard);
+        setLoading(false);
+      });
+
+    return () => clearTimeout(guard);
   }, []);
 
   return (

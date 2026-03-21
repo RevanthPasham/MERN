@@ -15,6 +15,9 @@ export const sequelize = new Sequelize(DATABASE_URL || FALLBACK_DATABASE_URL, {
   dialect: "postgres",
   dialectModule: pg,
   dialectOptions: {
+    // Fail DB queries fast in serverless, instead of hanging until platform timeout.
+    statement_timeout: 12000,
+    query_timeout: 12000,
     ssl: {
       require: true,
       rejectUnauthorized: false,

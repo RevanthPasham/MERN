@@ -73,7 +73,22 @@ const handler = async (req: any, res: any) => {
     );
     return;
   }
-  return serverlessHandler(req, res);
+
+  try {
+    await withTimeout(Promise.resolve(serverlessHandler(req, res)), 25000);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    if (!res.headersSent) {
+      res.statusCode = 504;
+      res.setHeader("Content-Type", "application/json");
+      res.end(
+        JSON.stringify({
+          success: false,
+          error: `Request timed out: ${message}`,
+        })
+      );
+    }
+  }
 };
 
 export default handler;

@@ -7,7 +7,7 @@
  * Example: npx ts-node scripts/set-admin-role.ts admin@example.com super_admin
  */
 import "dotenv/config";
-import { initModels } from "../src/db/models";
+import { connectDatabaseForScripts } from "../src/db/models";
 import { Admin } from "../src/db/models";
 import type { AdminRole } from "../src/db/models/admin.model";
 
@@ -30,7 +30,7 @@ async function run() {
   }
 
   try {
-    await initModels();
+    await connectDatabaseForScripts();
     const admin = await Admin.findOne({ where: { email: email.toLowerCase().trim() } });
     if (!admin) {
       console.error("No admin found with email:", email);

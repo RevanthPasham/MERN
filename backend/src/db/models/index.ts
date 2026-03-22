@@ -100,16 +100,15 @@ export function associate(): void {
   Product.hasMany(CartItem, { foreignKey: "productId", as: "cartItems" });
 }
 
-/* ================= INIT ================= */
+/* ================= SCRIPTS ================= */
 
-/** Associations + authenticate only. No sync here (use migrations / local server.ts / seed). */
-export async function initModels(): Promise<void> {
+/** Await first connection for CLI scripts. HTTP uses Sequelize’s lazy pool — no startup authenticate. */
+export async function connectDatabaseForScripts(): Promise<void> {
   if (!isDatabaseConfigured()) {
     throw new Error(
       "DATABASE_URL is not set. Add it under Vercel → Project → Settings → Environment Variables (Production + Preview)."
     );
   }
-  associate();
   await sequelize.authenticate();
 }
 

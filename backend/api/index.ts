@@ -134,17 +134,30 @@ const handler = async (req: any, res: any) => {
   }, 25000);
 
   try {
-    // serverless-http's promise can lag; also resolve when the response is fully sent.
-    const handlerPromise = Promise.resolve(serverlessHandler(req, res));
-    const responseEnded = new Promise<void>((resolve) => {
-      if (res.writableEnded) {
+    // IMPORTANT: Do not use Promise.race with serverless-http's promise — it often resolves
+    // before res.end() / body flush. The invocation would return early and the client stays
+    // "pending" until axios/browser timeout (your logs showed totalMs:0 + status 200).
+    await new Promise<void>((resolve, reject) => {
+      let done = false;
+      const finish = () => {
+        if (done) return;
+        done = true;
         resolve();
-        return;
+      };
+      res.once("finish", finish);
+      res.once("close", finish);
+      if (res.writableEnded) {
+        queueMicrotask(finish);
       }
-      res.once("finish", () => resolve());
-      res.once("close", () => resolve());
+
+      Promise.resolve(serverlessHandler(req, res)).catch((err) => {
+        if (!done) {
+          done = true;
+          reject(err);
+        }
+      });
     });
-    await Promise.race([handlerPromise, responseEnded]);
+
     runtimeLog("request_out", {
       method,
       path,

@@ -16,7 +16,7 @@ import { OrderItem } from "./orderItem.model";
 import { CartItem } from "./cartItem.model";
 import { Address } from "./address.model";
 import { Admin } from "./admin.model";
-import { sequelize } from "../../config/db";
+import { isDatabaseConfigured, sequelize } from "../../config/db";
 
 /* ================= ASSOCIATIONS ================= */
 
@@ -104,6 +104,11 @@ export function associate(): void {
 
 /** Associations + authenticate only. No sync here (use migrations / local server.ts / seed). */
 export async function initModels(): Promise<void> {
+  if (!isDatabaseConfigured()) {
+    throw new Error(
+      "DATABASE_URL is not set. Add it under Vercel → Project → Settings → Environment Variables (Production + Preview)."
+    );
+  }
   associate();
   await sequelize.authenticate();
 }

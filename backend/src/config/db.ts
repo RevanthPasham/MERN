@@ -1,18 +1,38 @@
 import { Sequelize } from "sequelize";
 
-const DATABASE_URL = process.env.DATABASE_URL;
+/**
+ * Must not throw at module load — Vercel loads this file before env is guaranteed
+ * (e.g. preview deploys without env). Missing URL is handled in initModels().
+ */
+const rawUrl = process.env.DATABASE_URL;
+const DATABASE_URL =
+  typeof rawUrl === "string" && rawUrl.trim().length > 0
+    ? rawUrl.trim()
+    : "postgresql://invalid:invalid@127.0.0.1:5432/invalid";
 
-if (!DATABASE_URL) {
-  throw new Error("DATABASE_URL is not set");
+export function isDatabaseConfigured(): boolean {
+  return Boolean(typeof rawUrl === "string" && rawUrl.trim().length > 0);
+}
+
+function dialectOptionsForUrl(urlString: string): { ssl?: { require: boolean; rejectUnauthorized: boolean } } {
+  try {
+    const host = new URL(urlString).hostname.toLowerCase();
+    if (host === "localhost" || host === "127.0.0.1") {
+      return {};
+    }
+  } catch {
+    // ignore parse errors
+  }
+  return {
+    ssl: {
+      require: true,
+      rejectUnauthorized: false,
+    },
+  };
 }
 
 export const sequelize = new Sequelize(DATABASE_URL, {
   dialect: "postgres",
   logging: false,
-  dialectOptions: {
-    ssl: {
-      require: true,
-      rejectUnauthorized: false,
-    },
-  },
+  dialectOptions: dialectOptionsForUrl(DATABASE_URL),
 });

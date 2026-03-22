@@ -1,16 +1,46 @@
-# React + Vite
+React + Vite Starter Template
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This template provides a minimal and optimized setup to run React with Vite, including Hot Module Replacement (HMR) and basic ESLint configuration.
 
-Currently, two official plugins are available:
+->Features
+->React (latest)
+->Vite (fast build tool)
+->Hot Module Replacement (HMR)
+->ESLint for code quality
+->Lightweight and fast setup
+->Available Plugins
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Currently, two official plugins are supported for React:
 
-## React Compiler
+1. Babel-based Plugin
+@vitejs/plugin-react
+Uses Babel (or OXC with rolldown-vite)
+Supports Fast Refresh
+2. SWC-based Plugin (Faster)
+@vitejs/plugin-react-swc
+Uses SWC (faster than Babel)
+Recommended for better performance
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-## Expanding the ESLint configuration
+React Compiler (Optional)
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+The React Compiler is not enabled by default due to its impact on development and build performance.
+
+->To enable it, follow:
+https://react.dev/learn/react-compiler/installation
+
+
+--->ESLint Configuration (Recommended Upgrade)
+
+For production-level apps, enhance ESLint with TypeScript support and stricter rules.
+
+Suggested Improvements:
+Use TypeScript
+Enable type-aware linting
+Add stricter rules for maintainability
+
+->Official TypeScript template:
+https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts
+
+->typescript-eslint docs:
+https://typescript-eslint.io

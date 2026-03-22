@@ -4,7 +4,8 @@ const BASE_URL = import.meta.env.VITE_API_URL;
 
 export const api = axios.create({
   baseURL: BASE_URL,
-  timeout: 10000,
+  // Cold Vercel + Neon can exceed 10s; keep above client wait so you see API errors instead of a generic timeout
+  timeout: 60000,
   headers: { "Content-Type": "application/json" },
 });
 

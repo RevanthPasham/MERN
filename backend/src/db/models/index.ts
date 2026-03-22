@@ -17,6 +17,7 @@ import { CartItem } from "./cartItem.model";
 import { Address } from "./address.model";
 import { Admin } from "./admin.model";
 import { sequelize } from "../../config/db";
+import { runtimeLog, safeDatabaseHost } from "../../utils/runtimeLog";
 
 /* ================= ASSOCIATIONS ================= */
 
@@ -99,8 +100,16 @@ export function associate(): void {
 /* ================= INIT ================= */
 
 export async function initModels(): Promise<void> {
+  const tStart = Date.now();
+  runtimeLog("init_models_start", {
+    dbHost: safeDatabaseHost(),
+    hasDatabaseUrl: Boolean(process.env.DATABASE_URL?.trim()),
+  });
+
   associate();
+  const tAuth0 = Date.now();
   await sequelize.authenticate();
+  runtimeLog("init_models_authenticate_ok", { ms: Date.now() - tAuth0 });
 
   // Create missing tables from models (no force/alter — safe for existing data).
   // - Local / Neon in .env: runs by default so first connect creates tables.
@@ -111,14 +120,18 @@ export async function initModels(): Promise<void> {
     (!process.env.VERCEL && process.env.DATABASE_SYNC !== "false");
 
   if (runSync) {
+    const tSync0 = Date.now();
     await sequelize.sync();
+    runtimeLog("init_models_sync_done", { ms: Date.now() - tSync0 });
   }
 
-  console.log(
-    runSync
-      ? "Models initialized; tables synced (CREATE IF NOT EXISTS)."
-      : "Models initialized (DATABASE_SYNC disabled on this runtime; tables not altered)."
-  );
+  runtimeLog("init_models_complete", {
+    totalMs: Date.now() - tStart,
+    syncRan: runSync,
+    message: runSync
+      ? "tables synced (CREATE IF NOT EXISTS)"
+      : "DATABASE_SYNC off; schema not altered",
+  });
 }
 
 /* ================= RE-EXPORTS ================= */

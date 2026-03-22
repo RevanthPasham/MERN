@@ -2,6 +2,7 @@ import "dotenv/config";
 import serverless from "serverless-http";
 import app from "../src/app";
 import { initModels } from "../src/db/models";
+import { formatError, runtimeLog, safeDatabaseHost } from "../src/utils/runtimeLog";
 
 let initialized = false;
 let initError: Error | null = null;
@@ -46,6 +47,9 @@ async function init() {
 const serverlessHandler = serverless(app);
 
 const handler = async (req: any, res: any) => {
+  const path = typeof req.url === "string" ? req.url.split("?")[0] : "/";
+  const method = req.method || "GET";
+
   // Handle CORS preflight quickly to avoid timeouts from browser OPTIONS requests.
   if (req.method === "OPTIONS") {
     res.statusCode = 204;
@@ -56,9 +60,22 @@ const handler = async (req: any, res: any) => {
     return;
   }
 
+  const reqStarted = Date.now();
+  runtimeLog("request_in", { method, path, dbHost: safeDatabaseHost() });
+
   try {
+    const initStarted = Date.now();
     await init();
+    runtimeLog("request_init_ok", { method, path, initMs: Date.now() - initStarted });
   } catch (err) {
+    const fe = formatError(err);
+    runtimeLog("request_init_failed", {
+      method,
+      path,
+      errName: fe.name,
+      errMessage: fe.message,
+      errCode: fe.code ?? null,
+    });
     const message = err instanceof Error ? err.message : String(err);
     const isDbMissing = !process.env.DATABASE_URL || message.includes("DATABASE_URL") || message.includes("connect");
     res.statusCode = 503;
@@ -76,6 +93,12 @@ const handler = async (req: any, res: any) => {
 
   const requestTimeout = setTimeout(() => {
     if (!res.writableEnded) {
+      runtimeLog("request_aborted_slow", {
+        method,
+        path,
+        msSinceStart: Date.now() - reqStarted,
+        note: "no response within 25s (DB query or handler stuck)",
+      });
       res.statusCode = 504;
       res.setHeader("Content-Type", "application/json");
       res.end(
@@ -99,7 +122,20 @@ const handler = async (req: any, res: any) => {
       res.once("close", () => resolve());
     });
     await Promise.race([handlerPromise, responseEnded]);
+    runtimeLog("request_out", {
+      method,
+      path,
+      totalMs: Date.now() - reqStarted,
+      statusCode: typeof res.statusCode === "number" ? res.statusCode : undefined,
+    });
   } catch (err) {
+    const fe = formatError(err);
+    runtimeLog("request_handler_error", {
+      method,
+      path,
+      errName: fe.name,
+      errMessage: fe.message,
+    });
     const message = err instanceof Error ? err.message : String(err);
     if (!res.headersSent && !res.writableEnded) {
       res.statusCode = 500;

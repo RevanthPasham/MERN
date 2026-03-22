@@ -46,8 +46,14 @@ async function init() {
 
 const serverlessHandler = serverless(app);
 
+function normalizePath(url: unknown): string {
+  if (typeof url !== "string") return "/";
+  const p = url.split("?")[0] || "/";
+  return p.startsWith("/") ? p : `/${p}`;
+}
+
 const handler = async (req: any, res: any) => {
-  const path = typeof req.url === "string" ? req.url.split("?")[0] : "/";
+  const path = normalizePath(req.url);
   const method = req.method || "GET";
 
   // Handle CORS preflight quickly to avoid timeouts from browser OPTIONS requests.
@@ -57,6 +63,23 @@ const handler = async (req: any, res: any) => {
     res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE,OPTIONS");
     res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
     res.end();
+    return;
+  }
+
+  // Liveness only: must NOT await init() — that runs DB authenticate() and can hang on Neon/serverless.
+  if (method === "GET" && (path === "/api/health" || path.endsWith("/api/health"))) {
+    runtimeLog("request_liveness_ok", { path, note: "skipped_db_init" });
+    res.statusCode = 200;
+    res.setHeader("Content-Type", "application/json; charset=utf-8");
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.end(
+      JSON.stringify({
+        success: true,
+        message: "Serverless function is running (database not checked on this route)",
+        hint: "If /api/banners still times out, the problem is DB connection or queries after init.",
+        time: new Date().toISOString(),
+      })
+    );
     return;
   }
 

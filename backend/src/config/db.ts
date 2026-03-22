@@ -17,6 +17,11 @@ function sanitizeDatabaseUrl(url: string): string {
   try {
     const u = new URL(url);
     u.searchParams.delete("channel_binding");
+    // Quiets pg warning: prefer/require/verify-ca are aliases for verify-full until pg v9; set explicitly.
+    const sslmode = u.searchParams.get("sslmode");
+    if (sslmode && ["require", "prefer", "verify-ca"].includes(sslmode.toLowerCase())) {
+      u.searchParams.set("sslmode", "verify-full");
+    }
     return u.toString();
   } catch {
     return url;

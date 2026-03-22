@@ -4,7 +4,8 @@ import * as adminProductsService from "../services/adminProducts.service";
 
 export async function list(req: AdminRequest, res: Response, next: NextFunction) {
   try {
-    const data = await adminProductsService.listAll();
+    const search = typeof req.query.search === "string" ? req.query.search.trim() : undefined;
+    const data = await adminProductsService.listAll(search);
     return res.json({ success: true, data });
   } catch (e) {
     next(e);
@@ -35,6 +36,7 @@ export async function create(req: AdminRequest, res: Response, next: NextFunctio
       brand: body.brand ?? null,
       material: body.material ?? null,
       isActive: body.isActive !== false,
+      initialPrice: body.initialPrice != null ? Number(body.initialPrice) : 0,
     });
     return res.status(201).json({ success: true, data });
   } catch (e: unknown) {
@@ -68,9 +70,50 @@ export async function update(req: AdminRequest, res: Response, next: NextFunctio
       ...(body.brand !== undefined && { brand: body.brand }),
       ...(body.material !== undefined && { material: body.material }),
       ...(body.isActive !== undefined && { isActive: !!body.isActive }),
+      ...(body.price !== undefined && { price: body.price }),
+      ...(body.stockQuantity !== undefined && { stockQuantity: body.stockQuantity }),
     });
     if (!data) return res.status(404).json({ success: false, error: "Product not found" });
     return res.json({ success: true, data });
+  } catch (e) {
+    next(e);
+  }
+}
+
+export async function getImages(req: AdminRequest, res: Response, next: NextFunction) {
+  try {
+    const images = await adminProductsService.getProductImages(req.params.id);
+    return res.json({ success: true, data: { images } });
+  } catch (e) {
+    next(e);
+  }
+}
+
+export async function addImage(req: AdminRequest, res: Response, next: NextFunction) {
+  try {
+    const id = req.params.id;
+    const url = req.body?.url;
+    if (!url || typeof url !== "string" || !url.trim()) {
+      return res.status(400).json({ success: false, error: "url required" });
+    }
+    const image = await adminProductsService.addProductImage(id, url.trim());
+    return res.status(201).json({ success: true, data: image });
+  } catch (e: unknown) {
+    const err = e as Error;
+    if (err.message?.includes("not found")) {
+      return res.status(404).json({ success: false, error: err.message });
+    }
+    next(e);
+  }
+}
+
+export async function removeImage(req: AdminRequest, res: Response, next: NextFunction) {
+  try {
+    const { id, imageId } = req.params;
+    if (!imageId) return res.status(400).json({ success: false, error: "imageId required" });
+    const ok = await adminProductsService.removeProductImage(id, imageId);
+    if (!ok) return res.status(404).json({ success: false, error: "Image or product not found" });
+    return res.json({ success: true, message: "Image removed" });
   } catch (e) {
     next(e);
   }

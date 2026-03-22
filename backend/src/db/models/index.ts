@@ -16,11 +16,15 @@ import { OrderItem } from "./orderItem.model";
 import { CartItem } from "./cartItem.model";
 import { Address } from "./address.model";
 import { Admin } from "./admin.model";
-import { sequelize } from "../../config/db";
+import { isDatabaseConfigured, sequelize } from "../../config/db";
 
 /* ================= ASSOCIATIONS ================= */
 
+let associationsRegistered = false;
+
 export function associate(): void {
+  if (associationsRegistered) return;
+  associationsRegistered = true;
   // Category: self-reference (parent/children)
   Category.hasMany(Category, { foreignKey: "parentId", as: "children" });
   Category.belongsTo(Category, { foreignKey: "parentId", as: "parent" });
@@ -96,14 +100,16 @@ export function associate(): void {
   Product.hasMany(CartItem, { foreignKey: "productId", as: "cartItems" });
 }
 
-/* ================= INIT ================= */
+/* ================= SCRIPTS ================= */
 
-export async function initModels(): Promise<void> {
-  associate();
-  // Create tables if they don't exist; do not drop so DB data persists across restarts
-  // await sequelize.sync();
+/** Await first connection for CLI scripts. HTTP uses Sequelize’s lazy pool — no startup authenticate. */
+export async function connectDatabaseForScripts(): Promise<void> {
+  if (!isDatabaseConfigured()) {
+    throw new Error(
+      "DATABASE_URL is not set. Add it under Vercel → Project → Settings → Environment Variables (Production + Preview)."
+    );
+  }
   await sequelize.authenticate();
-  console.log("Models initialized and synced");
 }
 
 /* ================= RE-EXPORTS ================= */

@@ -51,6 +51,15 @@ export default function Checkout() {
 
   const handlePay = async () => {
     if (items.length === 0) return;
+    if (user && addresses.length > 0 && !selectedAddressId) {
+      setAddressError("Please select a delivery address.");
+      return;
+    }
+    if (user && addresses.length === 0) {
+      setAddressError("Please add a delivery address before paying.");
+      return;
+    }
+    setAddressError("");
     setPaying(true);
     const amountPaise = Math.max(100, Math.round(Number(subtotal) * 100));
     try {
@@ -314,12 +323,17 @@ export default function Checkout() {
               Pay securely via Razorpay. Amount: ₹{subtotal.toLocaleString("en-IN")}
             </p>
           </div>
+          {user && addresses.length > 0 && !selectedAddressId && (
+            <p className="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 mb-2">
+              Please select a delivery address above.
+            </p>
+          )}
           <div className="flex flex-wrap gap-3">
             <button
               type="button"
               onClick={handlePay}
-              disabled={paying}
-              className="px-8 py-3.5 bg-[#1e3a5f] text-white font-semibold rounded-xl hover:bg-[#163050] disabled:opacity-50"
+              disabled={paying || (user && addresses.length === 0) || (user && addresses.length > 0 && !selectedAddressId)}
+              className="px-6 py-3 bg-green-600 text-white font-medium rounded hover:bg-green-700 disabled:opacity-50"
             >
               {paying ? "Opening..." : `Pay ₹${subtotal.toLocaleString("en-IN")}`}
             </button>

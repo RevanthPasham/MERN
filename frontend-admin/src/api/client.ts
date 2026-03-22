@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE = import.meta.env.VITE_API_URL || "http://localhost:4000/api";
+const BASE = import.meta.env.VITE_API_URL;
 
 export const api = axios.create({
   baseURL: `${BASE}/admin`,
@@ -9,18 +9,24 @@ export const api = axios.create({
 
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("adminToken");
-  if (token) config.headers.Authorization = `Bearer ${token}`;
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
   return config;
 });
 
 api.interceptors.response.use(
   (r) => r,
   (err) => {
-    // Don't redirect on 401 when the failed request was login (so user sees error message)
     const isLoginRequest = err.config?.url?.includes("/auth/login");
     if (err.response?.status === 401 && !isLoginRequest) {
       localStorage.removeItem("adminToken");
+      const msg = err.response?.data?.error || "Session expired. Please sign in again.";
       window.location.href = "/login";
+      return Promise.reject(new Error(msg));
+    }
+    if (err.response?.data?.error) {
+      return Promise.reject(new Error(err.response.data.error));
     }
     return Promise.reject(err);
   }
@@ -51,8 +57,10 @@ export async function updateOrderStatus(id: string, orderStatus: string) {
   return data.data;
 }
 
-export async function getProducts() {
-  const { data } = await api.get<{ success: boolean; data: ProductListItem[] }>("/products");
+export async function getProducts(search?: string) {
+  const { data } = await api.get<{ success: boolean; data: ProductListItem[] }>("/products", {
+    params: search ? { search: search.trim() } : {},
+  });
   return data.data;
 }
 
@@ -61,14 +69,34 @@ export async function getProductById(id: string) {
   return data.data;
 }
 
-export async function createProduct(body: { title: string; slug: string; description?: string; categoryId?: string; brand?: string; material?: string; isActive?: boolean }) {
+export async function createProduct(body: { title: string; slug: string; description?: string; categoryId?: string; brand?: string; material?: string; isActive?: boolean; initialPrice?: number }) {
   const { data } = await api.post<{ success: boolean; data: unknown }>("/products", body);
   return data.data;
 }
 
-export async function updateProduct(id: string, body: Partial<{ title: string; slug: string; description: string; categoryId: string; brand: string; material: string; isActive: boolean; imageUrl: string | null }>) {
+export async function updateProduct(id: string, body: Partial<{ title: string; slug: string; description: string; categoryId: string; brand: string; material: string; isActive: boolean; imageUrl: string | null; price: number; stockQuantity: number }>) {
   const { data } = await api.patch<{ success: boolean; data: unknown }>(`/products/${id}`, body);
   return data.data;
+}
+
+export interface ProductImageDto {
+  id: string;
+  url: string;
+  sortOrder: number;
+}
+
+export async function getProductImages(productId: string): Promise<ProductImageDto[]> {
+  const { data } = await api.get<{ success: boolean; data: { images: ProductImageDto[] } }>(`/products/${productId}/images`);
+  return data.data.images;
+}
+
+export async function addProductImage(productId: string, url: string): Promise<ProductImageDto> {
+  const { data } = await api.post<{ success: boolean; data: ProductImageDto }>(`/products/${productId}/images`, { url });
+  return data.data;
+}
+
+export async function removeProductImage(productId: string, imageId: string): Promise<void> {
+  await api.delete(`/products/${productId}/images/${imageId}`);
 }
 
 export async function getCollections() {
@@ -123,6 +151,86 @@ export async function updateBanner(id: string, body: Partial<{ title: string; hi
 
 export async function getCarts() {
   const { data } = await api.get<{ success: boolean; data: CartSummaryDto[] }>("/carts");
+  return data.data;
+}
+
+export interface SizeChartDto {
+  id: string | null;
+  categoryId: string;
+  categoryName: string;
+  categorySlug: string;
+  imageUrl: string | null;
+  description: string | null;
+}
+
+export async function getSizeCharts(): Promise<SizeChartDto[]> {
+  const { data } = await api.get<{ success: boolean; data: SizeChartDto[] }>("/size-charts");
+  return data.data;
+}
+
+export async function upsertSizeChart(categoryId: string, body: { imageUrl?: string | null; description?: string | null }): Promise<SizeChartDto> {
+  const { data } = await api.put<{ success: boolean; data: SizeChartDto }>(`/size-charts/${categoryId}`, body);
+  return data.data;
+}
+
+export async function inviteSubAdmin(email: string, role?: "super_admin" | "sub_admin" | "admin") {
+  await api.post("/invite", { email, role: role || "sub_admin" });
+}
+
+export interface AdminListItem {
+  id: string;
+  email: string;
+  name: string | null;
+  role: string;
+}
+
+export async function getAdmins() {
+  const { data } = await api.get<{ success: boolean; data: AdminListItem[] }>("/admins");
+  return data.data;
+}
+
+export async function removeAdmin(id: string) {
+  await api.delete(`/admins/${id}`);
+}
+
+export async function setPasswordFromToken(token: string, password: string) {
+  const { data } = await api.post<{ success: boolean; data: { admin: { id: string; email: string; name: string | null; role: string }; token: string } }>("/set-password", { token, password });
+  return data.data;
+}
+
+export async function getRefundPolicy() {
+  const { data } = await api.get<{ success: boolean; data: { refundPolicy: string } }>("/settings/refund-policy");
+  return data.data.refundPolicy;
+}
+
+export async function updateRefundPolicy(refundPolicy: string) {
+  const { data } = await api.patch<{ success: boolean; data: { refundPolicy: string } }>("/settings/refund-policy", { refundPolicy });
+  return data.data.refundPolicy;
+}
+
+export interface RefundRequestDto {
+  id: string;
+  order_id: string;
+  user_id: string | null;
+  message: string;
+  status: string;
+  created_at: string;
+  order_total?: number;
+  order_status?: string;
+  user_email?: string | null;
+  user_name?: string | null;
+  phone_number?: string | null;
+  address_full_name?: string | null;
+  items?: { productName: string; quantity: number; subtotal: number; productId: string }[];
+}
+
+export async function getRefundRequests() {
+  const { data } = await api.get<{ success: boolean; data: RefundRequestDto[] }>("/refund-requests");
+  return data.data;
+}
+
+export async function updateRefundRequestStatus(id: string, status: "approved" | "rejected") {
+  const { data } = await api.patch<{ success: boolean; data: { status: string } }>(`/refund-requests/${id}`, { status });
   return data.data;
 }
 

@@ -1,14 +1,48 @@
 import { Outlet, NavLink, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
-const nav = [
+const navItems: { to: string; label: string; icon: () => JSX.Element; superAdminOnly?: boolean }[] = [
   { to: "/orders", label: "Orders", icon: OrderIcon },
+  { to: "/admins", label: "Admins", icon: InviteIcon, superAdminOnly: true },
+  { to: "/invite", label: "Invite", icon: InviteIcon },
   { to: "/products", label: "Products", icon: ProductIcon },
+  { to: "/size-charts", label: "Size charts", icon: SizeChartIcon },
   { to: "/collections", label: "Collections", icon: CollectionIcon },
   { to: "/banners", label: "Banners", icon: BannerIcon },
   { to: "/carts", label: "Carts", icon: CartIcon },
   { to: "/analytics", label: "Analytics", icon: ChartIcon },
+  { to: "/refund-policy", label: "Refund policy", icon: RefundIcon },
+  { to: "/settings", label: "Settings", icon: SettingsIcon },
 ];
+
+function RefundIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="1 4 1 10 7 10" />
+      <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
+    </svg>
+  );
+}
+
+function InviteIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+      <circle cx="9" cy="7" r="4" />
+      <line x1="19" y1="8" x2="19" y2="14" />
+      <line x1="22" y1="11" x2="16" y2="11" />
+    </svg>
+  );
+}
+
+function SettingsIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="3" />
+      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+    </svg>
+  );
+}
 
 function OrderIcon() {
   return (
@@ -26,6 +60,16 @@ function ProductIcon() {
       <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
       <line x1="3" y1="9" x2="21" y2="9" />
       <line x1="9" y1="21" x2="9" y2="9" />
+    </svg>
+  );
+}
+
+function SizeChartIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+      <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+      <line x1="12" y1="22.08" x2="12" y2="12" />
     </svg>
   );
 }
@@ -106,7 +150,7 @@ export default function Layout() {
           <div style={{ fontSize: "0.75rem", color: "#94a3b8", marginTop: 2 }}>Admin</div>
         </div>
         <nav style={{ flex: 1 }}>
-          {nav.map(({ to, label, icon: Icon }) => (
+          {navItems.filter((item) => !item.superAdminOnly || admin?.role === "super_admin").map(({ to, label, icon: Icon }) => (
             <NavLink
               key={to}
               to={to}

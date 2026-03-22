@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { getOrders } from "../api/client";
+import { getOrders, getRefundPolicy, requestRefund } from "../api/client";
 import type { OrderDto } from "../types";
 
 function formatAddress(addr: OrderDto["address"]) {
@@ -33,15 +33,23 @@ export default function OrderHistory() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [orders, setOrders] = useState<OrderDto[]>([]);
+  const [refundPolicy, setRefundPolicy] = useState("");
   const [loading, setLoading] = useState(true);
+  const [refundOrderId, setRefundOrderId] = useState<string | null>(null);
+  const [refundMessage, setRefundMessage] = useState("");
+  const [refundSubmitting, setRefundSubmitting] = useState(false);
+  const [refundError, setRefundError] = useState("");
 
   useEffect(() => {
     if (!user) {
       navigate("/login", { replace: true });
       return;
     }
-    getOrders()
-      .then(setOrders)
+    Promise.all([getOrders(), getRefundPolicy()])
+      .then(([ordersList, policy]) => {
+        setOrders(ordersList);
+        setRefundPolicy(policy);
+      })
       .catch(() => setOrders([]))
       .finally(() => setLoading(false));
   }, [user, navigate]);
@@ -55,6 +63,12 @@ export default function OrderHistory() {
         &#8592; Back to account
       </Link>
 
+      {refundPolicy && orders.length > 0 && (
+        <div className="mb-6 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+          <h3 className="font-semibold mb-2">Refund policy</h3>
+          <p className="whitespace-pre-wrap">{refundPolicy}</p>
+        </div>
+      )}
       {loading ? (
         <p className="text-gray-500">Loading...</p>
       ) : orders.length === 0 ? (
@@ -112,9 +126,73 @@ export default function OrderHistory() {
                 <div className="text-xs text-gray-400">
                   Payment: {order.paymentStatus} &middot; {order.paymentMethod}
                 </div>
+                <div className="pt-3 mt-3 border-t border-gray-100">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setRefundOrderId(order.id);
+                      setRefundMessage("");
+                      setRefundError("");
+                    }}
+                    className="text-sm text-amber-700 hover:text-amber-800 font-medium"
+                  >
+                    Request refund
+                  </button>
+                </div>
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {refundOrderId && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => !refundSubmitting && setRefundOrderId(null)}>
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-5" onClick={(e) => e.stopPropagation()}>
+            <h3 className="font-semibold text-gray-900 mb-2">Request refund</h3>
+            <p className="text-sm text-gray-600 mb-3">Describe the reason for your refund. The store will review your request.</p>
+            {refundError && <p className="text-sm text-red-600 mb-2">{refundError}</p>}
+            <textarea
+              value={refundMessage}
+              onChange={(e) => setRefundMessage(e.target.value)}
+              placeholder="e.g. Wrong size, defective item..."
+              rows={4}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm resize-y mb-4"
+            />
+            <div className="flex gap-2 justify-end">
+              <button
+                type="button"
+                onClick={() => setRefundOrderId(null)}
+                disabled={refundSubmitting}
+                className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={async () => {
+                  if (!refundMessage.trim()) {
+                    setRefundError("Please describe your reason.");
+                    return;
+                  }
+                  setRefundError("");
+                  setRefundSubmitting(true);
+                  try {
+                    await requestRefund(refundOrderId, refundMessage.trim());
+                    setRefundOrderId(null);
+                    setRefundMessage("");
+                  } catch (err: unknown) {
+                    setRefundError(err instanceof Error ? err.message : "Request failed");
+                  } finally {
+                    setRefundSubmitting(false);
+                  }
+                }}
+                disabled={refundSubmitting}
+                className="px-3 py-1.5 text-sm bg-amber-600 text-white rounded-lg hover:bg-amber-700 disabled:opacity-50"
+              >
+                {refundSubmitting ? "Submitting…" : "Submit request"}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </main>

@@ -39,26 +39,46 @@ export function optionalAuth(req: AuthRequest, res: Response, next: NextFunction
   next();
 }
 
-/** Admin auth: JWT must contain role: 'admin' and adminId (from admin login) */
+/** Admin auth: JWT must contain role and adminId (from admin login) */
+export type AdminRole = "super_admin" | "sub_admin" | "admin";
+
 export interface AdminRequest extends Request {
   adminId?: string;
+  adminRole?: AdminRole;
 }
 
 export function requireAdmin(req: AdminRequest, res: Response, next: NextFunction) {
   const authHeader = req.headers.authorization;
   const token = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : null;
   if (!token) {
-    return res.status(401).json({ success: false, error: "Unauthorized" });
+    return res.status(401).json({
+      success: false,
+      error: "Unauthorized. Please sign in to the admin panel again.",
+    });
   }
   try {
     const payload = jwt.verify(token, JWT_SECRET) as { adminId?: string; role?: string };
-    const adminRoles = ["super_admin", "admin", "sub_admin"];
-    if (!payload.adminId || !payload.role || !adminRoles.includes(payload.role)) {
+    const adminRoles: AdminRole[] = ["super_admin", "admin", "sub_admin"];
+    if (!payload.adminId || !payload.role || !adminRoles.includes(payload.role as AdminRole)) {
       return res.status(403).json({ success: false, error: "Admin access required" });
     }
     req.adminId = payload.adminId;
+    req.adminRole = payload.role as AdminRole;
     next();
   } catch {
-    return res.status(401).json({ success: false, error: "Invalid or expired token" });
+    return res.status(401).json({
+      success: false,
+      error: "Invalid or expired token. Please sign in again.",
+    });
   }
+}
+
+/** Require one of the given roles. Must be used after requireAdmin. */
+export function requireRole(allowed: AdminRole[]) {
+  return (req: AdminRequest, res: Response, next: NextFunction) => {
+    if (!req.adminRole || !allowed.includes(req.adminRole)) {
+      return res.status(403).json({ success: false, error: "Insufficient permissions" });
+    }
+    next();
+  };
 }

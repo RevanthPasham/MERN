@@ -7,7 +7,7 @@
  * Default admin for login: pashamrevanth541@gmail.com / admin (create with role super_admin)
  */
 import "dotenv/config";
-import { initModels } from "../src/db/models";
+import { connectDatabaseForScripts } from "../src/db/models";
 import * as adminAuthService from "../src/services/adminAuth.service";
 import type { AdminRole } from "../src/db/models/admin.model";
 
@@ -26,7 +26,7 @@ async function run() {
     process.exit(1);
   }
   try {
-    await initModels();
+    await connectDatabaseForScripts();
     const admin = await adminAuthService.createAdmin(email, password, name || "Admin", role);
     console.log("Admin created:", admin.email, "role:", admin.role);
   } catch (err: unknown) {

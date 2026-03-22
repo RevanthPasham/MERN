@@ -1,4 +1,4 @@
-import { Order, OrderItem, Product, ProductVariant, Address } from "../db/models";
+import { Order, OrderItem, Product, ProductVariant, Address, User } from "../db/models";
 
 export interface ConfirmOrderInput {
   userId: string;
@@ -92,6 +92,18 @@ export async function confirmOrder(input: ConfirmOrderInput): Promise<{ orderId:
       quantity: row.quantity,
       subtotal: row.subtotal,
     });
+  }
+
+  // Order confirmation email (if SMTP configured)
+  try {
+    const { isEmailConfigured, sendOrderConfirmation } = await import("./email.service");
+    if (userId && isEmailConfigured()) {
+      const user = await User.findByPk(userId);
+      const email = (user as any)?.email;
+      if (email) sendOrderConfirmation(email, orderId, totalAmountRupees).catch(() => {});
+    }
+  } catch {
+    /* ignore */
   }
 
   return { orderId };

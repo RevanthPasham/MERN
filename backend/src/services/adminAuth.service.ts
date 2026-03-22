@@ -39,3 +39,19 @@ export async function createAdmin(email: string, password: string, name?: string
   } as AdminCreationAttributes);
   return { id: admin.id, email: admin.email, name: admin.name, role: admin.role };
 }
+
+export async function listAdmins(): Promise<{ id: string; email: string; name: string | null; role: string }[]> {
+  const admins = await Admin.findAll({
+    attributes: ["id", "email", "name", "role"],
+    order: [["email", "ASC"]],
+  });
+  return admins.map((a) => ({ id: a.id, email: a.email, name: a.name, role: a.role }));
+}
+
+export async function deleteAdmin(adminId: string, requestedByAdminId: string): Promise<boolean> {
+  if (adminId === requestedByAdminId) throw new Error("You cannot remove yourself");
+  const admin = await Admin.findByPk(adminId);
+  if (!admin) return false;
+  await admin.destroy();
+  return true;
+}

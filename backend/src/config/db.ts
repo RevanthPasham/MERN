@@ -1,34 +1,50 @@
 import dns from "node:dns";
 import { Sequelize } from "sequelize";
+import pg from "pg";
 
-// Force public DNS resolvers so local DNS refusals don't block DB hostname lookups.
-const dnsServers = process.env.DNS_SERVERS?.split(",").map((s) => s.trim()).filter(Boolean);
-if (dnsServers?.length) {
-  dns.setServers(dnsServers);
-} else {
-  dns.setServers(["1.1.1.1", "8.8.8.8"]);
+/**
+ * Must not throw at module load — Vercel loads this file before env is guaranteed
+ * (e.g. preview deploys without env). Missing URL is handled in connectDatabaseForScripts / seed.
+ */
+const rawUrl = process.env.DATABASE_URL;
+const DATABASE_URL =
+  typeof rawUrl === "string" && rawUrl.trim().length > 0
+    ? rawUrl.trim()
+    : "postgresql://invalid:invalid@127.0.0.1:5432/invalid";
+
+export function isDatabaseConfigured(): boolean {
+  return Boolean(typeof rawUrl === "string" && rawUrl.trim().length > 0);
 }
-dns.setDefaultResultOrder("ipv4first");
 
-const DATABASE_URL = process.env.DATABASE_URL;
-
-if (!DATABASE_URL || typeof DATABASE_URL !== "string" || !DATABASE_URL.trim()) {
-  throw new Error("DATABASE_URL is missing. Set it in Vercel Environment Variables (or .env locally).");
-}
-
-export const sequelize = new Sequelize(DATABASE_URL.trim(), {
-  dialect: "postgres",
-  dialectOptions: {
+function dialectOptionsForUrl(urlString: string): { ssl?: { require: boolean; rejectUnauthorized: boolean } } {
+  try {
+    const host = new URL(urlString).hostname.toLowerCase();
+    if (host === "localhost" || host === "127.0.0.1") {
+      return {};
+    }
+  } catch {
+    // ignore parse errors
+  }
+  return {
     ssl: {
       require: true,
       rejectUnauthorized: false,
     },
-  },
+  };
+}
+
+export const sequelize = new Sequelize(DATABASE_URL, {
+  dialect: "postgres",
+  /** Required so Vercel/serverless bundles include `pg` (dynamic require alone can be tree-shaken out). */
+  dialectModule: pg,
   logging: false,
-  pool: {
-    max: process.env.VERCEL ? 1 : 5,
-    min: 0,
-    acquire: 10000,
-    idle: 10000,
-  },
+  dialectOptions: dialectOptionsForUrl(DATABASE_URL),
+});
+
+/** In-memory associations only; runs synchronously right before the first real DB connection (any query path). */
+sequelize.addHook("beforeConnect", () => {
+  // Lazy require avoids circular import with models while keeping startup free of DB work.
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { associate } = require("../db/models") as { associate: () => void };
+  associate();
 });

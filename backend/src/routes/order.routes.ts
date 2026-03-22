@@ -7,5 +7,6 @@ router.get("/payment-status", orderController.paymentStatus);
 router.post("/create", orderController.createOrder);
 router.post("/confirm", requireAuth, orderController.confirmOrder);
 router.get("/", requireAuth, orderController.listOrders);
+router.post("/:orderId/refund-request", requireAuth, orderController.requestRefund);
 
 export default router;

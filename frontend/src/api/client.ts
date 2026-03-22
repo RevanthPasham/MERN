@@ -1,9 +1,11 @@
 import axios from "axios";
 
-const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:4000/api";
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 export const api = axios.create({
   baseURL: BASE_URL,
+  // Cold Vercel + Neon can exceed 10s; keep above client wait so you see API errors instead of a generic timeout
+  timeout: 60000,
   headers: { "Content-Type": "application/json" },
 });
 
@@ -202,11 +204,26 @@ export async function deleteAddress(id: string): Promise<void> {
   await api.delete(`/addresses/${id}`);
 }
 
+/* ========== Settings (public) ========== */
+
+export async function getRefundPolicy(): Promise<string> {
+  try {
+    const { data } = await api.get<{ success: boolean; data: { refundPolicy: string } }>("/settings/refund-policy");
+    return data?.data?.refundPolicy ?? "";
+  } catch {
+    return "";
+  }
+}
+
 /* ========== Order history (requires auth) ========== */
 
 export async function getOrders(): Promise<import("../types").OrderDto[]> {
   const { data } = await api.get<{ success: boolean; data: import("../types").OrderDto[] }>("/orders");
   return Array.isArray(data?.data) ? data.data : [];
+}
+
+export async function requestRefund(orderId: string, message: string): Promise<void> {
+  await api.post(`/orders/${orderId}/refund-request`, { message });
 }
 
 /* ========== Cart (requires auth) ========== */

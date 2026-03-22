@@ -153,13 +153,13 @@ export default function Checkout() {
         <>
           {user && (
             <section className="mb-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-3">Delivery address</h2>
+              <h2 className="border-b border-gray-200 pb-3 mb-4 text-lg font-bold text-gray-900">Delivery address</h2>
               <div className="space-y-2">
                 {addresses.map((a) => (
                   <label
                     key={a.id}
                     className={`flex gap-3 p-3 border rounded-lg cursor-pointer ${
-                      selectedAddressId === a.id ? "border-green-600 bg-green-50/50 ring-1 ring-green-600" : "border-gray-200 hover:border-gray-300"
+                      selectedAddressId === a.id ? "border-[#1e3a5f] bg-blue-50/50 ring-1 ring-[#1e3a5f]" : "border-gray-200 hover:border-gray-300"
                     }`}
                   >
                     <input
@@ -173,7 +173,7 @@ export default function Checkout() {
                     <div className="flex-1">
                       <span className="text-sm font-medium text-gray-500">{a.addressType}</span>
                       {a.isDefault && (
-                        <span className="ml-2 text-xs text-green-700 bg-green-100 px-1.5 py-0.5 rounded">Default</span>
+                        <span className="ml-2 text-xs text-white bg-[#1e3a5f] px-1.5 py-0.5 rounded">Default</span>
                       )}
                       <p className="font-medium text-gray-900">{a.fullName}, {a.phoneNumber}</p>
                       <p className="text-sm text-gray-600">
@@ -187,7 +187,7 @@ export default function Checkout() {
                 <button
                   type="button"
                   onClick={() => setShowNewAddress(true)}
-                  className="mt-2 text-sm text-blue-600 hover:underline"
+                  className="mt-2 text-sm text-[#1e3a5f] font-medium hover:underline"
                 >
                   + Add new address
                 </button>
@@ -293,11 +293,12 @@ export default function Checkout() {
             </section>
           )}
 
-          <div className="space-y-4 mb-6">
+          <div className="space-y-3 mb-6">
+            <h2 className="border-b border-gray-200 pb-3 mb-4 text-lg font-bold text-gray-900">Order summary</h2>
             {items.map(({ product, quantity, size }) => (
               <div
                 key={`${product.id}-${size}`}
-                className="flex gap-3 border-b pb-3"
+                className="white bg-white rounded-xl border border-gray-100 p-3 flex gap-3"
               >
                 <img
                   src={product.images?.[0] || PLACEHOLDER_PRODUCT_THUMB}
@@ -338,7 +339,7 @@ export default function Checkout() {
             </button>
             <Link
               to="/"
-              className="px-6 py-3 border border-gray-300 rounded font-medium hover:bg-gray-50"
+              className="px-6 py-3 border border-[#1e3a5f] text-[#1e3a5f] rounded-xl font-medium hover:bg-blue-50"
             >
               Continue shopping
             </Link>

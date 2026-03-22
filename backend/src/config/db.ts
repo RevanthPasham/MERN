@@ -1,3 +1,4 @@
+import dns from "node:dns";
 import { Sequelize } from "sequelize";
 import pg from "pg";
 

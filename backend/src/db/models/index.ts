@@ -17,11 +17,14 @@ import { CartItem } from "./cartItem.model";
 import { Address } from "./address.model";
 import { Admin } from "./admin.model";
 import { sequelize } from "../../config/db";
-import { runtimeLog, safeDatabaseHost } from "../../utils/runtimeLog";
 
 /* ================= ASSOCIATIONS ================= */
 
+let associationsRegistered = false;
+
 export function associate(): void {
+  if (associationsRegistered) return;
+  associationsRegistered = true;
   // Category: self-reference (parent/children)
   Category.hasMany(Category, { foreignKey: "parentId", as: "children" });
   Category.belongsTo(Category, { foreignKey: "parentId", as: "parent" });
@@ -99,39 +102,10 @@ export function associate(): void {
 
 /* ================= INIT ================= */
 
+/** Associations + authenticate only. No sync here (use migrations / local server.ts / seed). */
 export async function initModels(): Promise<void> {
-  const tStart = Date.now();
-  runtimeLog("init_models_start", {
-    dbHost: safeDatabaseHost(),
-    hasDatabaseUrl: Boolean(process.env.DATABASE_URL?.trim()),
-  });
-
   associate();
-  const tAuth0 = Date.now();
   await sequelize.authenticate();
-  runtimeLog("init_models_authenticate_ok", { ms: Date.now() - tAuth0 });
-
-  // Create missing tables from models (no force/alter — safe for existing data).
-  // - Local / Neon in .env: runs by default so first connect creates tables.
-  // - Vercel: skipped by default (cold starts); set DATABASE_SYNC=true once, then remove or set false.
-  // - Disable anywhere: DATABASE_SYNC=false
-  const runSync =
-    process.env.DATABASE_SYNC === "true" ||
-    (!process.env.VERCEL && process.env.DATABASE_SYNC !== "false");
-
-  if (runSync) {
-    const tSync0 = Date.now();
-    await sequelize.sync();
-    runtimeLog("init_models_sync_done", { ms: Date.now() - tSync0 });
-  }
-
-  runtimeLog("init_models_complete", {
-    totalMs: Date.now() - tStart,
-    syncRan: runSync,
-    message: runSync
-      ? "tables synced (CREATE IF NOT EXISTS)"
-      : "DATABASE_SYNC off; schema not altered",
-  });
 }
 
 /* ================= RE-EXPORTS ================= */

@@ -1,27 +1,42 @@
 import "dotenv/config";
+import http from "http";
 import { initModels } from "./db/models";
+import { sequelize } from "./config/db";
 import { isCloudinaryConfigured } from "./services/cloudinary.service";
 import app from "./app";
 
 const PORT = Number(process.env.PORT) || 4000;
 
-const startServer = async () => {
+async function start(): Promise<void> {
   await initModels();
 
-  if (isCloudinaryConfigured()) {
-    console.log("Cloudinary configured – image uploads will use CLOUDINARY_* from .env");
-  } else {
-    console.warn("Cloudinary NOT configured – set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET in .env");
+  if (!process.env.VERCEL && process.env.DATABASE_SYNC !== "false") {
+    await sequelize.sync();
   }
 
-  const server = app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-    console.log("Press Ctrl+C to stop.");
+  if (isCloudinaryConfigured()) {
+    console.log("Cloudinary configured");
+  }
+
+  const server = http.createServer(app);
+
+  await new Promise<void>((resolve, reject) => {
+    const onErr = (err: Error) => {
+      server.off("error", onErr);
+      reject(err);
+    };
+    server.once("error", onErr);
+    server.listen(PORT, () => {
+      server.off("error", onErr);
+      resolve();
+    });
   });
+
+  console.log(`Server listening on port ${PORT}`);
 
   server.on("error", (err: NodeJS.ErrnoException) => {
     if (err.code === "EADDRINUSE") {
-      console.error(`Port ${PORT} is already in use. Stop the other process or set PORT in .env.`);
+      console.error(`Port ${PORT} is already in use.`);
     } else {
       console.error("HTTP server error:", err);
     }
@@ -29,26 +44,14 @@ const startServer = async () => {
   });
 
   const shutdown = (signal: string) => {
-    console.log(`\n${signal} received — closing server…`);
-    server.close((closeErr) => {
-      if (closeErr) console.error("Error while closing server:", closeErr);
-      process.exit(closeErr ? 1 : 0);
-    });
+    console.log(`${signal} — closing…`);
+    server.close(() => process.exit(0));
   };
-
   process.once("SIGINT", () => shutdown("SIGINT"));
   process.once("SIGTERM", () => shutdown("SIGTERM"));
-};
+}
 
-startServer().catch((err) => {
-  console.error("Failed to start server:", err);
+start().catch((err) => {
+  console.error("Failed to start:", err);
   process.exit(1);
-});
-
-process.on("unhandledRejection", (reason) => {
-  console.error("Unhandled promise rejection:", reason);
-});
-
-process.on("uncaughtException", (err) => {
-  console.error("Uncaught exception:", err);
 });

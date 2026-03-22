@@ -1,4 +1,5 @@
 import { Sequelize } from "sequelize";
+import pg from "pg";
 
 /**
  * Must not throw at module load — Vercel loads this file before env is guaranteed
@@ -33,6 +34,8 @@ function dialectOptionsForUrl(urlString: string): { ssl?: { require: boolean; re
 
 export const sequelize = new Sequelize(DATABASE_URL, {
   dialect: "postgres",
+  /** Required so Vercel/serverless bundles include `pg` (dynamic require alone can be tree-shaken out). */
+  dialectModule: pg,
   logging: false,
   dialectOptions: dialectOptionsForUrl(DATABASE_URL),
 });

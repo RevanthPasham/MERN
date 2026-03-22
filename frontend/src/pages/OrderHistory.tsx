@@ -95,12 +95,12 @@ export default function OrderHistory() {
                       <span className="text-gray-800">
                         {item.productName} &times; {item.quantity}
                       </span>
-                      <span className="text-gray-700">\u20B9{Number(item.subtotal).toLocaleString("en-IN")}</span>
+                      <span className="text-gray-700">₹{Number(item.subtotal).toLocaleString("en-IN")}</span>
                     </li>
                   ))}
                 </ul>
                 <p className="text-right font-bold text-gray-900 text-base pt-2 border-t border-gray-100">
-                  Total: \u20B9{Number(order.totalAmount).toLocaleString("en-IN")}
+                  Total: ₹{Number(order.totalAmount).toLocaleString("en-IN")}
                 </p>
                 <div className="text-sm text-gray-500 pt-1 flex items-start gap-1.5">
                   <svg className="w-4 h-4 mt-0.5 shrink-0 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

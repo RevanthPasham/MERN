@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 
 const MESSAGES = [
-  "COD AVAILABLE TILL \u20B93,000",
+  "COD AVAILABLE TILL ₹3,000",
   "FREE SHIPPING ON ALL ORDERS",
   "PREMIUM 100% COTTON TEE",
 ];

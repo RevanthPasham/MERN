@@ -28,9 +28,9 @@ function ProductCard({ product }: { product: ProductListItem }) {
       <div className="pt-2 px-0.5 pb-1">
         <h3 className="mt-2 text-sm font-medium text-gray-900 line-clamp-2">{product.title}</h3>
         <div className="mt-1 flex items-baseline gap-2">
-          <span className="font-semibold text-gray-900">\u20B9{product.price?.toLocaleString("en-IN") ?? "\u2014"}</span>
+          <span className="font-semibold text-gray-900">₹{product.price?.toLocaleString("en-IN") ?? "\u2014"}</span>
           {product.compareAtPrice != null && (
-            <span className="text-sm text-gray-400 line-through">\u20B9{product.compareAtPrice.toLocaleString("en-IN")}</span>
+            <span className="text-sm text-gray-400 line-through">₹{product.compareAtPrice.toLocaleString("en-IN")}</span>
           )}
         </div>
       </div>

@@ -4,24 +4,16 @@ import { useCart } from "../../context/CartContext";
 import { useAuth } from "../../context/AuthContext";
 import SearchOverlay from "./SearchOverlay";
 
-const navLinks = [
-  { label: "Shop All", to: "/search" },
-  { label: "Size Chart \u2013 Crop Top", to: "/pages/size-chart-crop-top" },
-  { label: "Size Chart \u2013 Crop Tank", to: "/pages/size-chart-crop-tank" },
-];
-
 export default function Navbar() {
   const { count, setSidebarOpen } = useCart();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [searchOpen, setSearchOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [sizeDropdown, setSizeDropdown] = useState(false);
+  const [navQuery, setNavQuery] = useState("");
 
   const mobileLinks = [
     { label: "Home", to: "/" },
-    { label: "Shop All", to: "/search" },
     ...(user
       ? [
           { label: "My Account", to: "/account" },
@@ -29,14 +21,7 @@ export default function Navbar() {
           { label: "Saved Addresses", to: "/account/addresses" },
         ]
       : [{ label: "Login / Register", to: "/login" }]),
-    { label: "Size Chart \u2013 Crop Top", to: "/pages/size-chart-crop-top" },
-    { label: "Size Chart \u2013 Crop Tank", to: "/pages/size-chart-crop-tank" },
   ];
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
-  };
 
   return (
     <>
@@ -64,70 +49,35 @@ export default function Navbar() {
             </Link>
           </div>
 
-          {/* Desktop nav links — Shop All + Size Charts dropdown */}
-          <nav className="hidden md:flex items-center gap-1 shrink-0">
-            <Link
-              to="/search"
-              className="px-3 py-1.5 text-sm text-gray-300 hover:text-white hover:bg-white/10 rounded transition-colors whitespace-nowrap"
-            >
-              Shop All
-            </Link>
-
-            {/* Size Charts dropdown */}
-            <div
-              className="relative"
-              onMouseEnter={() => setSizeDropdown(true)}
-              onMouseLeave={() => setSizeDropdown(false)}
-            >
-              <button
-                type="button"
-                className="flex items-center gap-1 px-3 py-1.5 text-sm text-gray-300 hover:text-white hover:bg-white/10 rounded transition-colors whitespace-nowrap"
-              >
-                Size Charts
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-              {sizeDropdown && (
-                <div className="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-xl py-1 w-44 z-50 border border-gray-100">
-                  <Link
-                    to="/pages/size-chart-crop-top"
-                    className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#1e3a5f]"
-                    onClick={() => setSizeDropdown(false)}
-                  >
-                    Crop Top
-                  </Link>
-                  <Link
-                    to="/pages/size-chart-crop-tank"
-                    className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#1e3a5f]"
-                    onClick={() => setSizeDropdown(false)}
-                  >
-                    Crop Tank
-                  </Link>
-                </div>
-              )}
-            </div>
-          </nav>
+          {/* Desktop nav links removed per request */}
 
           {/* Inline search bar — desktop only */}
           <form
-            onSubmit={handleSearch}
-            className="hidden md:flex flex-1 mx-4 max-w-xl"
+            className="hidden md:flex flex-1 justify-center px-4"
+            onSubmit={(e) => {
+              e.preventDefault();
+              setSearchOpen(true);
+            }}
           >
-            <div className="w-full flex items-center bg-white rounded overflow-hidden">
+            <div className="w-full max-w-3xl flex items-center bg-white rounded overflow-hidden border border-transparent hover:border-[#1e3a5f]/40 focus-within:outline-none focus-within:ring-2 focus-within:ring-[#1e3a5f]/30 transition">
               <svg className="ml-3 w-4 h-4 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
               <input
                 type="search"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                value={navQuery}
+                onChange={(e) => {
+                  setNavQuery(e.target.value);
+                  setSearchOpen(true);
+                }}
                 placeholder="Search for products, collections..."
-                className="flex-1 px-3 py-2.5 text-sm text-gray-900 outline-none bg-transparent"
+                className="flex-1 px-3 py-2.5 text-left text-sm text-gray-900 outline-none"
+                aria-label="Search products"
+                autoComplete="off"
               />
               <button
                 type="submit"
-                className="px-4 py-2.5 bg-[#1e3a5f] text-white text-sm font-medium hover:bg-[#163050] transition-colors"
+                className="px-4 py-2.5 bg-[#1e3a5f] text-white text-sm font-medium"
               >
                 Search
               </button>
@@ -264,7 +214,12 @@ export default function Navbar() {
         </>
       )}
 
-      <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
+      <SearchOverlay
+        open={searchOpen}
+        initialQuery={navQuery}
+        onQueryChange={setNavQuery}
+        onClose={() => setSearchOpen(false)}
+      />
     </>
   );
 }

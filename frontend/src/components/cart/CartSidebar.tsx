@@ -62,7 +62,7 @@ export default function CartSidebar() {
                 <div className="flex-1 min-w-0">
                   <p className="font-medium text-gray-900 text-sm truncate">{product.title}</p>
                   <p className="text-[#1e3a5f] font-semibold text-sm mt-0.5">
-                    \u20B9{product.price?.toLocaleString("en-IN")}
+                    ₹{product.price?.toLocaleString("en-IN")}
                   </p>
                   <span className="inline-block bg-gray-100 text-gray-600 text-xs px-1.5 py-0.5 rounded mt-0.5">
                     Size: {size}
@@ -100,7 +100,7 @@ export default function CartSidebar() {
           <div className="p-4 border-t bg-gray-50">
             <p className="text-sm text-gray-600 mb-3">
               Estimated total:{" "}
-              <strong className="text-gray-900">\u20B9{subtotal.toLocaleString("en-IN")}</strong>
+              <strong className="text-gray-900">₹{subtotal.toLocaleString("en-IN")}</strong>
             </p>
             <button
               type="button"

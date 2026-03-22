@@ -36,11 +36,11 @@ function ProductCard({ product }: { product: ProductListItem }) {
         </p>
         <div className="mt-1 flex flex-wrap items-baseline gap-1">
           <span className="font-semibold text-gray-900">
-            \u20B9{product.price?.toLocaleString("en-IN") ?? "\u2014"}
+            ₹{product.price?.toLocaleString("en-IN") ?? "\u2014"}
           </span>
           {product.compareAtPrice != null && (
             <span className="text-sm text-gray-400 line-through">
-              \u20B9{product.compareAtPrice.toLocaleString("en-IN")}
+              ₹{product.compareAtPrice.toLocaleString("en-IN")}
             </span>
           )}
         </div>

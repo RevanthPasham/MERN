@@ -5,6 +5,7 @@ You only need to configure keys on the **backend**. The frontend gets the Key ID
 ---
 
 ## 1. Backend: Add Razorpay keys
+! use test api keys for staging
 
 In the **backend** folder, create or edit `.env` with:
 

@@ -36,7 +36,7 @@ This guide explains how **products**, **collections**, and **banners** relate, a
 - **API:** `POST /api/products` with body (title, slug, description, categoryId, brand, material, isActive). You still need to add variants and images (e.g. via separate logic or SQL).
 - Products appear in listing and search when `is_active = true`. Product listing uses the **lowest variant price** and first variant image.
 
-To have a product show with price and image you need at least one **product_variant** and optionally **product_images** for that variant.
+To have a product show with prices and image you need at least one **product_variant** and optionally **product_images** for that variant.
 
 ---
 

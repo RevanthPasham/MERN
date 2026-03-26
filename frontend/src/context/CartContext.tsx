@@ -51,6 +51,18 @@ function saveToStorage(items: CartItem[]) {
   }
 }
 
+function upsertItem(list: CartItem[], product: CartProduct, quantity: number, size: string) {
+  const existing = list.find((i) => i.product.id === product.id && i.size === size);
+  if (existing) {
+    return list.map((i) =>
+      i.product.id === product.id && i.size === size
+        ? { ...i, quantity: i.quantity + quantity }
+        : i
+    );
+  }
+  return [...list, { product, quantity, size }];
+}
+
 export function CartProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
   const [items, setItems] = useState<CartItem[]>([]);
@@ -74,7 +86,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
             setItems(merged);
             localStorage.removeItem(CART_STORAGE_KEY);
           })
-          .catch(() => cartApi.getCart().then(setItems))
+          .catch(() =>
+            cartApi
+              .getCart()
+              .then(setItems)
+              .catch(() => setItems(guestItems))
+          )
           .finally(() => {
             setIsLoading(false);
             hasFetchedForUser.current = true;
@@ -83,6 +100,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         cartApi
           .getCart()
           .then(setItems)
+          .catch(() => setItems(guestItems))
           .finally(() => {
             setIsLoading(false);
             hasFetchedForUser.current = true;
@@ -107,17 +125,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
         cartApi
           .addCartItem(product.id, quantity, sizeStr)
           .then(setItems)
-          .catch(() => {});
+          .catch(() => {
+            setItems((prev) => {
+              const next = upsertItem(prev, product, quantity, sizeStr);
+              saveToStorage(next);
+              return next;
+            });
+          });
       } else {
         setItems((prev) => {
-          const existing = prev.find((i) => i.product.id === product.id && i.size === sizeStr);
-          const next = existing
-            ? prev.map((i) =>
-                i.product.id === product.id && i.size === sizeStr
-                  ? { ...i, quantity: i.quantity + quantity }
-                  : i
-              )
-            : [...prev, { product, quantity, size: sizeStr }];
+          const next = upsertItem(prev, product, quantity, sizeStr);
           return next;
         });
       }
@@ -129,21 +146,24 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const updateQuantity = useCallback(
     (productId: string, size: string, delta: number) => {
       const sizeStr = size || "S";
+      // Optimistic update so totals change immediately for all users
+      setItems((prev) =>
+        prev
+          .map((i) => {
+            if (i.product.id !== productId || i.size !== sizeStr) return i;
+            const q = i.quantity + delta;
+            return q <= 0 ? null : { ...i, quantity: q };
+          })
+          .filter((i): i is CartItem => i !== null)
+      );
+
       if (user) {
         cartApi
           .updateCartItem(productId, sizeStr, delta)
           .then(setItems)
-          .catch(() => {});
-      } else {
-        setItems((prev) =>
-          prev
-            .map((i) => {
-              if (i.product.id !== productId || i.size !== sizeStr) return i;
-              const q = i.quantity + delta;
-              return q <= 0 ? null : { ...i, quantity: q };
-            })
-            .filter((i): i is CartItem => i !== null)
-        );
+          .catch(() => {
+            // Keep optimistic state on failure; backend will reconcile on next fetch
+          });
       }
     },
     [user]

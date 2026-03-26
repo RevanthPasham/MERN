@@ -8,12 +8,22 @@ export default {
     extend: {
       keyframes: {
         slideFromRight: {
-          from: { transform: "translateX(200px)", opacity: "0" },
+          from: { transform: "translateX(100%)", opacity: "0" },
           to: { transform: "translateX(0)", opacity: "1" },
+        },
+        slideFromLeft: {
+          from: { transform: "translateX(-100%)", opacity: "0" },
+          to: { transform: "translateX(0)", opacity: "1" },
+        },
+        fadeIn: {
+          from: { opacity: "0" },
+          to: { opacity: "1" },
         },
       },
       animation: {
-        slideFromRight: "slideFromRight 1s ease-out forwards",
+        "slide-from-right": "slideFromRight 0.3s ease-out forwards",
+        "slide-from-left": "slideFromLeft 0.3s ease-out forwards",
+        "fade-in": "fadeIn 0.2s ease-out forwards",
       },
     },
   },

@@ -14,11 +14,17 @@ import { ProductReview } from "./productReview.model";
 import { Order } from "./order.model";
 import { OrderItem } from "./orderItem.model";
 import { CartItem } from "./cartItem.model";
-import { sequelize } from "../../config/db";
+import { Address } from "./address.model";
+import { Admin } from "./admin.model";
+import { isDatabaseConfigured, sequelize } from "../../config/db";
 
 /* ================= ASSOCIATIONS ================= */
 
+let associationsRegistered = false;
+
 export function associate(): void {
+  if (associationsRegistered) return;
+  associationsRegistered = true;
   // Category: self-reference (parent/children)
   Category.hasMany(Category, { foreignKey: "parentId", as: "children" });
   Category.belongsTo(Category, { foreignKey: "parentId", as: "parent" });
@@ -76,8 +82,13 @@ export function associate(): void {
   User.hasMany(ProductReview, { foreignKey: "userId", as: "reviews" });
   ProductReview.belongsTo(User, { foreignKey: "userId", as: "user" });
 
+  User.hasMany(Address, { foreignKey: "userId", as: "addresses" });
+  Address.belongsTo(User, { foreignKey: "userId", as: "user" });
+
   User.hasMany(Order, { foreignKey: "userId", as: "orders" });
   Order.belongsTo(User, { foreignKey: "userId", as: "user" });
+  Order.belongsTo(Address, { foreignKey: "addressId", as: "address" });
+  Address.hasMany(Order, { foreignKey: "addressId", as: "orders" });
   Order.hasMany(OrderItem, { foreignKey: "orderId", as: "items" });
   OrderItem.belongsTo(Order, { foreignKey: "orderId", as: "order" });
   OrderItem.belongsTo(Product, { foreignKey: "productId", as: "product" });
@@ -89,13 +100,16 @@ export function associate(): void {
   Product.hasMany(CartItem, { foreignKey: "productId", as: "cartItems" });
 }
 
-/* ================= INIT ================= */
+/* ================= SCRIPTS ================= */
 
-export async function initModels(): Promise<void> {
-  associate();
-  // Create tables if they don't exist; do not drop so DB data persists across restarts
-  await sequelize.sync();
-  console.log("Models initialized and synced");
+/** Await first connection for CLI scripts. HTTP uses Sequelize’s lazy pool — no startup authenticate. */
+export async function connectDatabaseForScripts(): Promise<void> {
+  if (!isDatabaseConfigured()) {
+    throw new Error(
+      "DATABASE_URL is not set. Add it under Vercel → Project → Settings → Environment Variables (Production + Preview)."
+    );
+  }
+  await sequelize.authenticate();
 }
 
 /* ================= RE-EXPORTS ================= */
@@ -116,3 +130,5 @@ export { ProductReview } from "./productReview.model";
 export { Order } from "./order.model";
 export { OrderItem } from "./orderItem.model";
 export { CartItem } from "./cartItem.model";
+export { Address } from "./address.model";
+export { Admin } from "./admin.model";

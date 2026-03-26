@@ -7,6 +7,7 @@ import Login from "../pages/Login";
 import Profile from "../pages/Profile";
 import Account from "../pages/Account";
 import AccountAddresses from "../pages/AccountAddresses";
+import OrderHistory from "../pages/OrderHistory";
 import SearchPage from "../pages/SearchPage";
 import SizeChart from "../pages/SizeChart";
 
@@ -24,6 +25,7 @@ export default function AppRoutes() {
       <Route path="/profile" element={<Profile />} />
       <Route path="/account" element={<Account />} />
       <Route path="/account/addresses" element={<AccountAddresses />} />
+      <Route path="/account/orders" element={<OrderHistory />} />
     </Routes>
   );
 }

@@ -4,16 +4,21 @@ import { sequelize } from "../../config/db";
 export interface OrderAttributes {
   id: string;
   userId: string | null;
+  addressId: string | null;
   razorpayOrderId: string;
   amountPaise: number;
-  status: string;
+  totalAmount: number;
+  paymentMethod: string;
+  paymentStatus: string;
+  orderStatus: string;
+  status: string; // legacy, kept for backward compatibility
   createdAt: Date;
   updatedAt: Date;
 }
 
 export type OrderCreationAttributes = Optional<
   OrderAttributes,
-  "id" | "userId" | "status" | "createdAt" | "updatedAt"
+  "id" | "userId" | "addressId" | "status" | "paymentMethod" | "paymentStatus" | "orderStatus" | "createdAt" | "updatedAt"
 >;
 
 export class Order
@@ -22,8 +27,13 @@ export class Order
 {
   declare id: string;
   declare userId: string | null;
+  declare addressId: string | null;
   declare razorpayOrderId: string;
   declare amountPaise: number;
+  declare totalAmount: number;
+  declare paymentMethod: string;
+  declare paymentStatus: string;
+  declare orderStatus: string;
   declare status: string;
   declare createdAt: Date;
   declare updatedAt: Date;
@@ -43,6 +53,13 @@ Order.init(
       references: { model: "users", key: "id" },
       onDelete: "SET NULL",
     },
+    addressId: {
+      type: DataTypes.UUID,
+      allowNull: true,
+      field: "address_id",
+      references: { model: "addresses", key: "id" },
+      onDelete: "SET NULL",
+    },
     razorpayOrderId: {
       type: DataTypes.STRING(120),
       allowNull: false,
@@ -52,6 +69,30 @@ Order.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       field: "amount_paise",
+    },
+    totalAmount: {
+      type: DataTypes.DECIMAL(12, 2),
+      allowNull: false,
+      defaultValue: 0,
+      field: "total_amount",
+    },
+    paymentMethod: {
+      type: DataTypes.STRING(40),
+      allowNull: false,
+      defaultValue: "razorpay",
+      field: "payment_method",
+    },
+    paymentStatus: {
+      type: DataTypes.STRING(20),
+      allowNull: false,
+      defaultValue: "paid",
+      field: "payment_status",
+    },
+    orderStatus: {
+      type: DataTypes.STRING(20),
+      allowNull: false,
+      defaultValue: "Processing",
+      field: "order_status",
     },
     status: {
       type: DataTypes.STRING(20),
@@ -74,6 +115,6 @@ Order.init(
     tableName: "orders",
     underscored: true,
     timestamps: true,
-    indexes: [{ fields: ["user_id"] }, { fields: ["razorpay_order_id"] }],
+    indexes: [{ fields: ["user_id"] }, { fields: ["address_id"] }, { fields: ["razorpay_order_id"] }],
   }
 );

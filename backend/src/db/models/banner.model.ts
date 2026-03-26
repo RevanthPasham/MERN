@@ -8,7 +8,7 @@ export interface BannerAttributes {
   subtitle: string;
   cta: string;
   collectionSlug: string;
-  imageUrl: string;
+  imageUrl: string | null;
   sortOrder: number;
   isActive: boolean;
   createdAt: Date;
@@ -68,7 +68,7 @@ Banner.init(
     },
     imageUrl: {
       type: DataTypes.TEXT,
-      allowNull: false,
+      allowNull: true,
       field: "image_url",
     },
     sortOrder: {

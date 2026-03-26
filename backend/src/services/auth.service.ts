@@ -1,12 +1,12 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { User } from "../db/models";
-import type { UserCreationAttributes } from "../db/models/user.model";
+import type { UserCreationAttributes, UserRole } from "../db/models/user.model";
 
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-change-in-production";
 const SALT_ROUNDS = 10;
 
-export async function register(email: string, password: string, name?: string) {
+export async function register(email: string, password: string, name?: string, role: UserRole = "customer") {
   const existing = await User.findOne({ where: { email: email.toLowerCase() } });
   if (existing) throw new Error("Email already registered");
   const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
@@ -14,14 +14,15 @@ export async function register(email: string, password: string, name?: string) {
     email: email.toLowerCase(),
     passwordHash,
     name: name || null,
+    role: role === "candidate" ? "candidate" : "customer",
   } as UserCreationAttributes);
   const token = jwt.sign(
-    { userId: user.id, email: user.email },
+    { userId: user.id, email: user.email, role: user.role },
     JWT_SECRET,
     { expiresIn: "7d" }
   );
   return {
-    user: { id: user.id, email: user.email, name: user.name },
+    user: { id: user.id, email: user.email, name: user.name, role: user.role },
     token,
   };
 }
@@ -32,12 +33,12 @@ export async function login(email: string, password: string) {
   const ok = await bcrypt.compare(password, user.passwordHash);
   if (!ok) throw new Error("Invalid email or password");
   const token = jwt.sign(
-    { userId: user.id, email: user.email },
+    { userId: user.id, email: user.email, role: user.role },
     JWT_SECRET,
     { expiresIn: "7d" }
   );
   return {
-    user: { id: user.id, email: user.email, name: user.name },
+    user: { id: user.id, email: user.email, name: user.name, role: user.role },
     token,
   };
 }

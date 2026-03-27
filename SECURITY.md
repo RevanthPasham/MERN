@@ -1,93 +1,127 @@
-# Security Policy
+# 🔐 Security Policy
 
-## Supported Versions
+## 📌 Supported Versions
 
-We actively maintain and provide security updates for the following versions:
+We actively maintain and provide security updates for:
 
 | Version | Supported |
 | ------- | --------- |
-| 1.x     | ✅         |
-| < 1.0   | ❌         |
+| 1.x     | ✅ Yes     |
+| < 1.0   | ❌ No      |
 
-If you are using an unsupported version, upgrade to the latest release before reporting issues.
-
----
-
-## Reporting a Vulnerability
-
-If you discover a security vulnerability, **do not create a public GitHub issue**.
-
-Instead, report it responsibly using one of the following methods:
-
-
-Include the following details in your report:
-
-* Description of the vulnerability
-* Steps to reproduce
-* Proof of concept (if possible)
-* Potential impact
-* Suggested fix (optional)
-
-We will acknowledge your report within **48 hours**.
+> ⚠️ Unsupported versions will not receive security patches. Upgrade immediately before reporting issues.
 
 ---
 
-## Responsible Disclosure
+## 🚨 Reporting a Vulnerability
 
-We follow a responsible disclosure process:
+**Do NOT open public issues for security vulnerabilities.**
 
-1. You report the vulnerability privately.
-2. We investigate and validate the issue.
-3. A fix is developed and deployed.
-4. The vulnerability is disclosed publicly after the patch is released.
+Report privately via:
 
-Please allow reasonable time for us to address the issue before public disclosure.
+- 📧 Email: security@yourdomain.com  
+- 🔐 (Optional) PGP Key: [link to your public key]  
+- 🛡️ (Optional) Bug bounty platform: HackerOne / Bugcrowd  
 
----
+### 📋 Include in Your Report:
+- Clear description of the vulnerability  
+- Step-by-step reproduction  
+- Proof of Concept (PoC)  
+- Potential impact  
+- Suggested fix (optional)  
 
-## Security Practices
-
-This project follows several security best practices:
-
-* Password hashing using **bcrypt**
-* Token-based authentication using **JWT**
-* Environment variable management via **dotenv**
-* Input validation using **Zod**
-* Secure payment processing through **Razorpay**
-* Secure database access with **PostgreSQL + Sequelize**
+### ⏱ Response SLA:
+- Acknowledgement: within **48 hours**
+- Initial assessment: within **3–5 days**
 
 ---
 
-## Security Recommendations for Deployment
+## 🧠 Severity Levels & Response Time
 
-When deploying this backend:
-
-* Always use **HTTPS**
-* Store secrets in **environment variables**, never in source code
-* Rotate API keys regularly
-* Restrict database access to trusted IPs
-* Enable rate limiting and request logging
-* Keep dependencies updated
+| Severity   | Example                          | Fix Timeline |
+|------------|----------------------------------|-------------|
+| Critical   | RCE, auth bypass, data breach    | 24–72 hrs   |
+| High       | Sensitive data exposure          | 3–7 days    |
+| Medium     | Privilege escalation             | 7–14 days   |
+| Low        | Minor misconfigurations          | 14+ days    |
 
 ---
 
-## Dependency Security
+## 🔄 Responsible Disclosure
 
-Run the following regularly:
+We follow a coordinated disclosure process:
 
-```
-npm audit
-npm audit fix
-```
+1. Vulnerability is reported privately  
+2. Issue is validated internally  
+3. Fix is developed and tested  
+4. Patch is released  
+5. Public disclosure after resolution  
 
-or use automated tools like:
-
-* GitHub Dependabot
-* Snyk
-* npm audit
+> ❗ Do not disclose vulnerabilities publicly before a fix is deployed.
 
 ---
 
-## Acknowledgements
+## 🛡️ Core Security Practices
 
-We appreciate security researchers who responsibly disclose vulnerabilities and help improve this project.
+### 🔑 Authentication & Authorization
+- Passwords hashed using **bcrypt (cost ≥ 12)**
+- JWT:
+  - Short-lived access tokens (≤ 15 minutes)
+  - Refresh tokens required
+  - Stored in **HTTP-only cookies**
+- Role-based access control (RBAC)
+
+---
+
+### 🌐 Web Security Controls
+- Strict **CORS policy** (whitelisted domains only)
+- **CSRF protection** for state-changing requests
+- Security headers via Helmet:
+  - Content-Security-Policy (CSP)
+  - X-Frame-Options
+  - X-Content-Type-Options
+- Input sanitization (prevent XSS, injection attacks)
+
+---
+
+### ⚡ Rate Limiting & Abuse Protection
+- Authentication routes: **5 req/min/IP**
+- API routes: **100 req/min/user**
+- Brute-force protection enabled
+- IP + user-based throttling
+
+---
+
+### 🗄️ Database Security
+- Least-privilege database roles
+- Sensitive data encryption (PII, tokens)
+- Parameterized queries (prevent SQL injection)
+- Query logging and anomaly detection
+
+---
+
+### 💳 Payment Security
+- Payments processed via Razorpay
+- All transactions verified via **server-side webhook**
+- Signature validation required
+- Never trust client-side payment confirmation
+
+---
+
+### 🔐 Secrets Management
+- Secrets stored in **environment variables (dev only)**
+- Production: use secret managers (AWS/GCP/Vault)
+- No secrets in source code
+- Regular key rotation enforced
+
+---
+
+## 🧪 Security Testing
+
+We enforce continuous security testing:
+
+- SAST (Static Analysis): ESLint security plugins  
+- DAST (Dynamic Testing): OWASP ZAP  
+- Dependency Scanning:
+  ```bash
+  npm audit

@@ -1,127 +1,295 @@
-# 🔐 Security Policy
+# 🔐 Security Policy (Advanced)
 
 ## 📌 Supported Versions
-
-We actively maintain and provide security updates for:
 
 | Version | Supported |
 | ------- | --------- |
 | 1.x     | ✅ Yes     |
-| < 1.0   | ❌ No      |
-
-> ⚠️ Unsupported versions will not receive security patches. Upgrade immediately before reporting issues.
+| <1.0    | ❌ No      |
 
 ---
 
 ## 🚨 Reporting a Vulnerability
 
-**Do NOT open public issues for security vulnerabilities.**
+Report privately:
 
-Report privately via:
+- 📧 security@yourdomain.com  
+- 🔐 PGP Key: [link]  
+- 🛡 HackerOne (optional)
 
-- 📧 Email: security@yourdomain.com  
-- 🔐 (Optional) PGP Key: [link to your public key]  
-- 🛡️ (Optional) Bug bounty platform: HackerOne / Bugcrowd  
+### Required Details:
+- Description
+- Reproduction steps
+- Impact
+- PoC
 
-### 📋 Include in Your Report:
-- Clear description of the vulnerability  
-- Step-by-step reproduction  
-- Proof of Concept (PoC)  
-- Potential impact  
-- Suggested fix (optional)  
-
-### ⏱ Response SLA:
-- Acknowledgement: within **48 hours**
-- Initial assessment: within **3–5 days**
+### SLA:
+- Response: 48h
+- Critical triage: <24h
 
 ---
 
-## 🧠 Severity Levels & Response Time
+## 🧠 Threat Model (Explicit)
 
-| Severity   | Example                          | Fix Timeline |
-|------------|----------------------------------|-------------|
-| Critical   | RCE, auth bypass, data breach    | 24–72 hrs   |
-| High       | Sensitive data exposure          | 3–7 days    |
-| Medium     | Privilege escalation             | 7–14 days   |
-| Low        | Minor misconfigurations          | 14+ days    |
+We assume attackers may attempt:
 
----
-
-## 🔄 Responsible Disclosure
-
-We follow a coordinated disclosure process:
-
-1. Vulnerability is reported privately  
-2. Issue is validated internally  
-3. Fix is developed and tested  
-4. Patch is released  
-5. Public disclosure after resolution  
-
-> ❗ Do not disclose vulnerabilities publicly before a fix is deployed.
+- Credential stuffing  
+- JWT theft / replay  
+- SQL injection  
+- XSS / CSRF  
+- API abuse / scraping  
+- Payment manipulation  
+- Insider misuse  
 
 ---
 
-## 🛡️ Core Security Practices
+## 🔑 Authentication & Session Security
 
-### 🔑 Authentication & Authorization
-- Passwords hashed using **bcrypt (cost ≥ 12)**
-- JWT:
-  - Short-lived access tokens (≤ 15 minutes)
-  - Refresh tokens required
-  - Stored in **HTTP-only cookies**
-- Role-based access control (RBAC)
+- bcrypt (cost ≥ 12)
+- Access token TTL: **15 min**
+- Refresh token rotation (one-time use)
 
----
+### Mandatory Controls:
+- Token binding (IP/device fingerprint)
+- Session invalidation on:
+  - password change
+  - logout
+  - suspicious activity
 
-### 🌐 Web Security Controls
-- Strict **CORS policy** (whitelisted domains only)
-- **CSRF protection** for state-changing requests
-- Security headers via Helmet:
-  - Content-Security-Policy (CSP)
-  - X-Frame-Options
-  - X-Content-Type-Options
-- Input sanitization (prevent XSS, injection attacks)
+### Cookie Rules:
+- HttpOnly
+- Secure
+- SameSite=Strict
 
 ---
 
-### ⚡ Rate Limiting & Abuse Protection
-- Authentication routes: **5 req/min/IP**
-- API routes: **100 req/min/user**
-- Brute-force protection enabled
-- IP + user-based throttling
+## 🧬 Advanced Authorization
+
+- RBAC + **Attribute-Based Access Control (ABAC)**
+
+### Examples:
+- A user can only access:
+  - their own resources
+  - resources matching ownership rules  
+
+- Admin actions require:
+  - re-authentication OR MFA  
 
 ---
 
-### 🗄️ Database Security
-- Least-privilege database roles
-- Sensitive data encryption (PII, tokens)
-- Parameterized queries (prevent SQL injection)
-- Query logging and anomaly detection
+## 🔐 Multi-Factor Authentication (MFA)
+
+Required for:
+- Admin accounts  
+- Payment actions  
+- Sensitive data access  
+
+Supported:
+- TOTP (Google Authenticator)
+- Email OTP (fallback)
 
 ---
 
-### 💳 Payment Security
-- Payments processed via Razorpay
-- All transactions verified via **server-side webhook**
-- Signature validation required
-- Never trust client-side payment confirmation
+## 🌐 Advanced Web Security
+
+### Headers (Strict)
+- Content-Security-Policy:
+  - default-src 'self'
+- X-Frame-Options: DENY
+- HSTS enabled (max-age ≥ 1 year)
+
+### Input Security:
+- Schema validation (Zod)
+- Output encoding (prevent XSS)
 
 ---
 
-### 🔐 Secrets Management
-- Secrets stored in **environment variables (dev only)**
-- Production: use secret managers (AWS/GCP/Vault)
-- No secrets in source code
-- Regular key rotation enforced
+## ⚡ Advanced Rate Limiting
+
+### Strategy:
+- IP-based + user-based + device-based
+
+### Examples:
+- Login:
+  - 5 attempts / min
+  - lockout after 10 failures  
+
+- API:
+  - burst + sustained limits  
 
 ---
 
-## 🧪 Security Testing
+## 🧱 API Abuse Protection
 
-We enforce continuous security testing:
+- Detect:
+  - unusual request patterns  
+  - scraping behavior  
+- Block:
+  - TOR exit nodes (optional)
+  - known malicious IPs  
 
-- SAST (Static Analysis): ESLint security plugins  
-- DAST (Dynamic Testing): OWASP ZAP  
-- Dependency Scanning:
-  ```bash
-  npm audit
+---
+
+## 🗄️ Data Protection
+
+### Encryption:
+- At rest: AES-256
+- In transit: TLS 1.2+
+
+### Sensitive Data:
+- Mask logs (never log tokens/passwords)
+- Encrypt:
+  - emails
+  - phone numbers (if critical)
+
+---
+
+## 💳 Payment Security (Strict)
+
+- Server-side verification ONLY  
+- Webhook validation:
+  - signature check REQUIRED  
+- Idempotency keys enforced  
+
+### Anti-Fraud:
+- Detect duplicate payments  
+- Validate amount server-side  
+
+---
+
+## 🔍 Logging & Monitoring
+
+### Log:
+- Auth attempts  
+- Failed logins  
+- Token usage  
+- Admin actions  
+
+### MUST NOT log:
+- Passwords  
+- Tokens  
+- Secrets  
+
+---
+
+## 🚨 Intrusion Detection
+
+Trigger alerts for:
+
+- Multiple failed logins  
+- Sudden traffic spikes  
+- Token reuse anomalies  
+
+---
+
+## 🔁 Dependency & Supply Chain Security
+
+### Enforced:
+- Lockfile integrity  
+- No unverified packages  
+
+### CI Rules:
+- Fail build on:
+  - critical vulnerabilities  
+  - outdated dependencies  
+
+---
+
+## 🧪 Security Testing (Mandatory)
+
+- SAST (static analysis)
+- DAST (runtime testing)
+- Fuzz testing for APIs  
+
+### Example:
+- Test malformed JSON inputs  
+- Test auth bypass attempts  
+
+---
+
+## 🧨 Secrets Management
+
+- No secrets in code EVER  
+
+### Production:
+- AWS Secrets Manager / Vault  
+
+### Rules:
+- Rotate every 30–90 days  
+- Separate per environment  
+
+---
+
+## 🚀 Infrastructure Security
+
+- Use reverse proxy (NGINX / Cloudflare)
+- WAF enabled (Web Application Firewall)
+
+### Network:
+- Private DB subnet  
+- No public DB access  
+
+---
+
+## 🧠 Zero Trust Principles
+
+- Never trust:
+  - client input  
+  - internal services  
+
+### Enforced:
+- Service-to-service authentication  
+- Internal API verification  
+
+---
+
+## 🚨 Incident Response
+
+### Steps:
+1. Detect anomaly  
+2. Contain (block IP / revoke tokens)  
+3. Investigate logs  
+4. Patch vulnerability  
+5. Notify users  
+6. Postmortem  
+
+---
+
+## ⚖️ Safe Harbor
+
+We support ethical security research.
+
+Allowed:
+- Testing within scope  
+
+Not allowed:
+- Data destruction  
+- Service disruption  
+
+---
+
+## 🔄 Backup & Recovery
+
+- Daily encrypted backups  
+- Tested restore procedures  
+
+---
+
+## 🧠 Security Principles
+
+- Least privilege  
+- Defense in depth  
+- Fail securely  
+- Assume breach  
+
+---
+
+# ✅ Final Note
+
+Security is enforced at:
+- Code level  
+- API level  
+- Infrastructure level  
+- Operational level  
+
+---

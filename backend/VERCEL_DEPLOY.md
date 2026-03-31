@@ -1,59 +1,130 @@
-# Deploy Backend to Vercel
+# Backend Deployment (Vercel)
 
-## 1. Project settings
+This backend is deployed as a **serverless API on Vercel**.
 
-- **Root Directory:** Set to `backend` (so Vercel uses this folder as the project root).
-- **Framework Preset:** Other (or Node.js).
-- **Build Command:** `npm run build` (or leave default).
-- **Output Directory:** Leave empty (this is a serverless API, not a static site).
-- **Install Command:** `npm install`.
+---
 
-## 2. Environment variables
+## 🚀 Overview
 
-In Vercel → Project → Settings → Environment Variables, add:
+- Runtime: Node.js (Serverless Functions)
+- Deployment: Vercel
+- Database: PostgreSQL
+- Auth: JWT
+- Payments: Razorpay (optional)
 
-| Name            | Value                    | Notes                    |
-|-----------------|--------------------------|--------------------------|
-| `DATABASE_URL`  | Your PostgreSQL URL      | **Required** for DB      |
-| `JWT_SECRET`    | A long random string     | **Required** for auth    |
-| `RAZORPAY_KEY_ID` | Your Razorpay key     | Optional, for payments  |
-| `RAZORPAY_KEY_SECRET` | Your Razorpay secret | Optional, for payments  |
+---
 
-Apply to **Production**, **Preview**, and **Development** as needed.
+## 📁 Project Structure
 
-## 3. Deploy
+backend/
+├── api/                # Serverless functions (routes)
+│   ├── auth.ts
+│   ├── products.ts
+│   └── health.ts
+├── package.json
+├── vercel.json
+└── ...
 
-Push to your repo and let Vercel build, or run:
+### Important
+Each file inside `/api` becomes an endpoint:
+- `/api/auth` → auth routes
+- `/api/products` → product routes
 
-```bash
-cd backend
-npx vercel
-```
+---
 
-## 4. API base URL
+## ⚙️ Vercel Configuration
 
-After deploy, your API base URL will be:
+### Project Settings
 
-- `https://<your-project>.vercel.app/api`
+| Setting             | Value              |
+|--------------------|-------------------|
+| Root Directory      | `backend`         |
+| Framework Preset    | Node.js / Other   |
+| Build Command       | `npm run build`   |
+| Install Command     | `npm install`     |
+| Output Directory    | (leave empty)     |
 
-So the frontend should use:
+---
 
-- `VITE_API_URL=https://<your-project>.vercel.app/api`
+## 🔐 Environment Variables
 
-Example: `GET https://<your-project>.vercel.app/api/products`, `POST https://<your-project>.vercel.app/api/auth/login`, etc.
+Add these in **Vercel → Settings → Environment Variables**
 
-## 5. Database migration
+| Name                     | Required | Description                         |
+|--------------------------|----------|-------------------------------------|
+| DATABASE_URL             | ✅       | PostgreSQL connection string        |
+| JWT_SECRET               | ✅       | Secret key for authentication       |
+| RAZORPAY_KEY_ID          | ❌       | Razorpay public key                 |
+| RAZORPAY_KEY_SECRET      | ❌       | Razorpay secret key                 |
 
-Run the migration against your production DB **before** or right after first deploy (from your machine or a one-off script):
+### Notes
+- Apply variables to **Production, Preview, Development**
+- Redeploy after any change
 
-```bash
-cd backend
-npm run db:migrate
-```
+---
 
-Use the same `DATABASE_URL` as in Vercel (or your production DB URL).
+## 🧪 Local Development
 
-## 6. If you see 503 "Database not configured"
+cd backend  
+npm install  
+npm run dev  
 
-- Add `DATABASE_URL` in Vercel Environment Variables.
-- Redeploy so the new env is picked up.
+Create `.env` file:
+
+DATABASE_URL=your_db_url  
+JWT_SECRET=your_secret  
+
+---
+
+## 🚀 Deployment
+
+### Option 1 (Recommended)
+Push to GitHub → Vercel auto-deploys
+
+### Option 2 (CLI)
+
+cd backend  
+npx vercel  
+
+---
+
+## 🌐 API Base URL
+
+https://<your-project>.vercel.app/api
+
+### Example Endpoints
+
+GET    /api/products  
+POST   /api/auth/login  
+GET    /api/health  
+
+---
+
+## 🗄️ Database Setup
+
+Run migrations before or after first deploy:
+
+cd backend  
+npm run db:migrate  
+
+### Critical
+- Use the same `DATABASE_URL` as production
+- Prefer connection pooling (Neon/Supabase)
+
+---
+
+## 🧠 Common Issues
+
+### 1. 503: Database not configured
+Cause: Missing `DATABASE_URL`  
+
+Fix:
+- Add environment variable
+- Redeploy
+
+---
+
+### 2. CORS Errors
+Cause: Frontend blocked  
+
+Fix:

@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { getCollectionBySlug } from "../api/client";
 import { PLACEHOLDER_PRODUCT } from "../utils/placeholder";
+import { ProductGridSkeleton } from "../components/ui/Skeletons";
 import type { ProductListItem } from "../types";
 
 function ProductCard({ product }: { product: ProductListItem }) {
@@ -68,8 +69,8 @@ export default function CategoryPage() {
 
   if (loading) {
     return (
-      <main className="max-w-7xl mx-auto px-4 py-12 text-center text-gray-500">
-        Loading...
+      <main className="max-w-7xl mx-auto px-4 md:px-8 py-6">
+        <ProductGridSkeleton count={8} />
       </main>
     );
   }

@@ -4,6 +4,7 @@ import { getProductById, getRelatedProducts, getProductReviews, getCanReview, ad
 import { useCart } from "../../context/CartContext";
 import { useAuth } from "../../context/AuthContext";
 import { PLACEHOLDER_PRODUCT, PLACEHOLDER_PRODUCT_LARGE } from "../../utils/placeholder";
+import { ProductDetailsSkeleton } from "../ui/Skeletons";
 import type { ProductDetail, ProductListItem, ProductReviewsResponse } from "../../types";
 
 function RelatedCard({ product }: { product: ProductListItem }) {
@@ -83,11 +84,7 @@ export default function ProductDetails() {
   };
 
   if (loading) {
-    return (
-      <main className="max-w-7xl mx-auto px-4 py-12 text-center text-gray-500">
-        Loading...
-      </main>
-    );
+    return <ProductDetailsSkeleton />;
   }
 
   if (!product) {

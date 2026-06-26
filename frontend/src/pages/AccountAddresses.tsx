@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import * as api from "../api/client";
+import { ListPageSkeleton } from "../components/ui/Skeletons";
 import type { AddressDto, AddressType } from "../types";
 
 const ADDRESS_TYPES: AddressType[] = ["Home", "Work", "Other"];
@@ -154,7 +155,7 @@ export default function AccountAddresses() {
       </Link>
 
       {loading ? (
-        <p className="text-gray-500">Loading...</p>
+        <ListPageSkeleton rows={3} />
       ) : (
         <>
           <div className="space-y-4 mb-6">

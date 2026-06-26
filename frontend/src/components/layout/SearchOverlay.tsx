@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { getProducts } from "../../api/client";
 import { PLACEHOLDER_PRODUCT_THUMB } from "../../utils/placeholder";
+import { SearchOverlaySkeleton } from "../ui/Skeletons";
 import type { ProductListItem } from "../../types";
 
 const SUGGESTION_TERMS = [
@@ -197,7 +198,7 @@ export default function SearchOverlay({ open, onClose, initialQuery, onQueryChan
             {error && (
               <p className="text-sm text-red-600 mb-2">{error}</p>
             )}
-            {loading && <p className="text-sm text-gray-500">Searching...</p>}
+            {loading && <SearchOverlaySkeleton />}
             {!loading && !error && showProducts.length === 0 && query.trim() && (
               <p className="text-sm text-gray-500">No products found. Try a different search.</p>
             )}

@@ -3,6 +3,7 @@ import HeroBanner from "../components/sections/HeroBanner";
 import BestSellers from "../components/sections/BestSellers";
 import CollectionsSection from "../components/sections/CollectionsSection";
 import { getBanners, getProducts } from "../api/client";
+import { HomePageSkeleton } from "../components/ui/Skeletons";
 
 export default function Home() {
   const [dataFailed, setDataFailed] = useState(false);
@@ -34,11 +35,7 @@ export default function Home() {
 
   return (
     <main className="min-h-[50vh]">
-      {loading && (
-        <div className="py-12 text-center text-gray-500">
-          Loading...
-        </div>
-      )}
+      {loading && <HomePageSkeleton />}
       {dataFailed && !loading && (
         <div className="bg-amber-50 border-b border-amber-200 px-4 py-3 text-center">
           <p className="text-amber-800 text-sm">

@@ -2,6 +2,7 @@ import { useSearchParams, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { getProducts } from "../api/client";
 import { PLACEHOLDER_PRODUCT } from "../utils/placeholder";
+import { ProductGridSkeleton } from "../components/ui/Skeletons";
 import type { ProductListItem } from "../types";
 
 function ProductCard({ product }: { product: ProductListItem }) {
@@ -66,7 +67,7 @@ export default function SearchPage() {
               Search results for &ldquo;{q}&rdquo;
             </h1>
           </div>
-          {loading && <p className="text-gray-500">Searching...</p>}
+          {loading && <ProductGridSkeleton count={8} />}
           {!loading && products.length === 0 && (
             <p className="text-gray-500">No products found.</p>
           )}

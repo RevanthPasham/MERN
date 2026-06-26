@@ -99,9 +99,14 @@ export default function Login() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 bg-[#1e3a5f] text-white font-semibold rounded-xl hover:bg-[#163050] transition-colors disabled:opacity-50"
+            className="w-full py-3 bg-[#1e3a5f] text-white font-semibold rounded-xl hover:bg-[#163050] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? "Please wait..." : isRegister ? "Register" : "Login"}
+            <span className="inline-flex items-center justify-center gap-2">
+              {loading && (
+                <span className="inline-block h-4 w-4 rounded-full border-2 border-white/30 border-t-white animate-spin" aria-hidden="true" />
+              )}
+              {loading ? (isRegister ? "Creating account" : "Signing in") : isRegister ? "Register" : "Login"}
+            </span>
           </button>
         </form>
         <p className="mt-5 text-center text-sm text-gray-600">

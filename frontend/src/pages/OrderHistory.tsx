@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { getOrders, getRefundPolicy, requestRefund } from "../api/client";
+import { ListPageSkeleton } from "../components/ui/Skeletons";
 import type { OrderDto } from "../types";
 
 function formatAddress(addr: OrderDto["address"]) {
@@ -70,7 +71,7 @@ export default function OrderHistory() {
         </div>
       )}
       {loading ? (
-        <p className="text-gray-500">Loading...</p>
+        <ListPageSkeleton rows={3} />
       ) : orders.length === 0 ? (
         <p className="text-gray-600">You haven&apos;t placed any orders yet.</p>
       ) : (

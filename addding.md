@@ -2,11 +2,14 @@
 
 ## ✅ Step-by-Step Verification
 
+
 ### 1. Check Server is Running
+
 
 ```bash
 npm run dev
 ```
+
 
 **Expected output:**
 ```
@@ -21,6 +24,7 @@ npm run dev
 - ❌ Missing environment variables → Check all required vars are set
 
 ---
+
 
 ### 2. Test Health Endpoint
 

@@ -1,4 +1,4 @@
-# Setup Verification Checklist
+
 
 ## ✅ Step-by-Step Verification
 

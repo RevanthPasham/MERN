@@ -9,6 +9,7 @@ export async function upload(req: AdminRequest, res: Response, next: NextFunctio
         error: "Cloudinary is not configured. Set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET in .env",
       });
     }
+    
 
     const { image, folder } = req.body;
 

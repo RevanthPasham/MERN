@@ -47,4 +47,5 @@ export async function deleteUpload(req: AdminRequest, res: Response, next: NextF
     }
     next(e);
   }
-} add a lint error or etch we check 
+  
+} 

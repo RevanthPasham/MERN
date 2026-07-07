@@ -18,7 +18,7 @@ npm run dev
 
 **If you see errors:**
 - ❌ Database connection failed → Check `DATABASE_URL` in `.env`
-- ❌ Missing environment variables → Check all required vars are set
+  
 
 ---
 

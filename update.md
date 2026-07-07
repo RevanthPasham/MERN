@@ -11,8 +11,7 @@ npm run dev
 **Expected output:**
 ```
 🌐 Server will run on port 3000
-✅ Database connection successful
-✅ Database tables initialized successfully
+✅ Database connection successfu
 🚀 Server running on port 3000
 ```
 

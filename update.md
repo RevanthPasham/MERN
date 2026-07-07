@@ -1,7 +1,6 @@
 
 
 ## ✅ Step-by-Step Verification
-
 ### 1. Check Server is Running
 
 ```bash
@@ -11,7 +10,6 @@ npm run dev
 **Expected output:**
 ```
 🌐 Server will run on port 3000
-✅ Database connection successful
 ✅ Database tables initialized successfully
 🚀 Server running on port 3000
 ```
